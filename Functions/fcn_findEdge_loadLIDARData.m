@@ -1,4 +1,4 @@
-function [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_loadLIDARData(varargin)
+function [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData(varargin)
 %% fcn_findEdge_loadLIDARData
 % Loads LIDAR data from a specified file. Peforms loading of vehicle pose
 % and LIDAR data with many conditional checks to confirm the file is
@@ -7,7 +7,7 @@ function [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_loadLIDARData(vara
 % 
 % FORMAT:
 %
-%      [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num))
+%      [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num))
 %
 % INPUTS:     
 %      
@@ -32,17 +32,9 @@ function [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_loadLIDARData(vara
 %
 % OUTPUTS:
 %
-%      Min_x: minimum number of x-coordinate of points
+%      VehiclePose: the position of the mapping vehicle during mapping
 %
-%      Max_x  maximum number of x-coordinate of points
-%
-%      Min_y: minimum number of y-coordinate of points
-%
-%      Max_y: maximum number of y-coordinate of points
-%
-%      Min_z: minimum number of z-coordinate of points
-%
-%      Max_z: maximum number of z-coordinate of points
+%      LiDAR_Scan_ENU_Entire_Loop: the points from the LIDAR scan 
 %
 % DEPENDENCIES:
 %
@@ -51,8 +43,10 @@ function [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_loadLIDARData(vara
 % EXAMPLES:
 %
 %       See the script:
-%       script_test_fcn_findEdge_findMaxMinOfXYZ.m for a full
-%       test suite.
+% 
+%       script_test_fcn_findEdge_loadLIDARData.m 
+%  
+%       for a full test suite.
 %
 % This function was written on 2024_08_05 by Jiabao Zhao
 % Questions or comments? jpz5469@psu.edu
@@ -142,7 +136,7 @@ vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing V
 if (2<=nargin)
     temp = varargin{2};
     if ~isempty(temp)
-        test_date_string = temp;
+        vehicle_pose_string = temp;
     end
 end
 
@@ -151,7 +145,7 @@ LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file cont
 if (3<=nargin)
     temp = varargin{3};
     if ~isempty(temp)
-        test_date_string = temp;
+        LIDAR_file_string = temp;
     end
 end
 
@@ -160,7 +154,7 @@ flag_load_all_data = 0; % FORCE LOAD? Set this manually to 1 to FORCE load
 if (4<=nargin)
     temp = varargin{4};
     if ~isempty(temp)
-        test_date_string = temp;
+        flag_load_all_data = temp;
     end
 end
 
@@ -187,18 +181,17 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Check to see if data was loaded earlier
-
 % Set the file names
 mat_loadFilename_vehiclePose = fullfile(cd,'LargeData',test_date_string, vehicle_pose_string);
 mat_loadFilename_LIDARdata   = fullfile(cd,'LargeData',test_date_string, LIDAR_file_string);
 
+persistent permanent_file_date PermanentVehiclePose PermanentLiDAR_Scan_ENU_Entire_Loop
 
 % If the variable does not yet exist, load it
-if ~exist('VehiclePose','var')
+if isempty(PermanentVehiclePose)
     flag_load_all_data = 1;
 end
-if ~exist('LiDAR_Scan_ENU_Entire_Loop','var')
+if isempty(PermanentLiDAR_Scan_ENU_Entire_Loop)
     flag_load_all_data = 1;
 end
 
@@ -220,10 +213,17 @@ if exist('permanent_file_date','var') || ~isempty(permanent_file_date)
     file_info = dir(which(mat_loadFilename_vehiclePose));
     file_date = file_info.date;
 
+    % Do we need to fill the file date? 
+    if isempty(permanent_file_date)
+        permanent_file_date = file_date;
+    end
+
+    % Does the file date from the first time we load match the date now? If
+    % not, tell the user and plan to reload the data.
     if ~strcmp(file_date,permanent_file_date)
-        fprintf(1,'\n\nComparing the data files creation date to the date given by user, they did not match.\n');
-        fprintf(1,'\tCreation date: %s\n',file_date);
-        fprintf(1,'\tGiven by user: %s\n',permanent_file_date)
+        fprintf(1,'\n\nComparing the current data file''s creation date to the date of the last load, they did not match.\n');
+        fprintf(1,'\tCurrent file''s creation date: %s\n',file_date);
+        fprintf(1,'\tCreation date of the file that was last loaded: %s\n',permanent_file_date)
         flag_load_all_data = 1;
     end
 
@@ -239,22 +239,44 @@ if 1==flag_load_all_data
 
     % Does the file exist?
     if exist(mat_loadFilename_vehiclePose,'file')
+        fprintf(1,'Loading vehicle pose data from file: %s\n',mat_loadFilename_vehiclePose);
         load(mat_loadFilename_vehiclePose,'VehiclePose');
     else
-        % File does not exist - need to load it
+        % File does not exist - need to warn the user
         error('Unable to find file: %s',mat_loadFilename_vehiclePose);
     end
 
 
     % Does the file exist?
     if exist(mat_loadFilename_LIDARdata,'file')
+        fprintf(1,'Loading LIDAR scan data from file: %s\n',mat_loadFilename_LIDARdata);
         load(mat_loadFilename_LIDARdata,'LiDAR_Scan_ENU_Entire_Loop');
     else
         % File does not exist - need to load it
         error('Unable to find file: %s',mat_loadFilename_LIDARdata);
     end
+
+    % Make sure both have same length
+    if 1==flag_do_plots
+        fprintf(1,'\n\nComparing the number of data in the vehicle pose data file to the number of data in the LIDAR scan file:\n');
+        fprintf(1,'\tNumber of data in the vehicle pose file: %.0f\n',length(VehiclePose(:,1)));
+        fprintf(1,'\tNumber of data in the LIDAR scan file: %.0f\n',length(LiDAR_Scan_ENU_Entire_Loop))
+    end
+
+    if length(VehiclePose(:,1)) ~= length(LiDAR_Scan_ENU_Entire_Loop)
+        error('The number of data in the vehicle pose data file does not match the number of data in the LIDAR scan file.');
+    end
+
+    % Save the results into memory
+    PermanentVehiclePose = VehiclePose;
+    PermanentLiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_ENU_Entire_Loop;
 else
-    fprintf(1,'Vehice pose and LIDAR data appears unchanged. Using existing variables within workspace.\n')
+    VehiclePose = PermanentVehiclePose;
+    LiDAR_Scan_ENU_Entire_Loop = PermanentLiDAR_Scan_ENU_Entire_Loop;
+    
+    if 1==flag_do_plots
+        fprintf(1,'Vehice pose and LIDAR data appears unchanged. Using existing variables within workspace.\n')
+    end
 end
 
 
@@ -276,64 +298,23 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
+    clf;
     hold on;
     grid on;
-    % axis equal
-    xlabel('X [m]')
-    ylabel('Y [m]')
-    zlabel('Z [m]')
-    title('ENU Trace Geometry')
+    axis equal
 
-    %plot of points
-    if isscalar(N_points(1,:))  % N by 1
-        [~, idx_min_x] = min(N_points(:,1));
-        [~, idx_max_x] = max(N_points(:,1));
-        x = (N_points(:,1));
-        hold on
-        plot(x,'o');
-        plot(idx_min_x,x(idx_min_x),'ro'); % Min x
-        plot(idx_max_x,x(idx_max_x),'ro'); % max x
-        hold off
-    elseif 2 == length(N_points(1,:)) % N by 2
-        [~, idx_min_x] = min(N_points(:,1));
-        [~, idx_max_x] = max(N_points(:,1));
-        [~, idx_min_y] = min(N_points(:,2));
-        [~, idx_max_y] = max(N_points(:,2));
-        x = (N_points(:,1));
-        y = (N_points(:,2));
-        hold on
-        scatter(x,y);
-        scatter(x(idx_min_x),y(idx_min_x),100,'r'); % Min x
-        scatter(x(idx_max_x),y(idx_max_x),100,'r'); % max x
-        scatter(x(idx_min_y),y(idx_min_y),200,'g'); % min y
-        scatter(x(idx_max_y),y(idx_max_y),200,'g'); % max y
-        hold off
-    elseif 3 == length(N_points(1,:))  % N by 3 
-        [~, idx_min_x] = min(N_points(:,1));
-        [~, idx_max_x] = max(N_points(:,1));
-        [~, idx_min_y] = min(N_points(:,2));
-        [~, idx_max_y] = max(N_points(:,2));
-        [~, idx_min_z] = min(N_points(:,3));
-        [~, idx_max_z] = max(N_points(:,3));
-        x = (N_points(:,1));
-        y = (N_points(:,2));
-        z = (N_points(:,3));
-        hold on 
-        colors = z;
-        scatter3(x,y,z,20,colors);
-        % scatter3(x,y,z,20)
-        scatter3(x(idx_min_x),y(idx_min_x),z(idx_min_x),100, 'r'); % Min x
-        scatter3(x(idx_max_x),y(idx_max_x),z(idx_max_x),100, 'r'); % max x
-        scatter3(x(idx_min_y),y(idx_min_y),z(idx_min_y),200, 'g'); % min y
-        scatter3(x(idx_max_y),y(idx_max_y),z(idx_max_y),200, 'g'); % max y
-        scatter3(x(idx_min_z),y(idx_min_z),z(idx_min_z),300, 'y'); % min z
-        scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),300, 'y'); % max z
-        colormap('jet'); % You can use 'viridis' if you have it, or other colormaps
-        colorbar; % Add a color bar to show the color mapping
-        view(2)
-        hold off
-    end
-    hold off
+    % plot of vehicle pose
+    boundaryLineNumber_start = 1;
+    boundaryLineNumber_end = length(VehiclePose);
+    plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 0],'MarkerSize',10,'LineWidth',3);
+   
+
+    title('ENU plot of vehicle trajectory');
+    xlabel('East position [m]');
+    ylabel('North position [m]');
+    zlabel('Up position [m]');
+    view(3)
+
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;

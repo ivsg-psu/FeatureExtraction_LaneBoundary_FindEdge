@@ -32,6 +32,11 @@
 
 %% To-do items
 % 2024_08_05 - created by S. Brennan
+% -- Jiabao
+%    --- document the outputs in fcn_findEdge_extractScanLines (header).
+%    These are just left as variables. Describe these carefully - what they
+%    mean, their length, and the meaning of each column of data.
+%
 % -- Aleks - finish step 1 below and document this change in the revision
 % history above when done
 
@@ -120,18 +125,21 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 
 
 
-%% STEP 1: Load and study the data (Yet to be functionalized)
+%% STEP 1: Load and study the data
 % Set the "inputs" to the file loading process - need the date and names
 % and date of file creation for the Vehicle Pose data file
-
+fig_num = 1; 
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
-permanent_file_date = '17-Jul-2024 22:25:09'; % The exact date and time of the files
+flag_load_all_data = [];
 
-%% BRENNAN FIX THIS
-% Aleks - finish this
-script_load_sample_LIDAR_data
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num));
+
+fig_num = 2;
+fcn_findEdge_plotVehicleXY(VehiclePose,fig_num);
+
+
 script_plot_sample_data  % Functionalize this first (Aleks)
 
 
