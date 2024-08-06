@@ -231,10 +231,11 @@ max_lines = max_lines+16; % There are 16 rings that may have NaN values at end o
 % 
 % if isempty(allScanLineNumbers) || isempty(allVehiclePose_ENU) || isempty(allVehiclePose_UnitOrthoVectors) || isempty(allLIDAR_ENU) || isempty(allLIDAR_intensity) || isempty(allLIDAR_scanLineAndRingID)
 
+totalDataLength = N_scanLines*max_lines;
 
-persistent allData
+persistent allData alltotalDataLength
 
-if isempty(allData)
+if isempty(allData) || isempty(alltotalDataLength) || ~isequal(totalDataLength,alltotalDataLength)
     % ScanLineNumbers              = nan(N_scanLines*max_lines,1);
     % VehiclePose_ENU              = nan(N_scanLines*max_lines,3);
     % VehiclePose_UnitOrthoVectors = nan(N_scanLines*max_lines,3);
@@ -242,13 +243,13 @@ if isempty(allData)
     % LIDAR_intensity              = nan(N_scanLines*max_lines,1);
     % LIDAR_scanLineAndRingID      = nan(N_scanLines*max_lines,2);
 
-    fillData = nan(N_scanLines*max_lines,(1+3+3+3+1+2));
+    fillData = nan(totalDataLength,(1+3+3+3+1+2));
 
     empty_XYZ_nanLine = [nan nan nan];
 
     % Loop through the scans we want to keep
     for ith_Scan = 1:N_scanLines
-        if 0==mod(ith_Scan-1,10)
+        if 0==mod(ith_Scan,100) && 1==flag_do_plots
             fprintf('Loading scan: %.0d of %.0d\n',ith_Scan,N_scanLines);
         end
         LIDAR_scan = LiDAR_Scan_ENU_Entire_Loop{ith_Scan};
@@ -263,19 +264,23 @@ if isempty(allData)
         end
         Nindicies = length(indicies_to_keep);
 
-        thisLIDAR_XYZ_to_add = [LIDAR_XYZ(indicies_to_keep,:); empty_XYZ_nanLine];
-        thisLIDAR_intensity_to_add = [LIDAR_intensity(indicies_to_keep,:); nan];
-        thisScanLine_rings_to_add = [ith_Scan*ones(Nindicies,1) LIDAR_ringID(indicies_to_keep,1); nan nan];
+        this_LIDAR_XYZ = [LIDAR_XYZ(indicies_to_keep,:); empty_XYZ_nanLine];
+        this_LIDAR_intensity = [LIDAR_intensity(indicies_to_keep,:); nan];
+        this_scanLine_rings = [ith_Scan*ones(Nindicies,1) LIDAR_ringID(indicies_to_keep,1); nan nan];
 
         % Save data        
-        Npoints_added = length(thisLIDAR_XYZ_to_add(:,1));
+        Npoints_added = length(this_LIDAR_XYZ(:,1));
         indicies_to_fill = (1:Npoints_added)' + max_lines*(ith_Scan-1);
+        this_scanInfo = ith_Scan*ones(Npoints_added,1);
 
         % make sure we are not overwriting any data
         temp = fillData(indicies_to_fill,1);
         if any(~isnan(temp))
             error('Stop here');
         end
+
+        this_vehiclePose = ones(Npoints_added,1)*VehiclePose(ith_Scan,1:3);
+        this_orthoVectors =  ones(Npoints_added,1)*[unit_ortho_vehicle_vectors_XY(ith_Scan,:) 0];
 
         % LIDAR_ENU(indicies_to_fill,:) = thisLIDAR_XYZ_to_add;
         % LIDAR_intensity(indicies_to_fill,:)  = thisLIDAR_intensity_to_add;
@@ -285,59 +290,27 @@ if isempty(allData)
         % VehiclePose_UnitOrthoVectors(indicies_to_fill,:) = ones(Npoints_added,1)*[unit_ortho_vehicle_vectors_XY(ith_Scan,:) 0];
         % 
         % ScanLineNumbers(indicies_to_fill,:) = ith_Scan;
-        fillData(indicies_to_fill,:) = [ith_Scan*ones(Npoints_added,1) ones(Npoints_added,1)*VehiclePose(ith_Scan,1:3)  ones(Npoints_added,1)*[unit_ortho_vehicle_vectors_XY(ith_Scan,:) 0] thisLIDAR_XYZ_to_add thisLIDAR_intensity_to_add thisScanLine_rings_to_add];
+        fillData(indicies_to_fill,:) = [this_scanInfo this_vehiclePose this_orthoVectors this_LIDAR_XYZ this_LIDAR_intensity this_scanLine_rings];
     end
     allData = fillData;
-    % allVehiclePose_ENU = VehiclePose_ENU;
-    % allVehiclePose_UnitOrthoVectors = VehiclePose_UnitOrthoVectors;
-    % allLIDAR_ENU = LIDAR_ENU;
-    % allLIDAR_intensity = LIDAR_intensity;
-    % allLIDAR_scanLineAndRingID = LIDAR_scanLineAndRingID;
-    % allScanLineNumbers = ScanLineNumbers;
+    alltotalDataLength = totalDataLength;
+
 end
 
 
 %% Get the LiDAR data based on ring and scanLine
+startIndex = find(allData(:,1)==scanLineNumber_start,1,'first');
+endIndex   = find(allData(:,1)==scanLineNumber_end,1,'last');
+indicies_to_pull = (startIndex:endIndex)';
+indices_to_pull = indicies_to_pull(~isnan(allData(indicies_to_pull,1)));
 
-% Initialize concatenation arrays
-VehiclePose_ENU = [];
-VehiclePose_UnitOrthoVectors = [];
-LIDAR_ENU = [];
-LIDAR_intensity = [];
-LIDAR_scanLineAndRingID = [];
-
-empty_XYZ_nanLine = [nan nan nan];
-
-% Loop through the scans we want to keep
-for ith_Scan = scanLineNumber_start:scanLineNumber_end
-    LIDAR_scan = LiDAR_Scan_ENU_Entire_Loop{ith_Scan};
-    LIDAR_XYZ  = LIDAR_scan(:,1:3);
-    LIDAR_intensity = LIDAR_scan(:,4);
-    LIDAR_ringID = round(LIDAR_scan(:,5));
-    
-    indicies_to_keep = [];
-    for ith_ring = 1:length(ringsRange)
-        this_ring_indicies = find(LIDAR_ringID==ringsRange(ith_ring));
-        indicies_to_keep = [indicies_to_keep; this_ring_indicies]; %#ok<AGROW>
-    end
-    Nindicies = length(indicies_to_keep);
-
-    thisLIDAR_XYZ_to_add = [LIDAR_XYZ(indicies_to_keep,:); empty_XYZ_nanLine];
-    thisLIDAR_intensity_to_add = [LIDAR_intensity(indicies_to_keep,:); nan];
-    thisScanLine_rings_to_add = [ith_Scan*ones(Nindicies,1) LIDAR_ringID(indicies_to_keep,1); nan nan];
-    Npoints_added = length(thisLIDAR_XYZ_to_add(:,1));
+VehiclePose_ENU              = allData(indices_to_pull,2:4);
+VehiclePose_UnitOrthoVectors = allData(indices_to_pull,5:7);
+LIDAR_ENU                    = allData(indices_to_pull,8:10);
+LIDAR_intensity              = allData(indices_to_pull,11);
+LIDAR_scanLineAndRingID      = allData(indices_to_pull,12:13);
 
 
-    LIDAR_ENU = [LIDAR_ENU; thisLIDAR_XYZ_to_add]; %#ok<AGROW>
-    LIDAR_intensity  = [LIDAR_intensity; thisLIDAR_intensity_to_add]; %#ok<AGROW>
-    VehiclePose_ENU = [VehiclePose_ENU; ones(Npoints_added,1)*VehiclePose(ith_Scan,1:3)]; %#ok<AGROW>
-    VehiclePose_UnitOrthoVectors = [...
-        VehiclePose_UnitOrthoVectors; ...
-        ones(Npoints_added,1)*[unit_ortho_vehicle_vectors_XY(ith_Scan,:) 0]]; %#ok<AGROW>
-    LIDAR_scanLineAndRingID = [...
-        LIDAR_scanLineAndRingID; ...
-        thisScanLine_rings_to_add]; %#ok<AGROW>
-end
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -351,41 +324,9 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
-    flag_rescale_axis = 0;
-    if isempty(get(temp_h,'Children'))
-        flag_rescale_axis = 1;
-    end        
 
-    clf;
-    hold on;
-    grid on;
-    axis equal
+   fcn_findEdge_plotVehicleXY(VehiclePose_ENU,fig_num);   
 
-    % Plot the vehicle pose
-    plot(VehiclePose(:,1),VehiclePose(:,2),'-','Color',[0 0 0],'MarkerSize',10,'LineWidth',3);
-
-    % Plot start and end points
-    plot(VehiclePose(1,1),VehiclePose(1,2),'.','Color',[0 1 0],'MarkerSize',10);
-    plot(VehiclePose(end,1),VehiclePose(end,2),'o','Color',[1 0 0],'MarkerSize',10);
-
-
-    title('ENU XY plot of vehicle trajectory');
-    xlabel('East position [m]');
-    ylabel('North position [m]');
-    zlabel('Up position [m]');
-
-    % Make axis slightly larger?
-    if flag_rescale_axis
-        temp = axis;
-        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
-        axis_range_x = temp(2)-temp(1);
-        axis_range_y = temp(4)-temp(3);
-        percent_larger = 0.3;
-        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-    end
-
-    
 end % Ends check if plotting
 
 if flag_do_debug

@@ -1,10 +1,10 @@
-function fcn_findEdge_plotVehicleXY(VehiclePose, varargin)
-%% fcn_findEdge_plotVehicleXY
-% Plots the vehicle's XY position.
+function fcn_findEdge_plotVehicleXYZ(VehiclePose, varargin)
+%% fcn_findEdge_plotVehicleXYZ
+% Plots the vehicle's XYZ position.
 % 
 % FORMAT:
 %
-%      fcn_findEdge_loadLIDARData(VehiclePose, (fig_num))
+%      fcn_findEdge_loadLIDARData(VehiclePose, (scanLineRange), (fig_num))
 %
 % INPUTS:  
 %
@@ -12,6 +12,9 @@ function fcn_findEdge_plotVehicleXY(VehiclePose, varargin)
 %      
 %      (OPTIONAL INPUTS)
 %       
+%      scanLineRange: the [min_number max_number] of the scanlines to
+%      extract. The default is to use all scan lines.
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
@@ -28,7 +31,7 @@ function fcn_findEdge_plotVehicleXY(VehiclePose, varargin)
 %
 %       See the script:
 % 
-%       script_test_fcn_findEdge_plotVehicleXY.m 
+%       script_test_fcn_findEdge_plotVehicleXYZ.m 
 %  
 %       for a full test suite.
 %
@@ -46,7 +49,7 @@ function fcn_findEdge_plotVehicleXY(VehiclePose, varargin)
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==2 && isequal(varargin{end},-1))
+if (nargin==3 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -89,7 +92,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,2);
+        narginchk(1,3);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -105,47 +108,18 @@ if 0==flag_max_speed
     end
 end
 
-% 
-% % Does user want to specify station_tolerance?
-% test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
-% if (1<=nargin)
-%     temp = varargin{1};
-%     if ~isempty(temp)
-%         test_date_string = temp;
-%     end
-% end
-% 
-% % Does user want to specify station_tolerance?
-% vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
-% if (2<=nargin)
-%     temp = varargin{2};
-%     if ~isempty(temp)
-%         vehicle_pose_string = temp;
-%     end
-% end
-% 
-% % Does user want to specify station_tolerance?
-% LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
-% if (3<=nargin)
-%     temp = varargin{3};
-%     if ~isempty(temp)
-%         LIDAR_file_string = temp;
-%     end
-% end
-% 
-% % Does user want to specify flag_load_all_data?
-% flag_load_all_data = 0; % FORCE LOAD? Set this manually to 1 to FORCE load
-% if (4<=nargin)
-%     temp = varargin{4};
-%     if ~isempty(temp)
-%         flag_load_all_data = temp;
-%     end
-% end
-
+% Does user want to specify scanLineRange?
+scanLineRange = []; 
+if (2<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        scanLineRange = temp;
+    end
+end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (2<=nargin)
+if (0==flag_max_speed) &&  (3<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -165,9 +139,42 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+N_scanLines = length(VehiclePose(:,1));
 
-% Nothing to do here - just plotting
+%% Calculate the vehicle orientation
+vehicle_change_in_pose_XY = diff(VehiclePose(:,1:2));
 
+% Repeat the last value again, since diff removes one row. We want the same
+% number of vectors as the number of points, and diff removed one point.
+vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_XY(end,:)];
+
+% Convert these to unit vectors
+unit_vehicle_change_in_pose_XY = fcn_INTERNAL_calcUnitVector(vehicle_change_in_pose_XY);
+
+% Find orthogonal vetors by rotating by 90 degrees in the CCW direction by
+% multiplying by the rotatio matrix
+unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
+
+
+%% Get the scanLineRange
+if ~isempty(scanLineRange)
+    scanLineNumber_start = scanLineRange(1);
+    scanLineNumber_end   = scanLineRange(2);
+    if scanLineNumber_start<1
+        warning('on','backtrace');
+        warning('Incorrect scan line detected');
+        error('Starting scan line must be greater than or equal to 1');
+    end
+    if scanLineNumber_start>N_scanLines
+        warning('on','backtrace');
+        warning('Incorrect scan line detected');
+        error('Starting scan line must be less than or equal to number of scans: %.0f',N_scanLines);
+    end
+
+else
+    scanLineNumber_start = 1;
+    scanLineNumber_end   = N_scanLines;
+end
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -191,18 +198,32 @@ if flag_do_plots
     grid on;
     axis equal
 
-    % Plot the vehicle pose
-    plot(VehiclePose(:,1),VehiclePose(:,2),'-','Color',[0 0 0],'MarkerSize',10,'LineWidth',3);
+    if 1==0
+        % Plot the vehicle's trajectory
+        plot3(VehiclePose(:,1),VehiclePose(:,2),VehiclePose(:,3),'-','Color',[1 0 1],'MarkerSize',10,'LineWidth',3);
 
-    % Plot start and end points
-    plot(VehiclePose(1,1),VehiclePose(1,2),'.','Color',[0 1 0],'MarkerSize',10);
-    plot(VehiclePose(end,1),VehiclePose(end,2),'o','Color',[1 0 0],'MarkerSize',10);
+        % Plot start and end points of trajectory
+        plot3(VehiclePose(1,1),VehiclePose(1,2),VehiclePose(1,3),'.','Color',[1 0 0],'MarkerSize',10,'LineWidth',3);
+        plot3(VehiclePose(end,1),VehiclePose(end,2),VehiclePose(end,3),'o','Color',[0 1 0],'MarkerSize',10,'LineWidth',3);
 
+    else
+        plot3(VehiclePose(scanLineNumber_start:scanLineNumber_end,1),VehiclePose(scanLineNumber_start:scanLineNumber_end,2),VehiclePose(scanLineNumber_start:scanLineNumber_end,3),'.','Color',[0 0 0],'MarkerSize',30,'LineWidth',3);
+        plot3(VehiclePose(scanLineNumber_start:scanLineNumber_end,1),VehiclePose(scanLineNumber_start:scanLineNumber_end,2),VehiclePose(scanLineNumber_start:scanLineNumber_end,3),'.','Color',[1 1 0],'MarkerSize',10,'LineWidth',3);
 
-    title('ENU XY plot of vehicle trajectory');
+        % Show the orthogonal arrows showing vehicle motion directions. Green
+        % is forward, bLue is Left
+        quiver3(...
+            VehiclePose(scanLineNumber_start,1),VehiclePose(scanLineNumber_start,2),VehiclePose(scanLineNumber_start,3), ...
+            unit_vehicle_change_in_pose_XY(scanLineNumber_start,1),unit_vehicle_change_in_pose_XY(scanLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 1 0]);
+        quiver3(...
+            VehiclePose(scanLineNumber_start,1),VehiclePose(scanLineNumber_start,2),VehiclePose(scanLineNumber_start,3), ...
+            unit_ortho_vehicle_vectors_XY(scanLineNumber_start,1),unit_ortho_vehicle_vectors_XY(scanLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 0 1]);
+    end
+
     xlabel('East position [m]');
     ylabel('North position [m]');
     zlabel('Up position [m]');
+    view(3)
 
     % Make axis slightly larger?
     if flag_rescale_axis
@@ -236,4 +257,8 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 
-
+%% fcn_INTERNAL_calcUnitVector
+function unit_vectors = fcn_INTERNAL_calcUnitVector(input_vectors)
+vector_length = sum(input_vectors.^2,2).^0.5;
+unit_vectors = input_vectors./vector_length;
+end

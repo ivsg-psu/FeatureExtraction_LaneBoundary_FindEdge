@@ -6,8 +6,10 @@
 % -- wrote code
 
 
-%% Test 1 simple load of all defaults
+%% Test 1: an example load
 fig_num = 1;
+figure(fig_num);
+clf;
 
 % Load data
 test_date_string = [];
@@ -16,9 +18,8 @@ LIDAR_file_string = [];
 flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
-
 % Set defaults
-scanLineRange = [];
+scanLineRange = [1400 1450];
 ringsRange = [];
 
 % Extract scan lines
@@ -26,31 +27,63 @@ ringsRange = [];
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (fig_num));
 
-
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(~isempty(get(temp_h,'Children')))
 
+% Check that the points are filled to same sizes
+Npoints = length(VehiclePose_ENU(:,1));
+assert(isequal(size(VehiclePose_ENU),[Npoints 3]));
+assert(isequal(size(VehiclePose_UnitOrthoVectors),[Npoints 3]));
+assert(isequal(size(LIDAR_ENU),[Npoints 3]));
+assert(isequal(size(LIDAR_intensity),[Npoints 1]));
+assert(isequal(size(LIDAR_scanLineAndRingID),[Npoints 2]));
+
+% Check key values
+assert(min(LIDAR_scanLineAndRingID(:,1))==scanLineRange(1))
+assert(max(LIDAR_scanLineAndRingID(:,1))==scanLineRange(2))
+assert(min(LIDAR_scanLineAndRingID(:,2))==0)
+assert(max(LIDAR_scanLineAndRingID(:,2))==15)
 
 %% Test 2: call function with NO plotting
 fig_num = 2;
 figure(fig_num);
 clf;
 
-
 % Load data
 test_date_string = [];
 vehicle_pose_string = [];
 LIDAR_file_string = [];
 flag_load_all_data = [];
-[VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
-fcn_findEdge_plotVehicleXY(VehiclePose,[]);
+% Set defaults
+scanLineRange = [1400 1450];
+ringsRange = [];
 
+% Extract scan lines
+[VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
 
-% Check that the figure plotted
+% Check that the figure is NOT plotted
 temp_h = figure(fig_num);
 assert(isempty(get(temp_h,'Children')))
+close(fig_num);
+
+% Check that the points are filled to same sizes
+Npoints = length(VehiclePose_ENU(:,1));
+assert(isequal(size(VehiclePose_ENU),[Npoints 3]));
+assert(isequal(size(VehiclePose_UnitOrthoVectors),[Npoints 3]));
+assert(isequal(size(LIDAR_ENU),[Npoints 3]));
+assert(isequal(size(LIDAR_intensity),[Npoints 1]));
+assert(isequal(size(LIDAR_scanLineAndRingID),[Npoints 2]));
+
+% Check key values
+assert(min(LIDAR_scanLineAndRingID(:,1))==scanLineRange(1))
+assert(max(LIDAR_scanLineAndRingID(:,1))==scanLineRange(2))
+assert(min(LIDAR_scanLineAndRingID(:,2))==0)
+assert(max(LIDAR_scanLineAndRingID(:,2))==15)
 
 
 %% Speed test
@@ -60,8 +93,11 @@ test_date_string = [];
 vehicle_pose_string = [];
 LIDAR_file_string = [];
 flag_load_all_data = [];
-[VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
+% Set defaults
+scanLineRange = [1400 1450];
+ringsRange = [];
 
 
 % Perform the calculation in slow mode
@@ -70,7 +106,9 @@ REPS = 5; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    fcn_findEdge_plotVehicleXY(VehiclePose,(fig_num));
+    [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (fig_num));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -83,7 +121,9 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    fcn_findEdge_plotVehicleXY(VehiclePose,(fig_num));
+    [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
