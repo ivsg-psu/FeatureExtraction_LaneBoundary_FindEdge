@@ -45,7 +45,7 @@ function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 %
 %       See the script:
 % 
-%       fcn_findEdge_plotVehicleXY.m 
+%       script_test_fcn_findEdge_extractScanLines
 %  
 %       for a full test suite.
 %

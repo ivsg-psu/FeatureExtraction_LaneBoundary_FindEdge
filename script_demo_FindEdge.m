@@ -167,9 +167,10 @@ fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (ENU_XYZ_fig_num))
 
 
 
-%% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK
+%% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
 % Jiabao and Alek - start here
+% Alek
 
 % Plot the LIDAR in 3D ENU
 ENU_3D_fig_num = 3;
@@ -262,6 +263,7 @@ plot(LIDAR_ENU(:,2),LIDAR_ENU(:,3), '.','Color',[0 0 1],'MarkerSize',5);
 %%
 %%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotVehicleLLA
 % Use plotVehicleXY as the template
+% Jiabao
 
 % Define GPS object 
 % Define base coordinates - THIS ONLY WORKS FOR THE TEST TRACK!!! Change for
@@ -310,6 +312,7 @@ geoplot(LLA_VehiclePose(end,1),LLA_VehiclePose(end,2),'o','Color',[1 0 0],'Marke
 
 %%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotLIDARLLA
 % Use plotVehicleXY as the template
+% Alek
 
 % Plot the LIDAR in LLA
 % Use the class to convert LLA to ENU
@@ -363,6 +366,7 @@ end
 % points in the orthogonal direction by taking the dot product of the LIDAR
 % points, relative to the vehicle center with the unit projection vector
 % pointed to the left of the vehicle.
+% Jiabao
 
 % Calculate the vectors
 vector_from_vehicle_pose_to_LIDAR_points = LIDAR_ENU - VehiclePose_ENU;
@@ -391,6 +395,7 @@ geoplot(concatenate_LiDAR_LLA_points_under_vehicle(:,1),concatenate_LiDAR_LLA_po
 
 
 %% STEP 2: Find the driven path (left and right side points) (Yet to be functionalized)
+% Alek
 
 % This is done in "script_test_geometry_boundaryPointsDrivenPath" - Steven 
 
@@ -617,6 +622,7 @@ figure(fig_num_first_classification);clf
     grid_size,grid_boundaries,fig_num_first_classification);
 
 %% STEP 5: Find the driven path grids within the grids more than zero points
+% Jiabao
 % NEED TO BE FUNCTION
 
 
