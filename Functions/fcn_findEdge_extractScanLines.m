@@ -31,11 +31,34 @@ function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 %
 % OUTPUTS:
 %
-%      VehiclePose_ENU = [];
-%      VehiclePose_UnitOrthoVectors = [];
-%      LIDAR_ENU = [];
-%      LIDAR_intensity = [];
-%      LIDAR_scanLineAndRingID = [];
+%      VehiclePose_ENU = the position of the mapping vehicle during mapping 
+%      in ENU coordination. This output variable must contain three columns 
+%      and three columns only. The first column is EAST: the direction pointing 
+%      towards the geographic east. The second column is NORTH: the direction 
+%      pointing towards the geographic north. The third column is UP (U): 
+%      the direction pointing vertically upwards, perpendicular to the Earth's surface.
+%
+%      VehiclePose_UnitOrthoVectors = Orthogonal unit vector of the
+%      position of the mapping vehicle during mapping.This output variable 
+%      must contain three columns and three columns only. For each row, every
+%      unit vector is perpendicular to each other. The sum of square of
+%      every vector should be 1 for each row. Usually, the third column 
+%      contains all zero unit vectors because the elevation of the mapping 
+%      vehicle is negligible compared to its latitude and longitude.
+%
+%      LIDAR_ENU = The converted data collected by the LIDAR on the mapping 
+%      vehicle in ENU coordination. The output variable must contain three 
+%      columns and three columns only. See previous comments for what each 
+%      column's data stands for.
+%
+%      LIDAR_intensity = The intensity of the LIDAR data during mapping.
+%      The variable should contain one column and one column only. Higher 
+%      intensity value means the target surface is more reflective.
+%
+%      LIDAR_scanLineAndRingID = The scanline and ringID during mapping.
+%      The first column is the scanline, which indicates which ranges are 
+%      used for analysis. The second column is the ringID
+%     
 %
 % DEPENDENCIES:
 %
@@ -55,6 +78,8 @@ function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 % Revision history
 % 2024_08_05 - Sean Brennan
 % -- Created function by copying out of load script in Geometry library
+% 2024_08_06 - Jiabao Zhao
+% -- Documented the output variables.
 
 
 %% Debugging and Input checks

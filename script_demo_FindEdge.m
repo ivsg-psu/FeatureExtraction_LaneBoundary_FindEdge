@@ -28,18 +28,31 @@
 % -- pulled core codes out of Geometry class library into this repo.
 % -- Functionalize core data loading steps
 % -- pass on to Jiabao
+% 2024_08_06 -  jpz5469@psu.edu
+% -- document the output in fcn_findEdge_extractScanLines
+% -- Add a LargeData file in the main directory?
+% -- Just pull all functions from the Geometry class to findEdge class. In
+% -- addition, I also removed all the functions that are copied in the Geometry class.  
+
 
 
 %% To-do items
 % 2024_08_05 - created by S. Brennan
-% -- Jiabao, document the outputs in fcn_findEdge_extractScanLines (header).
-%    These are just left as variables. Describe these carefully - what they
-%    mean, their length, and the meaning of each column of data.
 %
 % -- Aleks and Jiabao - finish funtionalizing starting at step 1 below and
 % document each change in the revision history above when done. Update the
 % flow chart with functions
-
+% -- Add a LargeData file in the main directory? EVERYONE?\
+% -- Should leave this function in the geometry libriary: fcn_geometry_fitPlaneLinearRegression
+%
+% FOR JIABAO ONLY
+% ADD SIMPLE TEST SCRIPT FOR THE FOLLOWING FUNCTIONS: 
+% fcn_findEdge_findGridsWithPoints
+% fcn_findEdge_plotVehicleLLA
+% fcn_findEdge_GridsIntoMappedUnmapped
+% fcn_findEdge_findGridsWithPoints\
+% fcn_findEdge_plotVehicleLLA (This one needs a new script)
+% fcn_geometry_classifyGridsAsDrivable
 
 %% Prep the workspace
 close all
@@ -261,51 +274,18 @@ plot(LIDAR_ENU(:,2),LIDAR_ENU(:,3), '.','Color',[0 0 1],'MarkerSize',5);
 %%%% END fcn_findEdge_plotLIDARXY
 
 %%
-%%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotVehicleLLA
-% Use plotVehicleXY as the template
-% Jiabao
+% Jiabao -- done
 
-% Define GPS object 
 % Define base coordinates - THIS ONLY WORKS FOR THE TEST TRACK!!! Change for
 % other sites as needed.
+LLA_fig_num = 5; % figure number
 reference_latitude = 40.86368573;
 reference_longitude = -77.83592832;
 reference_altitude = 344.189;
+zoom_in_location = [40.865718697633348 -77.830965127435817]; % note: the_zoom_in_location should be manually changed based on different plot
 
-gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % Load the GPS class
-
-LLA_fig_num = 2;
-figure(LLA_fig_num);
-clf;
-
-LLA_VehiclePose = gps_object.ENU2WGSLLA(VehiclePose(:,1:3));
-
-% Do plot, and set it up so that zoom is correct, tick marks are correct,
-% map is centered where we want, etc. To see options, do the geoplot, then
-% zoom into the location we want, and then do:
-%
-% format long % This sets the format so we can see all the digits
-% temp = gca  % This Gets Current Axis (GCA) and saves it as temp
-%
-% Next, click on "show all properties" and copy out the ZoomLevel and
-% MapCenter values into the correct locations below. This way, every time
-% we run this script, it automatically zooms and centers onto the correct
-% location.
-
-h_geoplot = geoplot(LLA_VehiclePose(:,1),LLA_VehiclePose(:,2),'-','Color',[0 0 1],'MarkerSize',10);
-hold on;
-h_parent =  get(h_geoplot,'Parent');
-set(h_parent,'ZoomLevel',20.5,'MapCenter',[40.865718697633348 -77.830965127435817]);
-geobasemap satellite
-geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
-
-
-% NOTE: transition the geoplotting to use the PlotTestTrack library 
-% Plot start and end points
-geoplot(LLA_VehiclePose(1,1),LLA_VehiclePose(1,2),'.','Color',[0 1 0],'MarkerSize',10);
-geoplot(LLA_VehiclePose(end,1),LLA_VehiclePose(end,2),'o','Color',[1 0 0],'MarkerSize',10);
-
-%%%% END fcn_findEdge_plotVehicleLLA
+[gps_object, LLA_VehiclePose] = fcn_findEdge_plotVehicleLLA(reference_latitude,...
+   reference_longitude, reference_altitude, VehiclePose, zoom_in_location, LLA_fig_num);
 
 %%
 
@@ -561,7 +541,7 @@ input_points = LiDAR_allPoints(:,1:2);
 grid_size = 1; %0.8;%1;%1.25; %1.26
 
 % Find minimum and maximum values of x,y,z of LiDAR data
-[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(input_points,-1);
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(input_points,-1);
 
 % The grids are plotted only within the boundaries in #D
 % grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
@@ -618,7 +598,7 @@ figure(fig_num_first_classification);clf
 
 [gridIndices_cell_array, total_N_points_in_each_grid, gridCenters, grids_with_zero_points,...
     grids_greater_than_zero_points, gridCenters_zero_point_density,...
-    gridCenters_greater_than_zero_point_density, gridIndices, grid_AABBs] = fcn_geometry_findGridsWithPoints(input_points,...
+    gridCenters_greater_than_zero_point_density, gridIndices, grid_AABBs] = fcn_findEdge_findGridsWithPoints(input_points,...
     grid_size,grid_boundaries,fig_num_first_classification);
 
 %% STEP 5: Find the driven path grids within the grids more than zero points
@@ -1056,7 +1036,7 @@ end
 
 
 %% STEP 7: Classify the grids with more than zero points into mapped and unmapped grids
-
+% Jiabao
 % plotting
 fig_num = 72; 
 figure(fig_num);clf
@@ -1066,7 +1046,7 @@ figure(fig_num);clf
     original_mapped_grids, original_unmapped_grids, gridCenters_low_point_density, gridCenters_required_point_density, gridCenters_with_more_than_one_scan_line, ...
 gridCenters_with_one_scan_line, gridCenters_mapped_grids, gridCenters_unmapped_grids, current_grids_with_low_point_density, current_grids_with_required_point_density, ...
 current_grids_with_more_than_one_scan_line, current_grids_with_one_scan_line, current_mapped_grids, current_unmapped_grids]...
-= fcn_geometry_GridsIntoMappedUnmapped(point_density, total_N_points_in_each_grid, total_scan_lines_in_each_grid_with_more_than_zero_points, ...
+= fcn_findEdge_GridsIntoMappedUnmapped(point_density, total_N_points_in_each_grid, total_scan_lines_in_each_grid_with_more_than_zero_points, ...
 grids_greater_than_zero_points, gridCenters, fig_num); 
 
 % Plot the grids with low point density and required density 
@@ -1080,7 +1060,7 @@ legend_name = 'Grids with low point density';
 legend_position = [];
 marker_type = [];
 plot_gridCenters_low_point_density = [gridCenters_low_point_density, zeros(length(gridCenters_low_point_density(:,1)),1)]; 
-[~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_low_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_low_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 % plot grid centers
 marker_size = 30;
@@ -1090,7 +1070,7 @@ legend_name = 'Grids with required density';
 legend_position = [];
 marker_type = [];
 plot_gridCenters_required_point_density = [gridCenters_required_point_density, zeros(length(gridCenters_required_point_density(:,1)),1)]; 
-[~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_required_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_required_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 % Plot grids with one scan line and more than one scan line
@@ -1104,7 +1084,7 @@ legend_name = 'Grids with one scan line';
 legend_position = [];
 marker_type = [];
 plot_gridCenters_with_one_scan_line = [gridCenters_with_one_scan_line, zeros(length(gridCenters_with_one_scan_line(:,1)),1)]; 
-[~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_with_one_scan_line,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_one_scan_line,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 % plot grid centers
@@ -1115,7 +1095,7 @@ legend_name = 'Grids with more than one scan line';
 legend_position = [];
 marker_type = [];
 plot_gridCenters_with_more_than_one_scan_line = [gridCenters_with_more_than_one_scan_line, zeros(length(gridCenters_with_more_than_one_scan_line(:,1)),1)]; 
-[~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_with_more_than_one_scan_line,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_more_than_one_scan_line,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 % ENU - plotting mapped and unmapped
@@ -1432,7 +1412,7 @@ end
 
 
 %% Updated mapped grids
-
+% Jiabao
 % Threshold of transverse span
 threshold_transverse_dist = 0.15;
 
@@ -1465,7 +1445,7 @@ legend_name = 'Updated mapped grids';
 legend_position = [];
 marker_type = [];
 plot_gridCenters_updated_original_mapped_grids = [gridCenters_updated_original_mapped_grids, zeros(length(gridCenters_updated_original_mapped_grids(:,1)),1)]; 
-[~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_updated_original_mapped_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_updated_original_mapped_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 % plot grid centers
 marker_size = 30;
@@ -1475,7 +1455,7 @@ legend_name = 'Updated unmapped grids';
 legend_position = [];
 marker_type = [];
 plot_gridCenters_updated_original_unmapped_grids = [gridCenters_updated_original_unmapped_grids, zeros(length(gridCenters_updated_original_unmapped_grids(:,1)),1)]; 
-[~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_updated_original_unmapped_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_updated_original_unmapped_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 %% Find mapped grids current number
@@ -1565,7 +1545,7 @@ for ith_mapped_grid = 1:total_mapped_grids
     % points = input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:);
     % points = points(~isnan(points(:,1)),:);
     [~, standard_deviation_in_z(ith_mapped_grid,:), ~, ~, ~, ~] =...
-    fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
+    fcn_findEdge_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
     % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
     % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
 end
@@ -1755,7 +1735,7 @@ unit_normal_vectors = zeros(total_mapped_grids,3);
 
 for ith_mapped_grid = 1:total_mapped_grids
     [~, ~, ~, unit_normal_vectors(ith_mapped_grid,:), ~, ~] =...
-    fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
+    fcn_findEdge_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
     % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
     % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
 end
@@ -1938,7 +1918,7 @@ current_text = sprintf('theta threshold = %.1f',theta_threshold*(180/pi));
 text(0.5, 30,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
 
 %% STEP 9: 3rd Classification
-
+%Jiabao 
 input_points = LiDAR_allPoints(:,1:3); 
 % std_threshold = 0.05; 
 % theta_threshold = 7*pi/180;
@@ -1979,7 +1959,7 @@ figure(fig_num);clf
     gridCenters_drivable_grids, ...
     gridCenters_non_drivable_grids, ...
     concatenate_gridCenters_drivable_non_drivable_grids] = ...
-    fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, updated_original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
+    fcn_findEdge_classifyGridsAsDrivable(gridIndices_cell_array, updated_original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
 std_threshold_failed_gridCenters = gridCenters_updated_original_mapped_grids(standard_deviation_in_z>std_threshold,:); 
 
@@ -1997,7 +1977,7 @@ legend_name = 'Std threshold failed grids';
 marker_type = 'o';
 legend_position = [];
 plot_std_threshold_failed_gridCenters = [std_threshold_failed_gridCenters, zeros(length(std_threshold_failed_gridCenters(:,1)),1)]; 
-[LLA_data_std_threshold_failed_grids] = fcn_geometry_plotPointsinLLA(plot_std_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[LLA_data_std_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_std_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 % fcn_geometry_plotPointsinLLA(plot_gridCenters_updated_original_unmapped_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 % fcn_geometry_plotPointsinLLA(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
@@ -2012,12 +1992,12 @@ legend_name = 'Theta threshold failed grids';
 marker_type = 'o';
 legend_position = [];
 plot_theta_threshold_failed_gridCenters = [theta_threshold_failed_gridCenters, zeros(length(theta_threshold_failed_gridCenters(:,1)),1)]; 
-[LLA_data_theta_threshold_failed_grids] = fcn_geometry_plotPointsinLLA(plot_theta_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[LLA_data_theta_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_theta_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 % geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_failed_grids(:,2), 'o','MarkerSize',15,'Color',[1 0 1], 'LineWidth',2) 
 
 %% STEP 10: Find the boundary points of drivable and non-drivable grids
-
+% Dr B
 % Part1 - Find the boundary points of mapped and unmapped grids
 
 % Revision History
@@ -2088,7 +2068,7 @@ y_limits = [];
 % Calculate boundary points
 figure(fig_num_mapped_unmapped);
 clf;
-boundary_points_mapped_unmapped = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_mapped_unmapped);
+boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_mapped_unmapped);
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -2159,7 +2139,7 @@ y_limits = [];
 
 figure(fig_num_drivable_non_drivable)
 clf;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
+boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -2173,7 +2153,7 @@ boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_lim
 
 %% Part 3 - Find true boundary points by eliminating the boundary points of
 % mapped and unmapped from drivable and non-drivable boubndary points. 
-
+% Jiabao
 fig_num_bd_pts_ENU = 1000; 
 
 [members, id_x] = ismember(boundary_points,boundary_points_mapped_unmapped,'rows'); 
@@ -2198,7 +2178,7 @@ legend_name = 'Computed boundary points';
 legend_position = [];
 marker_type = [];
 plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
-[~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 % plot computed boundary points
 marker_size = 10;
@@ -2207,7 +2187,7 @@ legend_option = 0;
 legend_name = 'Computed boundary points';
 legend_position = [];
 marker_type = [];
-[~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 % plot driven path
@@ -2218,7 +2198,7 @@ legend_name = 'Driven path grids';
 legend_position = [];
 marker_type = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
-[~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% Find the nearest boundary points in ENU - updated
 
@@ -2234,18 +2214,18 @@ legend_option = 1;
 legend_name = 'Computed boundary points';
 legend_position = [];
 plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
-[~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 marker_size = 10;
 RGB_triplet = [0 0 1]; 
 legend_option = 0;
 legend_name = 'Computed boundary points';
 legend_position = [];
 
-[~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 %% plot the true borders
-
+% Dr B
 fig_num = 1224; 
 figure(fig_num); clf;
 
@@ -2253,7 +2233,7 @@ figure(fig_num); clf;
 % [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
 %      gridCenters_driven_path, fig_num);
 
-[~, ~, true_borders]  = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
+[~, ~, true_borders]  = fcn_findEdge_findNearestBoundaryPoints(true_boundary_points, ...
      gridCenters_driven_path, grid_size, grid_boundaries, fig_num);
 
 
@@ -2271,7 +2251,7 @@ legend_position = [];
 marker_type = []; 
 nearest_boundary_points = [ true_borders(:,1), true_borders(:,2), zeros(length(true_borders),1)]; 
 
-[~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 marker_size = 10;
 RGB_triplet = [0 0 1]; 
@@ -2282,7 +2262,7 @@ marker_type = [];
 nearest_boundary_points = [true_borders(:,1), true_borders(:,2),  zeros(length(true_borders),1)]; 
 
 
-[~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 %% Find the nearest boundary points in ENU 
@@ -2450,7 +2430,7 @@ legend_position = [];
 marker_type = []; 
 
 
-[~] = fcn_geometry_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 marker_size = 12;
 RGB_triplet = [1 0 0]; 
@@ -2460,7 +2440,7 @@ legend_position = [];
 marker_type = []; 
 
 
-[~] = fcn_geometry_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[~] = fcn_findEdge_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %%
 % %% Remove boundary points on the left
