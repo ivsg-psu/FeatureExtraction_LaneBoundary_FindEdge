@@ -199,6 +199,7 @@ fcn_findEdge_plotLIDARXY(LIDAR_ENU, (color_triplet), (marker_size), (LIDAR_XY_XZ
 LLA_fig_num = 5; % figure number
 reference_LLA = [];
 zoom_in_location = [];
+zoomLevel = 20.5;
 LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (LLA_fig_num));
 
 
@@ -209,17 +210,21 @@ LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoo
 
 
 
-%%
+%% -- Jiabao
 % NOTES: Add the function  fcn_findEdge_plotLIDARLLA in here, fix the function to match format of
 % plotVehicleLLA, and use the variable arguments of plotLIDARXYZ (don't use
 % simplePlot as an input, but instead as a flag).
 
 %%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotLIDARLLA
 % Use plotVehicleXY as the template
-% Alek
 
 % Plot the LIDAR in LLA
 % Use the class to convert LLA to ENU
+
+% initialize the input 
+gps_object = GPS();
+intensity_min = min(LIDAR_intensity);
+intensity_max = max(LIDAR_intensity);
 concatenate_LiDAR_LLA_points = gps_object.ENU2WGSLLA(LIDAR_ENU(:,1:3));
 
 
@@ -264,7 +269,7 @@ end
 %%%% End fcn_findEdge_plotLIDARLLA
 
 
-%% Find the drivable surface
+%% Find the drivable surface --Jiabao
 % This must be done in ENU coordinates because LLA is not an orthogonal
 % coordinate system. To find the surface, we find the distance of the lidar
 % points in the orthogonal direction by taking the dot product of the LIDAR
@@ -288,6 +293,7 @@ concatenate_LiDAR_LLA_points_under_vehicle = gps_object.ENU2WGSLLA(LIDAR_ENU_und
 
 
 % Plot the LIDAR data underneath the vehicle in XYZ
+ENU_3D_fig_num = 1;
 figure(ENU_3D_fig_num);
 plot3(LIDAR_ENU_under_vehicle(:,1),LIDAR_ENU_under_vehicle(:,2),LIDAR_ENU_under_vehicle(:,3), '.','Color',[0 1 0],'MarkerSize',1);
 
@@ -394,7 +400,7 @@ zlabel('Up position [m]');
 view(3)
 
 
-%%
+%% -- Alek
 
 ENU_3D_fig_num = 3;
 figure(ENU_3D_fig_num);
@@ -631,7 +637,7 @@ for ith_text = 1:length(grids_greater_than_zero_points(:,1))
     text(gridCenters_greater_than_zero_point_density(ith_text,1), gridCenters_greater_than_zero_point_density(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
 end
 
-%% Testing: Delete this afterwards
+%% Testing: Delete this afterwards --Alek
 
 
 % Figure number
@@ -817,7 +823,7 @@ for ith_text = 1:length(grids_greater_than_zero_points(:,1))
 end
 
 
-%% STEP 5: Plot grid centers and boundary points in a same figure in ENU
+%% STEP 5: Plot grid centers and boundary points in a same figure in ENU --Alek
 
 % "inpolygon" is used to find the grids within the boundary points 
 [in,on] = inpolygon(gridCenters_greater_than_zero_point_density(:,1),gridCenters_greater_than_zero_point_density(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));

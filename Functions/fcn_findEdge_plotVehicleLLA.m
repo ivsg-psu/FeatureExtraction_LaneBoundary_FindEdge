@@ -134,7 +134,13 @@ if (3<=nargin)
     end
 end
 
-zoomLevel =  [];
+zoomLevel = [];
+if (4<=nargin)
+    temp = varargin{3};
+    if ~isempty(temp)
+        zoomLevel = temp;
+    end
+end
 
 
 % Does user want to specify fig_num?
