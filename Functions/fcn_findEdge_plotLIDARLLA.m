@@ -1,31 +1,31 @@
-function fcn_findEdge_plotLIDARLLA(gps_object,LIDAR_ENU,LIDAR_intensity,varargin)
-%% fcn_findEdge_plotLIDARLLA
-% Function takes in LLA coordinates and a reference gps object to plot LLA Lidar Data
+function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
+%% fcn_findEdge_plotLIDARLLA      
+% plot the LIDAR data in LLA coordinates
 % 
 % FORMAT: 
 %
-%       fcn_findEdge_plotLIDARLLA(gps_object,LIDAR_ENU,LIDAR_intensity,(simple_flag),(scaling),(color_map),(marker_size),(fig_num))
+%       fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
 %
 % INPUTS:
-%
-%       (DELETE) gps_object: GPS object needed for geoplot to correctly plot in LLA
-%       coordinates
 %
 %       LIDAR_ENU: ENU data of the LIDAR points which will be converted to
 %       LLA coordinates.
 %
-%       (OPTIONAL) LIDAR_intensity: Scalar intensity of LIDAR points
-%
 %       (OPTIONAL INPUTS)
 %
-%       (simple_flag): changes to a less user defined plot black/magenta
-%       color scheme for the points with a set marker size.
+%       (LIDAR_intensity): The intensity of the LIDAR data during mapping as a
+%       [Nx1] vector. Higher intensity value means the target surface is
+%       more reflective.
 %
 %       (scaling): scales the intensity of the points
 %
 %       (color_map): allows for user input color maps, default is 'sky'
 %
 %       (marker_size): size of the markers, default is 5
+%  
+%       (reference_LLA):the [reference latitude reference_longitude
+%       reference_altitude] of the mapping vehicle during mapping. This
+%       have to be in LLA coordinates.
 %
 %       (fig_num): a figure number to plot results. If set to -1, skips any
 %       input checking or debugging, no figures will be generated, and sets
@@ -50,6 +50,9 @@ function fcn_findEdge_plotLIDARLLA(gps_object,LIDAR_ENU,LIDAR_intensity,varargin
 % Revision History:
 % 2024_08_06 -Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
+% 2024_08_07 -Jiabao Zhao
+% -- reordered and simplified the inputs, allowing variable input arguments
+% -- minor clean-up of comments.
 
 %% Debugging and Input checks
 
@@ -57,7 +60,7 @@ function fcn_findEdge_plotLIDARLLA(gps_object,LIDAR_ENU,LIDAR_intensity,varargin
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==8 && isequal(varargin{end},-1))
+if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -99,22 +102,24 @@ end
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,8);
+        narginchk(1,7);
     end
 end 
 
-%Does user want to toggle simple_flag?
-simple_flag=0;
-if (4<=nargin)
+%Does user want to enter LIDAR_intensity?
+LIDAR_intensity = [];
+flag_simplePlot = 1;
+if (2<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
-        simple_flag = temp;
+        LIDAR_intensity = temp;
+        flag_simplePlot = 0;
     end
 end
 
 %Does user want to specify scaling?
 scaling=3;
-if (5<=nargin)
+if (3<=nargin)
     temp = varargin{2};
     if ~isempty(temp)
         scaling = temp;
@@ -122,27 +127,35 @@ if (5<=nargin)
 end
 
 %Does user want to specify color_map?
-color_map="sky";
-if (6<=nargin)
+color_map='jet';
+if (4<=nargin)
     temp = varargin{3};
     if ~isempty(temp)
         color_map = temp;
     end
 end
 
-%Does user want to specify color_map?
+%Does user want to specify marker_size?
 marker_size=5;
-if (7<=nargin)
+if (5<=nargin)
     temp = varargin{4};
     if ~isempty(temp)
         marker_size = temp;
     end
 end
 
+%Does user want to specify reference_LLA?
+reference_LLA = [];
+if (6<=nargin)
+    temp = varargin{5};
+    if ~isempty(temp)
+        reference_LLA = temp;
+    end
+end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (8<=nargin)
+if (0==flag_max_speed) &&  (7<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -163,13 +176,17 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Use the class to convert LLA to ENU
+if ~isempty(reference_LLA)
+    gps_object = GPS(reference_LLA(1), reference_LLA(2), reference_LLA(3)); % Load the GPS class
+else
+    gps_object = GPS();
+end
 concatenate_LiDAR_LLA_points = gps_object.ENU2WGSLLA(LIDAR_ENU(:,1:3));
 
-intensity_max=max(LIDAR_intensity);
-intensity_min=min(LIDAR_intensity);
-
-intensity_fraction = scaling*LIDAR_intensity/(intensity_max - intensity_min);
-
+if 0==flag_simplePlot
+    intensity_max=max(LIDAR_intensity);
+    intensity_min=min(LIDAR_intensity);
+end
 
 
 
@@ -187,16 +204,19 @@ intensity_fraction = scaling*LIDAR_intensity/(intensity_max - intensity_min);
 
 if flag_do_plots
     figure(fig_num)
+    clf
 
-    %simple flag turned on, magenta and black points
-
-    if 1==simple_flag
+    if 1==flag_simplePlot
         % Plot the LIDAR data simply as magenta and black points
         geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
         hold on
         geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
 
     else
+        intensity_fraction =  scaling*(LIDAR_intensity - intensity_min)/(intensity_max - intensity_min);
+
+        % Fix intensity fraction to be between 0 and 1
+        intensity_fraction = min(max(intensity_fraction,0),1);
         % Use user-defined colormap_string to map intensity to colors. For a
         % full example, see fcn_geometry_fillColorFromNumberOrName
         old_colormap = colormap;
@@ -222,7 +242,11 @@ if flag_do_plots
             geoplot(concatenate_LiDAR_LLA_points(index_in_this_color,1),concatenate_LiDAR_LLA_points(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',marker_size);
         end
     end
+    if flag_do_debug
+        fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
+    end
 
+end
 end
 
 %% Functions follow

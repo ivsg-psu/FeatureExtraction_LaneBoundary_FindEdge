@@ -13,11 +13,14 @@ function LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, varargin)
 %      (OPTIONAL INPUTS)
 %
 %      reference_LLA: the [reference latitude reference_longitude
-%      reference_altitude]  of the mapping vehicle during mapping. This
+%      reference_altitude] of the mapping vehicle during mapping. This
 %      have to be in LLA coordinates.
 %
-%      zoom_in_location = zoom into the location we want. This variable
+%      zoom_in_location: zoom into the location we want. This variable
 %      usually contains latitude and longitude. 
+%      
+%      zoomLevel: The elevation level we want to set for the figure to
+%      view.
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -50,6 +53,8 @@ function LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, varargin)
 % 2024_08_07 - S. Brennan
 % -- reordered and simplified the inputs, allowing variable input arguments
 % -- minor clean-up of comments. Function overall looks good.
+% 2024_08_07 - Jiabao Zhao
+% -- Add "zoomLevel" as one of the input arguments.
 
 
 %% Debugging and Input checks
@@ -58,7 +63,7 @@ function LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, varargin)
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -100,7 +105,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,4);
+        narginchk(1,5);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...

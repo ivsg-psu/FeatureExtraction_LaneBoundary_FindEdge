@@ -38,6 +38,9 @@
 % 2024_08_07 -  S. Brennan, sbrennan@psu.edu
 % -- cleaned up comments in fcn_findEdge_extractScanLines
 % -- added script_test_fcn_findEdge_plotVehicleLLA
+% 2024_08_07 -  Jiabao Zhao, jpz5469@psu.edu
+% --add test section for plotVehicleLLA to test zoomLevel. Add code in
+% --function to implement this as a variable input argument
 
 
 %% To-do items
@@ -56,8 +59,6 @@
 % fcn_findEdge_findGridsWithPoints\
 % fcn_findEdge_plotVehicleLLA (This one needs a new script)
 % fcn_geometry_classifyGridsAsDrivable
-% add test section for plotVehicleLLA to test zoomLevel. Add code in
-% function to implement this as a variable input argument
 %
 % Delete as many plot commands in the script as we can by just calling the
 % "core" plotting commands we already developed.
@@ -199,75 +200,19 @@ fcn_findEdge_plotLIDARXY(LIDAR_ENU, (color_triplet), (marker_size), (LIDAR_XY_XZ
 LLA_fig_num = 5; % figure number
 reference_LLA = [];
 zoom_in_location = [];
-zoomLevel = 20.5;
-LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (LLA_fig_num));
+zoomLevel = [];
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (LLA_fig_num));
 
-
-
+% plot the LIDAR in LLA 
+scaling = [];
+color_map = 'autumn';
+marker_size = [];
+reference_LLA = [];
+fig_num = 6;
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
 %% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
 % Jiabao and Alek - start here
-
-
-
-%% -- Jiabao
-% NOTES: Add the function  fcn_findEdge_plotLIDARLLA in here, fix the function to match format of
-% plotVehicleLLA, and use the variable arguments of plotLIDARXYZ (don't use
-% simplePlot as an input, but instead as a flag).
-
-%%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotLIDARLLA
-% Use plotVehicleXY as the template
-
-% Plot the LIDAR in LLA
-% Use the class to convert LLA to ENU
-
-% initialize the input 
-gps_object = GPS();
-intensity_min = min(LIDAR_intensity);
-intensity_max = max(LIDAR_intensity);
-concatenate_LiDAR_LLA_points = gps_object.ENU2WGSLLA(LIDAR_ENU(:,1:3));
-
-
-% Plot the LLA of LIDAR points
-figure(LLA_fig_num);
-
-if 1==0
-    % Plot the LIDAR data simply as magenta and black points
-    geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
-    geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
-else
-    scaling = 3;
-    intensity_fraction = scaling*LIDAR_intensity/(intensity_max - intensity_min);
-      
-    % Use user-defined colormap_string to map intensity to colors. For a
-    % full example, see fcn_geometry_fillColorFromNumberOrName
-    old_colormap = colormap;
-    % color_ordering = colormap('hot');
-    color_ordering = flipud(colormap('sky'));
-    colormap(old_colormap);
-    N_colors = length(color_ordering(:,1));
-
-    % Make sure the plot number is a fraction between 0 and 1
-    plot_number = min(max(0,intensity_fraction),1);
-
-    % Convert the plot number to a row
-    color_row = floor((N_colors-1)*plot_number) + 1;
-
-
-    % Plot the LIDAR data with intensity
-    for ith_color = min(color_row):max(color_row)
-        % Find the color
-        color_vector = color_ordering(ith_color,:);
-
-        % Find all the points that are in this color
-        index_in_this_color = find(color_row==ith_color);
-
-        geoplot(concatenate_LiDAR_LLA_points(index_in_this_color,1),concatenate_LiDAR_LLA_points(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',5);
-    end
-end
-
-%%%% End fcn_findEdge_plotLIDARLLA
-
 
 %% Find the drivable surface --Jiabao
 % This must be done in ENU coordinates because LLA is not an orthogonal

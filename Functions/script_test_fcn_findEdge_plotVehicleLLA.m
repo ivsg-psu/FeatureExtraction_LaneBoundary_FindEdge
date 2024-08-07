@@ -18,7 +18,8 @@ flag_load_all_data = [];
 
 reference_LLA = [];
 zoom_in_location = [];
-LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (fig_num));
+zoomLevel = [];
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
 
 % Check that the figure plotted
@@ -44,7 +45,8 @@ flag_load_all_data = [];
 
 reference_LLA = [];
 zoom_in_location = [];
-LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), ([]));
+zoomLevel = [];
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), ([]));
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
@@ -70,7 +72,8 @@ flag_load_all_data = [];
 
 reference_LLA = [40.862686255557058 -77.834608817369883 0];
 zoom_in_location = [];
-LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (fig_num));
+zoomLevel = [];
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
 
 % Check that the figure plotted
@@ -96,7 +99,34 @@ flag_load_all_data = [];
 
 reference_LLA = [];
 zoom_in_location = [40.862686255557058 -77.834608817369883];
-LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (fig_num));
+zoomLevel = [];
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
+
+
+% Check that the figure plotted
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+
+% Check that the data came out the right length
+assert(isequal(length(LLA_VehiclePose(:,1)), length(VehiclePose(:,1))));
+
+%% Test 5: call function with specific zoomLevel
+fig_num = 5;
+figure(fig_num);
+clf;
+
+
+% Load data
+test_date_string = [];
+vehicle_pose_string = [];
+LIDAR_file_string = [];
+flag_load_all_data = [];
+[VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
+
+reference_LLA = [];
+zoom_in_location = [40.862686255557058 -77.834608817369883];
+zoomLevel = 20.5;
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
 
 % Check that the figure plotted
@@ -112,7 +142,8 @@ test_date_string = [];
 vehicle_pose_string = [];
 LIDAR_file_string = [];
 flag_load_all_data = [];
-[VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
+zoomLevel = [];
+[VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string),(flag_load_all_data), (-1));
 
 reference_LLA = [];
 zoom_in_location = [];
@@ -125,7 +156,7 @@ REPS = 5; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (fig_num));
+    LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -138,7 +169,7 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (fig_num));
+    LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -161,7 +192,7 @@ assert(isequal(length(LLA_VehiclePose(:,1)), length(VehiclePose(:,1))));
 if 1==0
     % FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_findEdge_fitSlopeInterceptNPoints(points,fig_num);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

@@ -185,7 +185,7 @@ scanLineRange = [1400 1420];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
-[~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
+[~, ~, LIDAR_ENU, ~, ~] = ...
 fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1);
 
 % Speed Test Calculation

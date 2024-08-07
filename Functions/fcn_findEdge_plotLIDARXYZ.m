@@ -2,7 +2,7 @@ function fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, varargin)
 %fcn_findEdge_plotLIDARXYZ    plots the LIDAR points on an XYZ scale
 %
 % FORMAT: 
-% fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, LIDAR_intensity,(flag_simplePlot),(scaling),(color_map),(fig_num))
+% fcn_findEdge_plotLIDARXYZ(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(fig_num))
 %
 % INPUTS:
 %       
