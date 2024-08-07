@@ -3,16 +3,18 @@ function fcn_findEdge_plotLIDARLLA(gps_object,LIDAR_ENU,LIDAR_intensity,varargin
 % Function takes in LLA coordinates and a reference gps object to plot LLA Lidar Data
 % 
 % FORMAT: 
+%
 %       fcn_findEdge_plotLIDARLLA(gps_object,LIDAR_ENU,LIDAR_intensity,(simple_flag),(scaling),(color_map),(marker_size),(fig_num))
+%
 % INPUTS:
 %
-%       gps_object: GPS object needed for geoplot to correctly plot in LLA
+%       (DELETE) gps_object: GPS object needed for geoplot to correctly plot in LLA
 %       coordinates
 %
 %       LIDAR_ENU: ENU data of the LIDAR points which will be converted to
 %       LLA coordinates.
 %
-%       LIDAR_intensity: Scalar intensity of LIDAR points
+%       (OPTIONAL) LIDAR_intensity: Scalar intensity of LIDAR points
 %
 %       (OPTIONAL INPUTS)
 %

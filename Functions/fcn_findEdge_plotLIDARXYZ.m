@@ -1,34 +1,35 @@
-function fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,varargin)
-%% fcn_findEdge_plotLIDARXYZ
-% Plots the LIDAR points on an XYZ scale
+function fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, varargin)
+%fcn_findEdge_plotLIDARXYZ    plots the LIDAR points on an XYZ scale
 %
 % FORMAT: 
-% fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,(simple_flag),(scaling),(color_map),(fig_num))
+% fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, LIDAR_intensity,(flag_simplePlot),(scaling),(color_map),(fig_num))
 %
 % INPUTS:
 %       
-%       LIDAR_intensity: LiDAR intensity scalar
-%
 %       LIDAR_ENU: LiDAR data points corresponding to the intensity
 %      
 %       (OPTIONAL INPUTS)
 %
-%       simple_flag: a toggle flag which allows for the most basic plotting
-%       with no color input. Default is off. 
+%       LIDAR_intensity: LiDAR intensity scalar. If not entered, the points
+%       are plotted in "simple" mode with no color inputs. This is the
+%       default.
 %
 %       scaling: Scaling for the intensity. Default is a factor of 3.
 %
 %       color_map: Color map for the plot, default is "hot".
 %
 %       fig_num: a figure number to plot results. If set to -1, skips any
-%      input checking or debugging, no figures will be generated, and sets
-%      up code to maximize speed.
+%       input checking or debugging, no figures will be generated, and sets
+%       up code to maximize speed.
 %
 %
 % OUTPUTS: 
-%   (None)
+%
+%       (none)
+%
 % DEPENDENCIES:
-%   (none)
+%
+%       (none)
 %
 % EXAMPLES:
 %   
@@ -45,6 +46,12 @@ function fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,varargin)
 % 2024_08_06 - Aleksandr Goncharov
 % -- Created the function by taking parts of the code from the
 % script_demo_FindEdge and functionalizing it.
+% 2024_08_07 - S. Brennan
+% -- minor cleanup of comments
+% -- changed ordering of variable inputs from most important to least
+% -- fixed minor bug in re-scaling the LIDAR intensity (min/max and
+% subtract off the minimum value)
+
 
 %% Debugging and Input checks
 
@@ -52,7 +59,7 @@ function fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,varargin)
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==6 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -94,22 +101,24 @@ end
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,6);
+        narginchk(1,5);
     end
 end 
 
-%Does user want to toggle simple_flag?
-simple_flag=0;
-if (3<=nargin)
+%Does user want to enter LIDAR_intensity?
+LIDAR_intensity = [];
+flag_simplePlot = 1;
+if (2<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
-        simple_flag = temp;
+        LIDAR_intensity = temp;
+        flag_simplePlot = 0;
     end
 end
 
 %Does user want to specify scaling?
 scaling=3;
-if (4<=nargin)
+if (3<=nargin)
     temp = varargin{2};
     if ~isempty(temp)
         scaling = temp;
@@ -118,7 +127,7 @@ end
 
 %Does user want to specify color_map?
 color_map="jet";
-if (5<=nargin)
+if (4<=nargin)
     temp = varargin{3};
     if ~isempty(temp)
         color_map = temp;
@@ -127,7 +136,7 @@ end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (6<=nargin)
+if (0==flag_max_speed) &&  (5<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -146,10 +155,11 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Calculate the intensity ranges
-intensity_min = min(LIDAR_intensity);
-intensity_max = max(LIDAR_intensity);
-
+if 0==flag_simplePlot
+    % Calculate the intensity ranges
+    intensity_min = min(LIDAR_intensity);
+    intensity_max = max(LIDAR_intensity);
+end
 
 
 %% Plot the results (for debugging)?
@@ -164,14 +174,26 @@ intensity_max = max(LIDAR_intensity);
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    figure(fig_num);
-    clf;
 
-    if 1==simple_flag
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+    end        
+
+    clf;
+    hold on;
+    grid on;
+    axis equal
+
+    if 1==flag_simplePlot
         % Plot only the LIDAR data simply as blue points
         plot3(LIDAR_ENU(:,1),LIDAR_ENU(:,2),LIDAR_ENU(:,3), '.','Color',[0 0 1],'MarkerSize',1);
     else
-        intensity_fraction = scaling*LIDAR_intensity/(intensity_max - intensity_min);
+        intensity_fraction =  scaling*(LIDAR_intensity - intensity_min)/(intensity_max - intensity_min);
+
+        % Fix intensity fraction to be between 0 and 1
+        intensity_fraction = min(max(intensity_fraction,0),1);
 
         % Use user-defined colormap_string to map intensity to colors. For a
         % full example, see fcn_geometry_fillColorFromNumberOrName
@@ -200,10 +222,39 @@ if flag_do_plots
                 LIDAR_ENU(index_in_this_color,3), '.','Color',color_vector,'MarkerSize',5);
         end
     end
+
+    xlabel('East position [m]');
+    ylabel('North position [m]');
+    zlabel('Up position [m]');
+    view(3)
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+
 end
 
 
-
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
 end
+end % Ends main code
 
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 

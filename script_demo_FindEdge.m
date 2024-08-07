@@ -30,15 +30,18 @@
 % -- pass on to Jiabao
 % 2024_08_06 -  jpz5469@psu.edu
 % -- document the output in fcn_findEdge_extractScanLines
-% -- Add a LargeData file in the main directory?
-% -- Just pull all functions from the Geometry class to findEdge class. In
-% -- addition, I also removed all the functions that are copied in the Geometry class.  
-
+% -- add a LargeData subdirectory in the main directory. Be sure to
+% download large data files from the IVSG OneDrive folder - these files are
+% too large to host on GitHub.
+% -- Started copying core functions from the Geometry class to findEdge
+% -- removed copied functions from the Geometry class.  
+% 2024_08_07 -  S. Brennan, sbrennan@psu.edu
+% -- cleaned up comments in fcn_findEdge_extractScanLines
+% -- added script_test_fcn_findEdge_plotVehicleLLA
 
 
 %% To-do items
 % 2024_08_05 - created by S. Brennan
-%
 % -- Aleks and Jiabao - finish funtionalizing starting at step 1 below and
 % document each change in the revision history above when done. Update the
 % flow chart with functions
@@ -53,6 +56,11 @@
 % fcn_findEdge_findGridsWithPoints\
 % fcn_findEdge_plotVehicleLLA (This one needs a new script)
 % fcn_geometry_classifyGridsAsDrivable
+% add test section for plotVehicleLLA to test zoomLevel. Add code in
+% function to implement this as a variable input argument
+%
+% Delete as many plot commands in the script as we can by just calling the
+% "core" plotting commands we already developed.
 
 %% Prep the workspace
 close all
@@ -165,7 +173,6 @@ ringsRange = []; % If leave empty, it loads all rings
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
 
-
 % Plot the LIDAR in 2D ENU
 figure(ENU_XY_fig_num);
 plot(LIDAR_ENU(:,1),LIDAR_ENU(:,2),'.','Color',[0 0 1],'MarkerSize',1);
@@ -177,118 +184,35 @@ clf;
 scanLineRange = [1400 1450];
 fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (ENU_XYZ_fig_num))
 
+% Plot the LIDAR in 3D ENU
+scaling = [];
+color_map = [];
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (ENU_XYZ_fig_num));
+
+% Plot the LIDAR in XY, XZ, and YZ
+LIDAR_XY_XZ_YZ_fig_num = 4;
+color_triplet = [];
+marker_size = [];
+fcn_findEdge_plotLIDARXY(LIDAR_ENU, (color_triplet), (marker_size), (LIDAR_XY_XZ_YZ_fig_num))
+
+% Plot the vehicle trajectory in LLA
+LLA_fig_num = 5; % figure number
+reference_LLA = [];
+zoom_in_location = [];
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (LLA_fig_num));
 
 
 
 %% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
 % Jiabao and Alek - start here
-% Alek
-
-% Plot the LIDAR in 3D ENU
-ENU_3D_fig_num = 3;
-figure(ENU_3D_fig_num);
-clf;
-
-%%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotLIDARXYZ
-% Use plotVehicleXYZ as the template
-
-% Calculate the intensity ranges
-intensity_min = min(LIDAR_intensity);
-intensity_max = max(LIDAR_intensity);
-
-if 1==0
-    % Plot the LIDAR data simply as blue points
-    plot3(LIDAR_ENU(:,1),LIDAR_ENU(:,2),LIDAR_ENU(:,3), '.','Color',[0 0 1],'MarkerSize',1);
-else
-    scaling = 3;
-    intensity_fraction = scaling*LIDAR_intensity/(intensity_max - intensity_min);
-    
-    % Use user-defined colormap_string to map intensity to colors. For a
-    % full example, see fcn_geometry_fillColorFromNumberOrName
-    old_colormap = colormap;
-    color_ordering = colormap('hot');
-    colormap(old_colormap);
-    N_colors = length(color_ordering(:,1));
-
-    % Make sure the plot number is a fraction between 0 and 1
-    plot_number = min(max(0,intensity_fraction),1);
-
-    % Convert the plot number to a row
-    color_row = floor((N_colors-1)*plot_number) + 1;
 
 
-    % Plot the LIDAR data with intensity
-    for ith_color = min(color_row):max(color_row)
-        % Find the color
-        color_vector = color_ordering(ith_color,:);
-
-        % Find all the points that are in this color
-        index_in_this_color = find(color_row==ith_color);
-        plot3(...
-            LIDAR_ENU(index_in_this_color,1),...
-            LIDAR_ENU(index_in_this_color,2),...
-            LIDAR_ENU(index_in_this_color,3), '.','Color',color_vector,'MarkerSize',5);
-    end
-end
-
-% set(gca,'CameraViewAngle',6)
-%%% END of fcn_findEdge_plotLIDARXYZ
-
-
-%%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotLIDARXY
-% Use plotVehicleXY as the template. Pass in LIDAR_ENU as required input,
-% fig_num as optional input
-ENU_XZ_fig_num = 4;
-figure(ENU_XZ_fig_num);
-clf;
-
-
-% Plot the LIDAR in XZ ENU
-subplot(1,2,1)
-
-hold on;
-grid on;
-axis equal
-
-xlabel('East position [m]');
-ylabel('Up position [m]');
-
-% Plot the LIDAR data
-plot(LIDAR_ENU(:,1),LIDAR_ENU(:,3), '.','Color',[0 0 1],'MarkerSize',5);
-
-
-
-% Plot the LIDAR in YZ ENU
-subplot(1,2,2)
-hold on;
-grid on;
-axis equal
-
-xlabel('North position [m]');
-ylabel('Up position [m]');
-
-% Plot the LIDAR data
-plot(LIDAR_ENU(:,2),LIDAR_ENU(:,3), '.','Color',[0 0 1],'MarkerSize',5);
-
-%%%% END fcn_findEdge_plotLIDARXY
 
 %%
-% Jiabao -- done
-
-% Define base coordinates - THIS ONLY WORKS FOR THE TEST TRACK!!! Change for
-% other sites as needed.
-LLA_fig_num = 5; % figure number
-reference_latitude = 40.86368573;
-reference_longitude = -77.83592832;
-reference_altitude = 344.189;
-zoom_in_location = [40.865718697633348 -77.830965127435817]; % note: the_zoom_in_location should be manually changed based on different plot
-
-[gps_object, LLA_VehiclePose] = fcn_findEdge_plotVehicleLLA(reference_latitude,...
-   reference_longitude, reference_altitude, VehiclePose, zoom_in_location, LLA_fig_num);
-
-%%
-
+% NOTES: Add the function  fcn_findEdge_plotLIDARLLA in here, fix the function to match format of
+% plotVehicleLLA, and use the variable arguments of plotLIDARXYZ (don't use
+% simplePlot as an input, but instead as a flag).
 
 %%% PUT THE FOLLOWING IN a function called fcn_findEdge_plotLIDARLLA
 % Use plotVehicleXY as the template
@@ -2571,6 +2495,8 @@ marker_type = [];
 %     % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
 % %     % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
 % end
+
+
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

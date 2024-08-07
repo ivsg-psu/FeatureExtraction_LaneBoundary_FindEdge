@@ -1,8 +1,7 @@
 function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, varargin)
-%% fcn_findEdge_extractScanLines
-% Extracts LIDAR scan lines associated with a vehicle pose location.
+% fcn_findEdge_extractScanLines   extract LIDAR scan lines associated with a vehicle pose location.
 % 
 % FORMAT:
 %
@@ -31,34 +30,38 @@ function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 %
 % OUTPUTS:
 %
-%      VehiclePose_ENU = the position of the mapping vehicle during mapping 
-%      in ENU coordination. This output variable must contain three columns 
-%      and three columns only. The first column is EAST: the direction pointing 
-%      towards the geographic east. The second column is NORTH: the direction 
-%      pointing towards the geographic north. The third column is UP (U): 
-%      the direction pointing vertically upwards, perpendicular to the Earth's surface.
+%      VehiclePose_ENU: the position of the mapping vehicle during mapping
+%      in ENU coordinates as an [Nx3] vector. The first column is
+%      EAST: the direction pointing towards the geographic east. The second
+%      column is NORTH: the direction pointing towards the geographic
+%      north. The third column is UP (U): the direction pointing vertically
+%      upwards, perpendicular to the Earth's surface.
 %
-%      VehiclePose_UnitOrthoVectors = Orthogonal unit vector of the
-%      position of the mapping vehicle during mapping.This output variable 
-%      must contain three columns and three columns only. For each row, every
-%      unit vector is perpendicular to each other. The sum of square of
-%      every vector should be 1 for each row. Usually, the third column 
-%      contains all zero unit vectors because the elevation of the mapping 
-%      vehicle is negligible compared to its latitude and longitude.
+%      VehiclePose_UnitOrthoVectors: Orthogonal unit vectors of the
+%      position of the mapping vehicle during mapping as a [Nx3] vector,
+%      with one orthogonal vector per position. The first two columns are
+%      the X and Y components of the unit orthogonal vectors, e.g. the
+%      direction defined as positive - at that location - in the transverse
+%      or "left" direction. The third column contains all zero unit vectors
+%      because the elevation of the mapping vehicle is not considered when
+%      calculating whether objects are to the right/left of the vehicle.
+%      Thus, this output is used typically to determine whether coordinates
+%      are to the right or left of the vehicle.
 %
-%      LIDAR_ENU = The converted data collected by the LIDAR on the mapping 
-%      vehicle in ENU coordination. The output variable must contain three 
-%      columns and three columns only. See previous comments for what each 
-%      column's data stands for.
+%      LIDAR_ENU: The converted data collected by the LIDAR on the mapping 
+%      vehicle in ENU coordinates as an [Nx3] vector. The format is the
+%      same as VehiclePose_ENU.
 %
-%      LIDAR_intensity = The intensity of the LIDAR data during mapping.
-%      The variable should contain one column and one column only. Higher 
-%      intensity value means the target surface is more reflective.
+%      LIDAR_intensity: The intensity of the LIDAR data during mapping as a
+%      [Nx1] vector. Higher intensity value means the target surface is
+%      more reflective.
 %
-%      LIDAR_scanLineAndRingID = The scanline and ringID during mapping.
-%      The first column is the scanline, which indicates which ranges are 
-%      used for analysis. The second column is the ringID
-%     
+%      LIDAR_scanLineAndRingID: The scanline and ringID during mapping as a
+%      [Nx2] vector. The first column is the scanline, which indicates
+%      which scan instance (rotation of the LIDAR sensor) created that
+%      specific LIDAR data. The second column is the ringID which denotes
+%      which specific laser beam, in the array of lasers, created that data
+%      point.
 %
 % DEPENDENCIES:
 %

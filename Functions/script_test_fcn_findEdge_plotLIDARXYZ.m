@@ -4,11 +4,15 @@
 % Revision History:
 % 2024_08_06 - Aleksandr Goncharov
 % -- Wrote the script
+% 2024_08_07 - Sean Brennan
+% -- changed ordering of variable inputs from most important to least
+% -- cleaned up comments and details throughout
 
 %% Test 1 - No Optional Inputs Besides Fig_Num
 %Optional Inputs
 fig_num = 1; 
-simple_flag=[];
+
+LIDAR_intensity = [];
 scaling=[];
 color_map=[];
 
@@ -22,16 +26,15 @@ flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
 % Set defaults for which scans to extract
-scanLineRange = [1400 1450];
+scanLineRange = [1400 1420];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
-[~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
-fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+[~, ~, LIDAR_ENU, ~, ~] = ...
+fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1);
 
-%plotLIDARXYZ
-
-fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,simple_flag,scaling,color_map,fig_num)
+% Call the plotting function
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (fig_num));
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
@@ -42,11 +45,10 @@ assert(~isempty(get(temp_h,'Children')))
 
 %Optional Inputs
 fig_num = 2; 
-simple_flag=[];
+
+LIDAR_intensity = [];
 scaling=[];
 color_map=[];
-
-
 
 % Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
 test_date_string = [];
@@ -56,29 +58,28 @@ flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
 % Set defaults for which scans to extract
-scanLineRange = [1400 1450];
+scanLineRange = [1400 1420];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
-[~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
-fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+[~, ~, LIDAR_ENU, ~, ~] = ...
+fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1);
 
-%plotLIDARXYZ
-
-fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,simple_flag,scaling,color_map,([]))
+% Call the plotting function
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), [])
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(isempty(get(temp_h,'Children')))
+close(fig_num);
 
-%% Test 3 - Simple Flag Toggled
+%% Test 3 - add intensity input
 
 %Optional Inputs
 fig_num = 3; 
-simple_flag=1;
+
 scaling=[];
 color_map=[];
-
 
 
 % Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
@@ -89,30 +90,27 @@ flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
 % Set defaults for which scans to extract
-scanLineRange = [1400 1450];
+scanLineRange = [1400 1420];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
 [~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
-fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1);
 
-%plotLIDARXYZ
-
-fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,simple_flag,scaling,color_map,fig_num)
+% Call the plotting function
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (fig_num));
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(~isempty(get(temp_h,'Children')))
 
-%% Test 4 - Simple Flag off, scaling changed to 10
+%% Test 4 - Add color_map as autumn
 
 %Optional Inputs
 fig_num = 4; 
-simple_flag=[];
-scaling=10;
-color_map=[];
 
-
+scaling=[];
+color_map='autumn';
 
 % Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
 test_date_string = [];
@@ -122,30 +120,27 @@ flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
 % Set defaults for which scans to extract
-scanLineRange = [1400 1450];
+scanLineRange = [1400 1420];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
 [~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
-fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1);
 
-%plotLIDARXYZ
-
-fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,simple_flag,scaling,color_map,fig_num)
+% Call the plotting function
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (fig_num));
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(~isempty(get(temp_h,'Children')))
 
-%% Test 5 - Simple Flag off, scaling default, color_map is winter
+%% Test 5 - Add color_map as autumn, change scaling to 10
 
 %Optional Inputs
 fig_num = 5; 
-simple_flag=[];
-scaling=[];
-color_map='winter';
 
-
+scaling=10;
+color_map='autumn';
 
 % Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
 test_date_string = [];
@@ -155,16 +150,15 @@ flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
 % Set defaults for which scans to extract
-scanLineRange = [1400 1450];
+scanLineRange = [1400 1420];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
 [~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
-fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1);
 
-%plotLIDARXYZ
-
-fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,simple_flag,scaling,color_map,fig_num)
+% Call the plotting function
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (fig_num));
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
@@ -173,7 +167,7 @@ assert(~isempty(get(temp_h,'Children')))
 %% Test 6 - Speed Mode
 
 %Optional Inputs
-simple_flag=[];
+
 scaling=[];
 color_map=[];
 
@@ -187,12 +181,12 @@ flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
 % Set defaults for which scans to extract
-scanLineRange = [1400 1450];
+scanLineRange = [1400 1420];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
 [~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
-fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1);
 
 % Speed Test Calculation
 fig_num=[];
@@ -203,7 +197,7 @@ tic;
 
 for i=1:REPS
     tstart=tic;
-    fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,simple_flag,scaling,color_map,fig_num)
+    fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (fig_num));
     
     telapsed=toc(tstart);
     minTimeSlow=min(telapsed,minTimeSlow);
@@ -218,7 +212,7 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    fcn_findEdge_plotLIDARXYZ(LIDAR_intensity,LIDAR_ENU,simple_flag,scaling,color_map,fig_num)
+    fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

@@ -1,12 +1,13 @@
 function fcn_findEdge_plotLIDARXY(LIDAR_ENU,varargin)
-%% fcn_findEdge_plotLIDARXY
+% fcn_findEdge_plotLIDARXY   plots LIDAR data in XY, XZ, YZ subplots
 % 
 % FORMAT: 
-% fcn_findEdge_plotLiDARXY(LIDAR_ENU,(Color Triplet),(Marker_Size),(fig_num))
+% fcn_findEdge_plotLiDARXY(LIDAR_ENU, (Color Triplet), (Marker_Size), (fig_num))
 %
 % INPUTS:
 %       
-%       LIDAR_ENU: Dataset that will be plotted
+%       LIDAR_ENU: Dataset that will be plotted as an [Nx3] vector of XYZ
+%       points.
 %       
 % (OPTIONAL INPUTS):
 %
@@ -16,13 +17,17 @@ function fcn_findEdge_plotLIDARXY(LIDAR_ENU,varargin)
 %       (Marker Size): Size of the points. Default is 5.
 %
 %       (fig_num): a figure number to plot results. If set to -1, skips any
-%      input checking or debugging, no figures will be generated, and sets
-%      up code to maximize speed.
+%       input checking or debugging, no figures will be generated, and sets
+%       up code to maximize speed.
+%
 % OUTPUTS: 
+%
 %   (None)
-
+%
 % DEPENDENCIES:
+%
 %   (None)
+%
 % EXAMPLES:
 %   
 %   See the script:
@@ -33,12 +38,15 @@ function fcn_findEdge_plotLIDARXY(LIDAR_ENU,varargin)
 %
 % This function was written on 2024_08_06 by Aleksandr Goncharov
 % Questions or comments? opg5041@psu.edu -  267-304-8354
-%
+
+
 % Revision History
 % 2024_08_06 - Aleksandr Goncharov
 % -- Created the function by taking parts of the code from the
 % script_demo_FindEdge and functionalizing it.
-
+% 2024_08_06 - S. Brennan
+% -- cleaned up comments
+% -- added XY plot in addition to XZ and YZ plots
 
 %% Debugging and Input checks
 
@@ -84,7 +92,7 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Check correct number of inputs.
+% Check correct number of inputs.
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
@@ -92,7 +100,7 @@ if flag_max_speed == 0
     end
 end 
 
-%Does user want to specify color_triplet?
+% Does user want to specify color_triplet?
 color_triplet=[0 0 1];
 if (2<=nargin)
     temp = varargin{1};
@@ -101,7 +109,7 @@ if (2<=nargin)
     end
 end
 
-%Does user want to specify marker size?
+% Does user want to specify marker size?
 marker_size=5;
 if (3<=nargin)
     temp = varargin{2};
@@ -149,32 +157,80 @@ if flag_do_plots
     figure(fig_num);
     clf;
 
-    % Plot the LIDAR in XZ ENU
-    subplot(1,2,1)
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+    end
+
+    %%%%%% Plot the LIDAR in XZ ENU
+    subplot(1,3,1)
+   
 
     hold on;
     grid on;
     axis equal
 
+    % Plot the LIDAR data
+    plot(LIDAR_ENU(:,1),LIDAR_ENU(:,2), '.','Color',color_triplet,'MarkerSize',marker_size);
+
     xlabel('East position [m]');
-    ylabel('Up position [m]');
+    ylabel('North position [m]');
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+
+    %%%%% Plot the LIDAR in XZ ENU
+    subplot(1,3,2)
+
+    hold on;
+    grid on;
+    axis equal
 
     % Plot the LIDAR data
     plot(LIDAR_ENU(:,1),LIDAR_ENU(:,3), '.','Color',color_triplet,'MarkerSize',marker_size);
 
+    xlabel('East position [m]');
+    ylabel('Up position [m]');
 
-    % Plot the LIDAR in YZ ENU
-    subplot(1,2,2)
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+
+    %%%%%% Plot the LIDAR in YZ ENU
+    subplot(1,3,3)
     hold on;
     grid on;
     axis equal
 
-    xlabel('North position [m]');
-    ylabel('Up position [m]');
-
     % Plot the LIDAR data
     plot(LIDAR_ENU(:,2),LIDAR_ENU(:,3), '.','Color',color_triplet,'MarkerSize',marker_size);
 
+    xlabel('North position [m]');
+    ylabel('Up position [m]');
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
 end
 
 
