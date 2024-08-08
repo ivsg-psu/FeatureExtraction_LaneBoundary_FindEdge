@@ -242,6 +242,8 @@ if flag_do_plots
             geoplot(concatenate_LiDAR_LLA_points(index_in_this_color,1),concatenate_LiDAR_LLA_points(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',marker_size);
         end
     end
+     geobasemap satellite
+     geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
     if flag_do_debug
         fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
     end

@@ -41,6 +41,8 @@
 % 2024_08_07 -  Jiabao Zhao, jpz5469@psu.edu
 % --add test section for plotVehicleLLA to test zoomLevel. Add code in
 % --function to implement this as a variable input argument
+% --cleaned up more functions and add replace the script with two main
+% functions
 
 
 %% To-do items
@@ -62,6 +64,7 @@
 %
 % Delete as many plot commands in the script as we can by just calling the
 % "core" plotting commands we already developed.
+% add colormap command for fcn_findEdge_plotVehicleXY.
 
 %% Prep the workspace
 close all
@@ -176,7 +179,8 @@ ringsRange = []; % If leave empty, it loads all rings
 
 % Plot the LIDAR in 2D ENU
 figure(ENU_XY_fig_num);
-plot(LIDAR_ENU(:,1),LIDAR_ENU(:,2),'.','Color',[0 0 1],'MarkerSize',1);
+fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),ENU_XY_fig_num);
+%plot(LIDAR_ENU(:,1),LIDAR_ENU(:,2),'.','Color',[0 0 1],'MarkerSize',1);
 
 % Plot the vehicle in 3D ENU
 ENU_XYZ_fig_num = 3;
@@ -204,11 +208,11 @@ zoomLevel = [];
 LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (LLA_fig_num));
 
 % plot the LIDAR in LLA 
+fig_num = 6;
 scaling = [];
 color_map = 'autumn';
 marker_size = [];
 reference_LLA = [];
-fig_num = 6;
 fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
 %% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
@@ -221,7 +225,7 @@ fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(mar
 % points, relative to the vehicle center with the unit projection vector
 % pointed to the left of the vehicle.
 % Jiabao
-
+gps_object = GPS();
 % Calculate the vectors
 vector_from_vehicle_pose_to_LIDAR_points = LIDAR_ENU - VehiclePose_ENU;
 
@@ -241,13 +245,24 @@ concatenate_LiDAR_LLA_points_under_vehicle = gps_object.ENU2WGSLLA(LIDAR_ENU_und
 ENU_3D_fig_num = 1;
 figure(ENU_3D_fig_num);
 plot3(LIDAR_ENU_under_vehicle(:,1),LIDAR_ENU_under_vehicle(:,2),LIDAR_ENU_under_vehicle(:,3), '.','Color',[0 1 0],'MarkerSize',1);
+%%%%%%%%%%%% The plot above could be done by using fcn_findEdge_plotLIDARXYZ
+% LIDAR_intensity = [];
+% scaling = [];
+% color_map = [];
+% ENU_XYZ_fig_num = 2;
+% fcn_findEdge_plotLIDARXYZ(LIDAR_ENU_under_vehicle, (LIDAR_intensity), (scaling), (color_map), (ENU_XYZ_fig_num));
 
 % Plot the LIDAR data underneath the vehicle in LLA
 figure(LLA_fig_num);
 geoplot(concatenate_LiDAR_LLA_points_under_vehicle(:,1),concatenate_LiDAR_LLA_points_under_vehicle(:,2),'g.','MarkerSize',2);
-
-
-
+geobasemap satellite
+geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
+%%%%%%%%%% The plot above could be done by using fcn_findEdge_plotVehicleLLA
+% LLA_fig_num = 5; % figure number
+% reference_LLA = [];
+% zoom_in_location = [];
+% zoomLevel = [];
+% LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(LIDAR_ENU_under_vehicle, (reference_LLA), (zoom_in_location), (zoomLevel), (LLA_fig_num));
 
 %% STEP 2: Find the driven path (left and right side points) (Yet to be functionalized)
 % Alek
@@ -467,6 +482,11 @@ title('LLA Trace geometry')
 
 geobasemap satellite
 geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
+%%%%%%%%%%--the plot above could be replace with this fcn_findEdge_plotVehicleXY
+% fig_num = 1514874;
+% fcn_findEdge_plotVehicleXY(LiDAR_allPoints(:,1:2),fig_num);
+% however, this will not do a good job sicne we need to edit the color and
+% shape of the points. In addition, you can not overlap this. 
 
 fig_num_first_classification = 40; 
 figure(fig_num_first_classification);clf
@@ -581,6 +601,11 @@ for ith_text = 1:length(grids_greater_than_zero_points(:,1))
     % Place the text on the grid center
     text(gridCenters_greater_than_zero_point_density(ith_text,1), gridCenters_greater_than_zero_point_density(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
 end
+%%%%%%%%%%--the plot above could be replace with this fcn_findEdge_plotVehicleXY
+% fig_num = 1514874;
+% fcn_findEdge_plotVehicleXY(LiDAR_allPoints(:,1:2),fig_num);
+% however, this will not do a good job sicne we need to edit the color and
+% shape of the points. In addition, you can not overlap this. 
 
 %% Testing: Delete this afterwards --Alek
 
