@@ -16,6 +16,7 @@ color_map=[];
 marker_size=[];
 reference_LLA=[];
 
+
 % Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
 test_date_string = [];
 vehicle_pose_string = [];
@@ -33,8 +34,9 @@ fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLine
 
 
 %plotLIDARLLA
-
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+LIDAR_intensity = [];
+foramt = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);

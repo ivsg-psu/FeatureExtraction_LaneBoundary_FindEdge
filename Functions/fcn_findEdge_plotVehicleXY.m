@@ -4,13 +4,16 @@ function fcn_findEdge_plotVehicleXY(VehiclePose, varargin)
 % 
 % FORMAT:
 %
-%      fcn_findEdge_loadLIDARData(VehiclePose, (fig_num))
+%      fcn_findEdge_loadLIDARData(VehiclePose, (plot_str), (fig_num))
 %
 % INPUTS:  
 %
 %      VehiclePose: the position of the mapping vehicle during mapping
 %      
 %      (OPTIONAL INPUTS)
+%
+%      format: A format string, e.g. 'b-', that dictates the plot style or
+%      a color vector, e.g. [1 0 0.23], that dictates the line color.
 %       
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -38,6 +41,8 @@ function fcn_findEdge_plotVehicleXY(VehiclePose, varargin)
 % Revision history
 % 2024_08_05 - Sean Brennan
 % -- Created function by copying out of load script in Geometry library
+% 2024_08_09 - Jiabao Zhao
+% -- Added format string as a optional input
 
 
 %% Debugging and Input checks
@@ -46,7 +51,7 @@ function fcn_findEdge_plotVehicleXY(VehiclePose, varargin)
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==2 && isequal(varargin{end},-1))
+if (nargin==3 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -89,7 +94,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,2);
+        narginchk(1,3);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -142,6 +147,20 @@ end
 %     end
 % end
 
+% Set plotting defaults
+plot_str = 'k';
+plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
+
+% Check to see if user passed in a string or color style?
+if 2 <= nargin
+    input = varargin{1};
+    if ~isempty(input)
+        plot_str = input;
+        if isnumeric(plot_str)  % Numbers are a color style
+            plot_type = 2;
+        end
+    end
+end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
@@ -191,11 +210,8 @@ if flag_do_plots
     grid on;
     axis equal
 
-    % Plot the vehicle pose
-    plot(VehiclePose(:,1),VehiclePose(:,2),'-','Color',[0 0 0],'MarkerSize',10,'LineWidth',3);
-
     % Plot start and end points
-    plot(VehiclePose(1,1),VehiclePose(1,2),'.','Color',[0 1 0],'MarkerSize',10);
+    plot(VehiclePose(1,1),VehiclePose(1,2),'.','Color',[0 1 0],'MarkerSize',20);
     plot(VehiclePose(end,1),VehiclePose(end,2),'o','Color',[1 0 0],'MarkerSize',10);
 
 
@@ -203,6 +219,18 @@ if flag_do_plots
     xlabel('East position [m]');
     ylabel('North position [m]');
     zlabel('Up position [m]');
+
+    % make plots
+    if plot_type==1
+        if length(plot_str)>3
+            eval_string = sprintf('plot(VehiclePose(:,1),VehiclePose(:,2),%s)',plot_str);
+            eval(eval_string);
+        else
+            plot(VehiclePose(:,1),VehiclePose(:,2),plot_str);
+        end
+    elseif plot_type==2
+        plot(VehiclePose(:,1),VehiclePose(:,2),'Color',plot_str);
+    end
 
     % Make axis slightly larger?
     if flag_rescale_axis

@@ -43,6 +43,10 @@
 % --function to implement this as a variable input argument
 % --cleaned up more functions and add replace the script with two main
 % functions
+% 2024_08_08 -  Jiabao Zhao, jpz5469@psu.edu
+% -- added format string as a optional input for fcn_findEdge_plotVehicleXY
+% and fcn_findEdge_plotLIDARLLA since these two are the "core" function for
+% later use. 
 
 
 %% To-do items
@@ -164,8 +168,9 @@ flag_load_all_data = [];
 % Plot the vehicle in 2D ENU
 ENU_XY_fig_num = 2;
 figure(ENU_XY_fig_num);
+format = sprintf(' ''-'', ''Color'', [0 0 0], ''MarkerSize'', 10, ''LineWidth'', 3');
 clf;
-fcn_findEdge_plotVehicleXY(VehiclePose,fig_num);
+fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num); % -- add string as optional input (format)
 
 Nscans = length(VehiclePose(:,1));
 % Set defaults for which scans to extract
@@ -179,20 +184,21 @@ ringsRange = []; % If leave empty, it loads all rings
 
 % Plot the LIDAR in 2D ENU
 figure(ENU_XY_fig_num);
-fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),ENU_XY_fig_num);
-%plot(LIDAR_ENU(:,1),LIDAR_ENU(:,2),'.','Color',[0 0 1],'MarkerSize',1);
+format = sprintf(' ''-'', ''Color'', [0 0 1], ''MarkerSize'', 1');
+fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),format,ENU_XY_fig_num);
+
 
 % Plot the vehicle in 3D ENU
 ENU_XYZ_fig_num = 3;
 figure(ENU_XYZ_fig_num);
 clf;
 scanLineRange = [1400 1450];
-fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (ENU_XYZ_fig_num))
+fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (ENU_XYZ_fig_num)) 
 
 % Plot the LIDAR in 3D ENU
 scaling = [];
 color_map = [];
-fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (ENU_XYZ_fig_num));
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (ENU_XYZ_fig_num)); 
 
 % Plot the LIDAR in XY, XZ, and YZ
 LIDAR_XY_XZ_YZ_fig_num = 4;
@@ -358,7 +364,7 @@ xlabel('East position [m]');
 ylabel('North position [m]');
 zlabel('Up position [m]');
 view(3)
-
+hold off
 
 %% -- Alek
 
@@ -378,6 +384,7 @@ LLA_fig_num = 2;
 figure(LLA_fig_num);
 % Plot the LIDAR data underneath the vehicle in LLA
 figure(LLA_fig_num);
+hold off
 geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'b.','MarkerSize',30);
 
 
@@ -484,7 +491,15 @@ geobasemap satellite
 geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
 %%%%%%%%%%--the plot above could be replace with this fcn_findEdge_plotVehicleXY
 % fig_num = 1514874;
-% fcn_findEdge_plotVehicleXY(LiDAR_allPoints(:,1:2),fig_num);
+% format = sprintf('''mo'',''MarkerSize'',10');
+% fcn_findEdge_plotVehicleXY(LiDAR_allPoints(:,1:2),format,fig_num);
+% hold on 
+% format = sprintf('''k.'',''MarkerSize'',10');
+% fcn_findEdge_plotVehicleXY(LiDAR_allPoints(:,1:2),format,fig_num);
+% format = sprintf('''g.'',''MarkerSize'',10');
+% fcn_findEdge_plotVehicleXY(boundary_points_driven_path(:,1:2),format,fig_num);
+% hold off
+
 % however, this will not do a good job sicne we need to edit the color and
 % shape of the points. In addition, you can not overlap this. 
 

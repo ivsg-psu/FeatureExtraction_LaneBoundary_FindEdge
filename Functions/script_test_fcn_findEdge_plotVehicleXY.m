@@ -4,6 +4,8 @@
 % Revision history:
 % 2024_08_06 - S. Brennan
 % -- wrote code
+% 2024_08_09 - Jiabao Zhao
+% -- Added format string as a optional input
 
 
 %% Test 1 simple plotting
@@ -16,7 +18,8 @@ LIDAR_file_string = [];
 flag_load_all_data = [];
 [VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
-fcn_findEdge_plotVehicleXY(VehiclePose,fig_num);
+format = [];
+fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num);
 
 
 % Check that the figure plotted
@@ -37,14 +40,34 @@ LIDAR_file_string = [];
 flag_load_all_data = [];
 [VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
 
-fcn_findEdge_plotVehicleXY(VehiclePose,[]);
+format = [];
+fcn_findEdge_plotVehicleXY(VehiclePose, format, []);
 
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(isempty(get(temp_h,'Children')))
+close(fig_num)
+%% Test 3: add color and marker size
+fig_num = 3;
+figure(fig_num);
+clf;
 
 
+% Load data
+test_date_string = [];
+vehicle_pose_string = [];
+LIDAR_file_string = [];
+flag_load_all_data = [];
+[VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
+
+format = sprintf(' ''-'', ''Color'', [0 0 1], ''MarkerSize'', 10, ''LineWidth'', 3');
+fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num);
+
+
+% Check that the figure plotted
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
 %% Speed test
 
 % Load data
@@ -62,7 +85,7 @@ REPS = 5; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    fcn_findEdge_plotVehicleXY(VehiclePose,(fig_num));
+    fcn_findEdge_plotVehicleXY(VehiclePose, format, (fig_num));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -75,7 +98,7 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    fcn_findEdge_plotVehicleXY(VehiclePose,(fig_num));
+    fcn_findEdge_plotVehicleXY(VehiclePose, format,(fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

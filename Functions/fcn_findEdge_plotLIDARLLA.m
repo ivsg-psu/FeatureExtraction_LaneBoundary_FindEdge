@@ -27,6 +27,9 @@ function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 %       reference_altitude] of the mapping vehicle during mapping. This
 %       have to be in LLA coordinates.
 %
+%       (format): A format string, e.g. 'b-', that dictates the plot style or
+%       a color vector, e.g. [1 0 0.23], that dictates the line color.
+%
 %       (fig_num): a figure number to plot results. If set to -1, skips any
 %       input checking or debugging, no figures will be generated, and sets
 %       up code to maximize speed.
@@ -53,6 +56,9 @@ function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 % 2024_08_07 -Jiabao Zhao
 % -- reordered and simplified the inputs, allowing variable input arguments
 % -- minor clean-up of comments.
+% 2024_08_09 -Jiabao Zhao
+% -- Added format string as optional input. String could be marker size,
+% shape or color.
 
 %% Debugging and Input checks
 
@@ -60,7 +66,7 @@ function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==7 && isequal(varargin{end},-1))
+if (nargin==8 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -102,7 +108,7 @@ end
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,7);
+        narginchk(1,8);
     end
 end 
 
@@ -150,6 +156,22 @@ if (6<=nargin)
     temp = varargin{5};
     if ~isempty(temp)
         reference_LLA = temp;
+    end
+end
+
+%Does user want to specify format?
+plot_str1 = 'k.';
+plot_str2 = 'mo';
+plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
+
+% Check to see if user passed in a string or color style?
+if 7 <= nargin
+    input = varargin{6};
+    if ~isempty(input)
+        plot_str1 = input;
+        if isnumeric(plot_str1)  % Numbers are a color style
+            plot_type = 2;
+        end
     end
 end
 
@@ -207,10 +229,23 @@ if flag_do_plots
     clf
 
     if 1==flag_simplePlot
-        % Plot the LIDAR data simply as magenta and black points
-        geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
-        hold on
-        geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
+        if plot_type==1
+            if length(plot_str1)>3
+                eval_string = sprintf('concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),%s)',plot_str1);
+                eval(eval_string);
+                hold on
+                eval_string = sprintf('concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),%s)',plot_str2);
+                eval(eval_string);
+            else
+                geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),plot_str1);
+            end
+        elseif plot_type==2
+            geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'Color',plot_str1);
+        end
+        % % Plot the LIDAR data simply as magenta and black points
+        % geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
+        % hold on
+        % geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
 
     else
         intensity_fraction =  scaling*(LIDAR_intensity - intensity_min)/(intensity_max - intensity_min);
@@ -238,12 +273,11 @@ if flag_do_plots
 
             % Find all the points that are in this color
             index_in_this_color = find(color_row==ith_color);
-
             geoplot(concatenate_LiDAR_LLA_points(index_in_this_color,1),concatenate_LiDAR_LLA_points(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',marker_size);
         end
     end
-     geobasemap satellite
-     geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
+    geobasemap satellite
+    geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
     if flag_do_debug
         fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
     end
