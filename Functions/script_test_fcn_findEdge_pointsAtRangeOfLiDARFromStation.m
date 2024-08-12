@@ -15,26 +15,26 @@
 Test_Vehicle_Pose = [(-100:.1:100);(-100:.1:100)].';
 Test_Starting_Index= 1000;
 Test_Ending_Index=1200;
-Range=[];
+range_of_LiDAR=[];
 
-[a1,a2] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(Test_Vehicle_Pose,Test_Starting_Index,Test_Ending_Index,Range);
+[a1,a2] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(Test_Vehicle_Pose,Test_Starting_Index,Test_Ending_Index,range_of_LiDAR);
 
 %% TEST 2: Simple Case - Range changed to 50, about half of default
 
 Test_Vehicle_Pose = [(-100:.1:100);(-100:.1:100)].';
 Test_Starting_Index= 1000;
 Test_Ending_Index=1200;
-Range=50;
+range_of_LiDAR=50;
 
-[a1,a2] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(Test_Vehicle_Pose,Test_Starting_Index,Test_Ending_Index,Range);
+[a1,a2] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(Test_Vehicle_Pose,Test_Starting_Index,Test_Ending_Index,range_of_LiDAR);
 
 %% TEST 3: Simple Case - Range changed to 50, about half of default. And Index moved to 1200-1400
 
 Test_Vehicle_Pose = [(-100:.1:100);(-100:.1:100)].';
 Test_Starting_Index= 1200;
 Test_Ending_Index=1400;
-Range=50;
+range_of_LiDAR=50;
 
-[a1,a2] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(Test_Vehicle_Pose,Test_Starting_Index,Test_Ending_Index,Range);
+[a1,a2] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(Test_Vehicle_Pose,Test_Starting_Index,Test_Ending_Index,range_of_LiDAR);
 
 %%

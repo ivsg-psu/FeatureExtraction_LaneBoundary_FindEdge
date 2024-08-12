@@ -178,48 +178,12 @@ fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num); % -- add string as opt
 %% STEP 2: Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2 and find LiDAR ENU and LIDAR_scanLineAndRingID
 % :Check if enough data have been measured based on LiDAR range:
 
-% Run this script_test_geometry_PointsAtRangeOfLiDARFromStation to find
-% the scan lines that are 100 meters (range of our LiDAR) away from both
-% the stations - To-do ALEKS: replace the script with the function 
+station_1 = 1400; 
+station_2 = 1450;
 
-% Define the vehicle position
-vehicle_positionsXY = VehiclePose(:,1:2); 
+range_of_LiDAR = 100;
 
-% Range of the LiDAR
-range_of_LiDAR = 100; % This is the range of LiDAR we use
-
-% Define the indices of stations S1 and S2
-station_1 = 1400; % Example index for S1
-station_2 = 1450; % Example index for S2
-
-% Calculate the differences between consecutive points
-differences = diff(vehicle_positionsXY);
-
-% Compute the Euclidean distances for each pair of consecutive points
-distances = sqrt(sum(differences.^2, 2));
-
-% Compute the cumulative sum of the distances
-cumulative_distances = [0; cumsum(distances)];
-
-% Find the cumulative distance of station 1 and station 2
-station1_distance = cumulative_distances(station_1);
-station2_distance = cumulative_distances(station_2);
-
-% Find the index of the point before station 1 whose distance is
-% approximately equal to the range of the LiDAR.
-station1_minus_range_index = find(cumulative_distances <= station1_distance - range_of_LiDAR, 1, 'last');
-station1_minus_range_point = vehicle_positionsXY(station1_minus_range_index, :);
-
-% Find the index of the point after station 2 whose distance is
-% approximately equal to the range of the LiDAR.
-station2_plus_range_index = find(cumulative_distances >= station2_distance + range_of_LiDAR, 1, 'first');
-station2_plus_range_point = vehicle_positionsXY(station2_plus_range_index, :);
-
-% Display the indices and station points
-disp(['The index of the scan line that is 100 meters before station 1 is ', num2str(station1_minus_range_index), '.']);
-% disp(['The coordinates of the point that is 100 meters before S1 are [', num2str(station1_minus_range_point), '].']);
-disp(['The index of the scan line that is 100 meters after station 2 is ', num2str(station2_plus_range_index), '.']);
-% disp(['The coordinates of the point that is 100 meters after S2 are [', num2str(station2_plus_range_point), '].']);
+[station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,station_1,station_2,range_of_LiDAR);  
 
 %% STEP 2.25: find LiDAR ENU and LIDAR_scanLineAndRingID in domain
 
@@ -245,7 +209,7 @@ fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),format,ENU_XY_fig_num);
 ENU_XYZ_fig_num = 3;
 figure(ENU_XYZ_fig_num);
 clf;
-scanLineRange = [1400 1450];
+% scanLineRange = [1400 1450];
 fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (ENU_XYZ_fig_num)) 
 
 % Plot the LIDAR in 3D ENU
@@ -553,7 +517,7 @@ format = sprintf('''.'',''Color'',[0 0 0],''MarkerSize'',30,''LineWidth'',3');
 fcn_findEdge_plotLIDARXYZ(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,:), (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
 format = sprintf('''.'',''Color'',[1 1 0],''MarkerSize'',10,''LineWidth'',3');
 fcn_findEdge_plotLIDARXYZ(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,:), (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
-%% -- Alek
+% -- Alek
 
 ENU_3D_fig_num = 3;
 figure(ENU_3D_fig_num);
@@ -574,40 +538,15 @@ figure(LLA_fig_num);
 hold off
 geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'b.','MarkerSize',30);
 
+%% STEP 3: Seperate the data into grids
 
-% %%  INPOLYGON
-% boundary_points = [right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1:3); flipud(left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1:3)); right_boundary_points(boundaryLineNumber_start,1:3)];
-% 
-% points = VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1:3);
-% 
-% % xv = [0.5;0.2;1.0;0;0.8;0.5];
-% % yv = [1.0;0.1;0.7;0.7;0.1;1];
-% % 
-% % 
-% % xq = [0.1;0.5;0.9;0.2;0.4;0.5;0.5;0.9;0.6;0.8;0.7;0.2];
-% % yq = [0.4;0.6;0.9;0.7;0.3;0.8;0.2;0.4;0.4;0.6;0.2;0.6];
-% 
-% 
-% [in,on] = inpolygon(points(:,1),points(:,2),boundary_points(:,1),boundary_points(:,2));
-% 
-% figure(122)
-% 
-% plot(boundary_points(:,1),boundary_points(:,2)) % polygon
-% 
-% hold on
-% plot(points(in,1),points(in,2),'r+') % points strictly inside
-% % plot(xq(on),yq(on),'k*') % points on edge
-% plot(points(~in,1),points(~in,2),'bo') % points outside
-% hold off
-
-%% STEP 3 & STEP 4: Seperate the data into grids, and classify the grids as the grids with zero points and grids with more than zero points
 % Jiabao - convert this out of geometry library
 
 % These are concatenated LiDAR points of chosen scans and cells in the
 % first step. 
 % LiDAR_allPoints = concatenate_LiDAR_XYZ_points(:,1:3);
 
-LiDAR_allPoints = [LIDAR_ENU, LIDAR_scanLineAndRingID];
+LiDAR_allPoints = [LIDAR_ENU(in_domain,:), LIDAR_scanLineAndRingID(in_domain,:)];
 
 % remove NANs
 LiDAR_allPoints = LiDAR_allPoints(~isnan(LiDAR_allPoints(:,1)),:);
@@ -697,6 +636,442 @@ figure(fig_num_first_classification);clf
     grids_greater_than_zero_points, gridCenters_zero_point_density,...
     gridCenters_greater_than_zero_point_density, gridIndices, grid_AABBs] = fcn_findEdge_findGridsWithPoints(input_points,...
     grid_size,grid_boundaries,fig_num_first_classification);
+
+%% STEP 4: Find the driven path grids within the grids more than zero points
+
+% -----------------------------NOTE------------------------------
+% After finding the grids without anypoints, the grids are completely
+% removed from the analysis. Only, grids with greater than zero points were
+% analyzed from here. 
+% -----------------------------NOTE------------------------------
+
+% Plot all the grids greater than zero point density
+
+% "inpolygon" is used to find the grids within the boundary points 
+[in,on] = inpolygon(gridCenters_greater_than_zero_point_density(:,1),gridCenters_greater_than_zero_point_density(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
+
+% Original grid numbers of driven path
+original_grid_numbers_of_driven_path = grids_greater_than_zero_points(in); 
+
+% Current grid numbers in driven path 
+current_grid_numbers_of_driven_path = find(in); 
+
+% Total points in each grid in the driven path
+total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(original_grid_numbers_of_driven_path); 
+
+% Total points in each grid with points greater than zero
+total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(grids_greater_than_zero_points); 
+
+% Grid centers of the driven path
+gridCenters_driven_path = [gridCenters_greater_than_zero_point_density(in,1),gridCenters_greater_than_zero_point_density(in,2)];
+
+fig_num = 51;
+figure(fig_num); clf;
+
+hold on
+grid on
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Grid centers and boundary points')
+
+plot(gridCenters_greater_than_zero_point_density(:,1), gridCenters_greater_than_zero_point_density(:,2), '.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
+plot(gridCenters_driven_path(:,1), gridCenters_driven_path(:,2), '.','MarkerSize',30,'Color',[0 1 0]);
+
+
+% Plot the grids with 
+fig_num = 8765; 
+figure(fig_num);clf
+
+% plot computed boundary points
+marker_size = 10;
+RGB_triplet = [0 0 0]; 
+legend_option = 1;
+legend_name = 'Grids greater than zero points';
+legend_position = [];
+marker_type = [];
+plot_gridCenters_greater_than_zero_point_density = [gridCenters_greater_than_zero_point_density(:,1:2), zeros(length(gridCenters_greater_than_zero_point_density(:,1)),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_greater_than_zero_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+
+% plot driven path
+marker_size = 25;
+RGB_triplet = [0 1 0]; 
+legend_option = 1;
+legend_name = 'Driven path grids';
+legend_position = [];
+marker_type = [];
+plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+%% STEP 5: Grid conditions - Point density (Do not need to run after determining point density)
+
+% Figure number of histogram
+fig_num = 52; 
+figure(fig_num); clf; 
+% Add labels and title 
+hold on
+grid on
+xlabel('Points per grid');
+ylabel('Frequency');
+title('Statistic 1: Determining suitable point density');
+
+
+% edges = (floor(min(total_points_in_each_grid_with_points_greater_than_zero)/10)*10):10:(ceil(max(total_points_in_each_grid_with_points_greater_than_zero)/10)*10); % Define the bin edges
+
+% Create the histogram
+% actual_driving_surface_grids_hist = histogram(total_points_in_each_grid_in_the_driven_path,edges,'Visible','on'); 
+
+% total_grids_hist = histogram(total_points_in_each_grid_with_points_greater_than_zero,edges,'Visible','on'); 
+total_grids_greater_than_zero_hist = histogram(total_points_in_each_grid_with_points_greater_than_zero,20,'Visible','on'); 
+actual_driven_path_grids_hist = histogram(total_points_in_each_grid_in_the_driven_path,10,'Visible','on'); 
+
+% Extract the counts for both histograms
+counts1 = total_grids_greater_than_zero_hist.Values;
+[~,index_max_counts2] = max(counts1);
+counts2 = actual_driven_path_grids_hist.Values;
+
+binEdges = total_grids_greater_than_zero_hist.BinEdges;
+
+% Calculate the overlapping counts
+% % overlapCounts = min(counts2, counts1);
+
+% Find a ratio
+ % point_density = sum(binEdges(index_max_counts2:(index_max_counts2+1)))/2; 
+
+% point_density = floor(mean(total_points_in_each_grid_in_the_driven_path) - 7.5*(std(total_points_in_each_grid_in_the_driven_path)));
+x_location = floor(mean(total_points_in_each_grid_in_the_driven_path) - 1.5*(std(total_points_in_each_grid_in_the_driven_path)));
+
+% point_density = floor(mean(total_points_in_each_grid_in_the_driven_path));
+
+
+% Minimum number of points required 
+point_density = floor(20*((grid_size^2)/(0.3^2))); 
+disp('Chosen point density')
+disp(point_density)
+% mean(total_points_in_each_grid_in_the_driven_path)/mean(total_points_in_each_grid_with_points_greater_than_zero);
+
+plot(point_density,0, 'k.', 'MarkerSize',20)
+current_text = sprintf('point density = %.2d',point_density);
+text(x_location, 200,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
+
+%% STEP 5: Grid conditions - Determining number of scan lines in each grid greater than zero points Point density 
+
+% This was also done in STEP 5, however, it was done using a for loop. Need to
+% do it without using a for loop.
+
+total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+for ith_grid = 1:length(grids_greater_than_zero_points)
+     %Get all points in this domain and plot them
+    rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
+
+     %Find number of LiDAR scan lines in each grid
+    scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
+
+    % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORK     S WITHOUT A FOR LOOP
+    total_scan_lines_in_each_grid_with_more_than_zero_points = [total_scan_lines_in_each_grid_with_more_than_zero_points; scan_lines_ith_grid]; %#ok<AGROW> % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORKS WITHOUT A FOR LOOP
+end
+
+%% STEP 5: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring 
+
+% Figure number
+fig_num = 50;
+figure(fig_num); clf;
+
+hold on
+grid on
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Gridlines and points of the grids greater than zero point density')
+
+
+% allocation: these are the coordinates of the corners of each grid
+% line. Total no of lines required for each grid including NaNs is 11. Therefore, 11 is multiplied 
+gridlines_grids_greater_than_zero = zeros(11*length(grids_greater_than_zero_points),2); % length(gridlines) = 11
+
+concatenate_gridPoints_scanLines_rings = [];
+orthogonal_dist_each_grid = []; 
+transverse_span_each_grid = [];
+
+% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+for ith_grid = 1:length(grids_greater_than_zero_points)
+    % Get current color
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+    current_color = [0.2 0.2 0.2];
+
+    % Plot current AABB
+    current_AABB = grid_AABBs(grids_greater_than_zero_points(ith_grid),1:4);
+
+    % Nudge the current AABB inward
+    current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+    % Calculate the gridlines
+    gridlines = [...
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,1) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,2) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,3); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,4); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        ];
+
+    % Get all points in this domain and plot them
+    rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
+    
+    % XY coordinates of the input points that are in ith_grid
+    points_in_domain = input_points(rows_in_domain,:);
+ 
+    % Scan lines and rings
+    scanLines_and_rings = LIDAR_scanLines(rows_in_domain,:);
+
+    % Find number of LiDAR scan lines in each grid
+    scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
+    
+    % Combine points_in_domain and ScanLines and rings
+    gridPoints_scanLines_rings_to_add = [ith_grid*(ones(length(points_in_domain(:,1)),1)),points_in_domain,scanLines_and_rings];
+
+    % Sort gridPoints_scanLines_rings_to_add based on scan line
+    [~,sorted_gridPoints_scanLines_rings] = sort(gridPoints_scanLines_rings_to_add(:,4));
+
+    % Sorted gridPoints_scanLines_rings_to_add matrix
+    gridPoints_scanLines_rings_to_add = gridPoints_scanLines_rings_to_add(sorted_gridPoints_scanLines_rings,:);
+
+    % Count occurrences of each unique number in scan lines
+    [uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_rings_to_add(:,4));
+    counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
+
+    % Create the new array with the counts
+    count_array = counts;
+
+    % Index of the scan line with more than one occurence
+    index_of_scanLines = find(count_array>1, 1);
+    
+    if ~isempty(index_of_scanLines)
+        % Indices first scan line of the matrix as a seperate matrix
+        indices_gridPoints_scanLines_first_scan = find(gridPoints_scanLines_rings_to_add(:,4) == gridPoints_scanLines_rings_to_add(index_of_scanLines,4));
+
+        % Seperate the scan line with more than one occurence of the matrix as a seperate matrix
+        gridPoints_scanLines_first_scan = gridPoints_scanLines_rings_to_add(indices_gridPoints_scanLines_first_scan,:);
+
+        % Count occurrences of each unique number in rings
+        [uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_first_scan(:,5));
+        counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
+
+        % Create the new array with the counts
+        count_array = counts;
+
+        % Index of the scan line with more than one occurence
+        index_of_rings = find(count_array>1, 1);
+
+        % if length(gridPoints_scanLines_first_scan(:,1)) == 1
+        %
+        %     indices_gridPoints_scanLines_first_scan
+
+        if length(gridPoints_scanLines_first_scan(:,1)) > 1 & (gridPoints_scanLines_first_scan(index_of_rings,5) == gridPoints_scanLines_first_scan(index_of_rings+1,5))
+            change_in_vector = gridPoints_scanLines_first_scan(2,2:3) - gridPoints_scanLines_first_scan(1,2:3);
+            unit_change_in_vector = fcn_geometry_calcUnitVector(change_in_vector);
+            orth_unit_change_in_vector = unit_change_in_vector*[0 1; -1 0];
+
+            % The remaining number of grids
+            remaining_grids = length(indices_gridPoints_scanLines_first_scan)+1:length(gridPoints_scanLines_rings_to_add(:,1));
+
+            %
+            vector_from_base_point_first_scan_to_points_in_otherScans_rings = gridPoints_scanLines_rings_to_add(remaining_grids,2:3) - ...
+                gridPoints_scanLines_first_scan(1,2:3).*(ones(length(remaining_grids),2));
+
+            % Unit orthogonal vector
+            repeated_orth_unit_change_in_vector = orth_unit_change_in_vector.*(ones(length(remaining_grids),2));
+
+            % Calculate the transverse distance
+            transverse_dist_grid_points_other_scanLines = sum(vector_from_base_point_first_scan_to_points_in_otherScans_rings.*repeated_orth_unit_change_in_vector,2);
+
+            % Positive transverse distances
+            positive_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines>=0);
+
+            % Negative transverse distances
+            negative_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines<0);
+
+            % maximum span distance
+            if ~isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines) + max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+            elseif ~isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines);
+
+            elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+            elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = 0;
+                    
+            end
+            % Conatenate maximum transverse span
+            transverse_span_each_grid = [transverse_span_each_grid; maximum_span_distance]; %#ok<AGROW>
+
+            % Mean of absolute values of transverse distances
+            mean_dist = mean(abs(transverse_dist_grid_points_other_scanLines));
+
+            % Concatenate the orthogonal distances
+            orthogonal_dist_each_grid = [orthogonal_dist_each_grid; mean_dist]; %#ok<AGROW>
+        else
+
+            % Conacatenate orthogonal distance
+            orthogonal_dist_each_grid = [orthogonal_dist_each_grid; 0]; %#ok<AGROW>
+
+            % Conatenate maximum transverse span
+            transverse_span_each_grid = [transverse_span_each_grid; 0]; %#ok<AGROW>
+
+        end
+
+    else
+
+        % Conacatenate orthogonal distance
+        orthogonal_dist_each_grid = [orthogonal_dist_each_grid; 0]; %#ok<AGROW>
+
+        % Conatenate maximum transverse span
+        transverse_span_each_grid = [transverse_span_each_grid; 0]; %#ok<AGROW>
+
+    end
+    % Concatenate the points in domain, scan lines and rings
+    concatenate_gridPoints_scanLines_rings = [concatenate_gridPoints_scanLines_rings; gridPoints_scanLines_rings_to_add]; %#ok<AGROW>
+
+    % Save the grid lines of all the grids greater than zero density in a
+    % matrix
+    length_gridlines = length(gridlines);
+    gridlines_grids_greater_than_zero(1+(ith_grid-1)*length_gridlines:ith_grid*length_gridlines,:) = gridlines;
+   
+    % Plot the result
+    % plot the grid lines of the grids greater than zero
+    plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+    % plot the points in the grid
+    plot(points_in_domain(:,1),points_in_domain(:,2),'.','Color',[0.2,0.2,0.2],'MarkerSize',10)
+
+end
+
+% Write the grid number at the grid center for reference. 
+
+for ith_text = 1:length(grids_greater_than_zero_points(:,1))
+    % current_text = sprintf('%.0d',current_mapped_grids(ith_text));
+    current_text = sprintf('%.0d',(ith_text));
+
+    % Place the text on the grid center
+    text(gridCenters_greater_than_zero_point_density(ith_text,1), gridCenters_greater_than_zero_point_density(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
+end
+
+fig_num = 5837; 
+figure(fig_num); clf;
+hold on
+grid on
+xlabel('X[m]')
+ylabel('Y[m]')
+
+% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+for ith_grid = 1:length(grids_greater_than_zero_points)
+
+    % Get current color
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+    current_color = [0.2 0.2 0.2];
+
+    % Plot current AABB
+    current_AABB = grid_AABBs(grids_greater_than_zero_points(ith_grid),1:4);
+
+    % Nudge the current AABB inward
+    current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+    % Calculate the gridlines
+    gridlines = [...
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,1) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,2) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,3); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,4); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        ];
+
+    % Plot the result
+    % plot the grid lines of the grids greater than zero
+    plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
+end
+
+% Write the grid number at the grid center for reference. 
+
+for ith_text = 1:length(grids_greater_than_zero_points(:,1))
+    current_text = sprintf('%.3f',orthogonal_dist_each_grid(ith_text));
+    % current_text = sprintf('%.3f',orthogonal_dist_each_grid);
+
+    % Place the text on the grid center
+    text(gridCenters_greater_than_zero_point_density(ith_text,1), gridCenters_greater_than_zero_point_density(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
+end
+
+fig_num = 58309; 
+figure(fig_num); clf;
+hold on
+grid on
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Transverse span distances')
+
+% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+for ith_grid = 1:length(grids_greater_than_zero_points)
+
+    % Get current color
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+    current_color = [0.2 0.2 0.2];
+
+    % Plot current AABB
+    current_AABB = grid_AABBs(grids_greater_than_zero_points(ith_grid),1:4);
+
+    % Nudge the current AABB inward
+    current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+    % Calculate the gridlines
+    gridlines = [...
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,1) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,2) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,3); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,4); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        ];
+
+    % Plot the result
+    % plot the grid lines of the grids greater than zero
+    plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
+end
+
+% Write the grid number at the grid center for reference. 
+
+for ith_text = 1:length(grids_greater_than_zero_points(:,1))
+    current_text = sprintf('%.3f',transverse_span_each_grid(ith_text));
+    % current_text = sprintf('%.3f',orthogonal_dist_each_grid);
+
+    % Place the text on the grid center
+    text(gridCenters_greater_than_zero_point_density(ith_text,1), gridCenters_greater_than_zero_point_density(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
+end
+
+% Threshold of transverse span
+transverse_span_threshold = 0.15;
+
 
 %% STEP 5: Find the driven path grids within the grids more than zero points
 % Jiabao
