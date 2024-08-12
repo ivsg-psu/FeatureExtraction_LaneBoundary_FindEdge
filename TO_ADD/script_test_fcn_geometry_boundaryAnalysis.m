@@ -27,6 +27,8 @@
 
 % Then, run script_test_geometry_findPointsInDomain. 
 
+% THIS script loads the concatenated matrices: script_plot_sample_data (fcn_findEdge_extractScanLines - Need to check)
+
 % concatenate_LiDAR_XYZ_points
 % concatenate_scanLine_rings
 
