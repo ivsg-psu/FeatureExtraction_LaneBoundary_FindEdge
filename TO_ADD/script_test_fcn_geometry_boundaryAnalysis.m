@@ -21,8 +21,6 @@
 % These scripts are in the main directory of Geom Class
 % Just "run" the scripts. You don't need to run section by section
 
-
-
 %% STEP 2: Run script_plot_sample_data.m to capture enough data
 
 % Then, run script_test_geometry_findPointsInDomain. 
