@@ -51,6 +51,8 @@ function fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, varargin)
 % -- changed ordering of variable inputs from most important to least
 % -- fixed minor bug in re-scaling the LIDAR intensity (min/max and
 % subtract off the minimum value)
+% 2024_08_11 - Jiabao Zhao
+% -- added format string as a optional input
 
 
 %% Debugging and Input checks
@@ -59,7 +61,7 @@ function fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, varargin)
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -101,7 +103,7 @@ end
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,5);
+        narginchk(1,6);
     end
 end 
 
@@ -131,6 +133,21 @@ if (4<=nargin)
     temp = varargin{3};
     if ~isempty(temp)
         color_map = temp;
+    end
+end
+
+%Does user want to specify format?
+plot_str = 'g';
+plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
+
+% Check to see if user passed in a string or color style?
+if 5 <= nargin
+    input = varargin{4};
+    if ~isempty(input)
+        plot_str = input;
+        if isnumeric(plot_str)  % Numbers are a color style
+            plot_type = 2;
+        end
     end
 end
 
@@ -179,7 +196,7 @@ if flag_do_plots
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
-    end        
+    end
 
     clf;
     hold on;
@@ -187,8 +204,19 @@ if flag_do_plots
     axis equal
 
     if 1==flag_simplePlot
-        % Plot only the LIDAR data simply as blue points
-        plot3(LIDAR_ENU(:,1),LIDAR_ENU(:,2),LIDAR_ENU(:,3), '.','Color',[0 0 1],'MarkerSize',1);
+        if 1==flag_simplePlot
+            if plot_type==1
+                if length(plot_str)>3
+                    % Plot only the LIDAR data simply as blue points
+                    eval_string = sprintf('plot3(LIDAR_ENU(:,1),LIDAR_ENU(:,2),LIDAR_ENU(:,3), %s)',plot_str);
+                    eval(eval_string);
+                else
+                    plot3(LIDAR_ENU(:,1),LIDAR_ENU(:,2),LIDAR_ENU(:,3),plot_str);
+                end
+            elseif plot_type==2
+                plot3(LIDAR_ENU(:,1),LIDAR_ENU(:,2),LIDAR_ENU(:,3),'Color',plot_str);
+            end
+        end
     else
         intensity_fraction =  scaling*(LIDAR_intensity - intensity_min)/(intensity_max - intensity_min);
 
@@ -220,6 +248,7 @@ if flag_do_plots
                 LIDAR_ENU(index_in_this_color,1),...
                 LIDAR_ENU(index_in_this_color,2),...
                 LIDAR_ENU(index_in_this_color,3), '.','Color',color_vector,'MarkerSize',5);
+            hold on
         end
     end
 

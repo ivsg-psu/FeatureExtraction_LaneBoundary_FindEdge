@@ -35,8 +35,8 @@ fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLine
 
 %plotLIDARLLA
 LIDAR_intensity = [];
-foramt = [];
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
+format = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA), (format),(fig_num))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
@@ -49,6 +49,7 @@ scaling=[];
 color_map=[];
 marker_size=[];
 reference_LLA=[];
+
 
 % Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
 test_date_string = [];
@@ -67,13 +68,14 @@ fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLine
 
 
 %plotLIDARLLA
-
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),[])
+LIDAR_intensity = [];
+format = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA), (format),(-1))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(isempty(get(temp_h,'Children')))
-close(fig_num);
+close(fig_num)
 
 %% Test 3 - add LIDAR_intensity input
 %Optional Inputs
@@ -101,7 +103,8 @@ fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLine
 
 %plotLIDARLLA
 
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+format = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA), (format),(fig_num))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
@@ -132,14 +135,16 @@ fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLine
 
 
 %plotLIDARLLA
-
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+%plotLIDARLLA
+LIDAR_intensity = [];
+format = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA), (format),(fig_num))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(~isempty(get(temp_h,'Children')))
 
-%% Test 5- Colormap changed to 'autumn', rest is default
+%% Test 5- Colormap changed to 'autumn' with LIDAR_intensity, rest is default
 %Optional Inputs
 fig_num=5;
 scaling=[];
@@ -159,13 +164,13 @@ scanLineRange = [1400 1450];
 ringsRange = []; % If leave empty, it loads all rings
 
 % Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
-[~, ~, LIDAR_ENU, ~, ~] = ...
+[~, ~, LIDAR_ENU, LIDAR_intensity, ~] = ...
 fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
 
 
 %plotLIDARLLA
-
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+format = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA), (format),(fig_num))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
@@ -196,8 +201,9 @@ fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLine
 
 
 %plotLIDARLLA
-
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+format = [];
+LIDAR_intensity = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA), (format),(fig_num))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
@@ -208,7 +214,7 @@ assert(~isempty(get(temp_h,'Children')))
 fig_num=7;
 scaling=[];
 color_map=[];
-marker_size=10;
+marker_size=[];
 reference_LLA = [40.862686255557058 -77.834608817369883 0];
 
 % Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
@@ -228,13 +234,46 @@ fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLine
 
 
 %plotLIDARLLA
-
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+format = [];
+LIDAR_intensity = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size), (reference_LLA), (format), (fig_num))
 
 % Check that the figure plotted
 temp_h = figure(fig_num);
 assert(~isempty(get(temp_h,'Children')))
 
+%% Test 8 add format string
+
+fig_num=7;
+scaling=[];
+color_map=[];
+marker_size=[];
+reference_LLA = [];
+
+% Load data - Loads in VehiclePose and LiDAR_Scan_ENU_Entire_Loop
+test_date_string = [];
+vehicle_pose_string = [];
+LIDAR_file_string = [];
+flag_load_all_data = [];
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (-1));
+
+% Set defaults for which scans to extract
+scanLineRange = [1400 1450];
+ringsRange = []; % If leave empty, it loads all rings
+
+% Extract scan lines - Creates a Variable LIDAR_ENU and LIDAR_intensity
+[~, ~, LIDAR_ENU, ~, ~] = ...
+fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+
+
+%plotLIDARLLA
+format = sprintf(' ''.'',''Color'',[0 0 1],''MarkerSize'', 20');
+LIDAR_intensity = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size), (reference_LLA), (format), (fig_num))
+
+% Check that the figure plotted
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
 %% Test 8 - Speed Test Default Inputs
 % NOTE: Assertion sometimes fails due to average time of fast mode being
 % sometimes slower than average time of regular runtime due to variance
@@ -281,7 +320,7 @@ tic;
 for i=1:REPS
     tstart=tic;
     
-    fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+    fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
     
     telapsed=toc(tstart);
     minTimeSlow=min(telapsed,minTimeSlow);
@@ -297,7 +336,7 @@ tic;
 for i=1:REPS
     tstart = tic;
     
-    fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+    fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
     
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);

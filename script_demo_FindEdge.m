@@ -47,6 +47,9 @@
 % -- added format string as a optional input for fcn_findEdge_plotVehicleXY
 % and fcn_findEdge_plotLIDARLLA since these two are the "core" function for
 % later use. 
+% 2024_08_11 -  Jiabao Zhao, jpz5469@psu.edu
+% -- added format string as a optional input for fcn_findEdge_plotLIDARLLA 
+% -- functionalize drivable surface 
 
 
 %% To-do items
@@ -198,7 +201,8 @@ fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (ENU_XYZ_fig_num))
 % Plot the LIDAR in 3D ENU
 scaling = [];
 color_map = [];
-fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (ENU_XYZ_fig_num)); 
+format = [];
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
 
 % Plot the LIDAR in XY, XZ, and YZ
 LIDAR_XY_XZ_YZ_fig_num = 4;
@@ -219,59 +223,36 @@ scaling = [];
 color_map = 'autumn';
 marker_size = [];
 reference_LLA = [];
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+format = [];
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
+
+%%
+%Find the drivable surface
+[LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors);
+
+% Plot the LIDAR data underneath the vehicle in XYZ
+LIDAR_intensity = [];
+scaling = [];
+color_map = [];
+ENU_3D_fig_num = 7;
+format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 20');
+fcn_findEdge_plotLIDARXYZ(LIDAR_ENU_under_vehicle, (LIDAR_intensity), (scaling), (color_map), (format), (ENU_3D_fig_num));
+daspect([1 1 0.1]); % Adjust aspect ratio
+
+% Plot the LIDAR data underneath the vehicle in LLA
+LLA_fig_num = 8; % figure number
+reference_LLA = [];
+format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 2');
+fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(LLA_fig_num));
+
 %% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
 % Jiabao and Alek - start here
 
-%% Find the drivable surface --Jiabao
-% This must be done in ENU coordinates because LLA is not an orthogonal
-% coordinate system. To find the surface, we find the distance of the lidar
-% points in the orthogonal direction by taking the dot product of the LIDAR
-% points, relative to the vehicle center with the unit projection vector
-% pointed to the left of the vehicle.
-% Jiabao
-gps_object = GPS();
-% Calculate the vectors
-vector_from_vehicle_pose_to_LIDAR_points = LIDAR_ENU - VehiclePose_ENU;
-
-% Calculate the transverse distance
-transverse_only_LIDAR_points = sum(vector_from_vehicle_pose_to_LIDAR_points.*VehiclePose_UnitOrthoVectors,2);
-
-% Define lane width limits. Take 40 percent of the lane width. Numbers
-% obtained by converting 12 ft (standard lane) to meters
-lane_half_width = (3.6576/2) * 0.40;  
-
-indicies_under_vehicle = find(abs(transverse_only_LIDAR_points)<lane_half_width);
-LIDAR_ENU_under_vehicle = LIDAR_ENU(indicies_under_vehicle,:);
-concatenate_LiDAR_LLA_points_under_vehicle = gps_object.ENU2WGSLLA(LIDAR_ENU_under_vehicle(:,1:3));
-
-
-% Plot the LIDAR data underneath the vehicle in XYZ
-ENU_3D_fig_num = 1;
-figure(ENU_3D_fig_num);
-plot3(LIDAR_ENU_under_vehicle(:,1),LIDAR_ENU_under_vehicle(:,2),LIDAR_ENU_under_vehicle(:,3), '.','Color',[0 1 0],'MarkerSize',1);
-%%%%%%%%%%%% The plot above could be done by using fcn_findEdge_plotLIDARXYZ
-% LIDAR_intensity = [];
-% scaling = [];
-% color_map = [];
-% ENU_XYZ_fig_num = 2;
-% fcn_findEdge_plotLIDARXYZ(LIDAR_ENU_under_vehicle, (LIDAR_intensity), (scaling), (color_map), (ENU_XYZ_fig_num));
-
-% Plot the LIDAR data underneath the vehicle in LLA
-figure(LLA_fig_num);
-geoplot(concatenate_LiDAR_LLA_points_under_vehicle(:,1),concatenate_LiDAR_LLA_points_under_vehicle(:,2),'g.','MarkerSize',2);
-geobasemap satellite
-geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
-%%%%%%%%%% The plot above could be done by using fcn_findEdge_plotVehicleLLA
-% LLA_fig_num = 5; % figure number
-% reference_LLA = [];
-% zoom_in_location = [];
-% zoomLevel = [];
-% LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(LIDAR_ENU_under_vehicle, (reference_LLA), (zoom_in_location), (zoomLevel), (LLA_fig_num));
-
 %% STEP 2: Find the driven path (left and right side points) (Yet to be functionalized)
 % Alek
+% Jiabao is working this right now
+
 
 % This is done in "script_test_geometry_boundaryPointsDrivenPath" - Steven 
 
@@ -366,6 +347,15 @@ zlabel('Up position [m]');
 view(3)
 hold off
 
+LIDAR_intensity = [];
+scaling = [];
+color_map = [];
+fig = figure;
+ax = axes('Parent', fig);
+format = sprintf('''.'',''Color'',[0 0 0],''MarkerSize'',30,''LineWidth'',3');
+fcn_findEdge_plotLIDARXYZ(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,:), (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
+format = sprintf('''.'',''Color'',[1 1 0],''MarkerSize'',10,''LineWidth'',3');
+fcn_findEdge_plotLIDARXYZ(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,:), (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
 %% -- Alek
 
 ENU_3D_fig_num = 3;

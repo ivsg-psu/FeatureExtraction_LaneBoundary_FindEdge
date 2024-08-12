@@ -1,7 +1,9 @@
 function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 %% fcn_findEdge_plotLIDARLLA      
 % plot the LIDAR data in LLA coordinates
-% 
+%    
+% NOTE: colormap will be used when LIDAR intensity data is available,
+% otherwise debug section will use format as the color of plot.
 % FORMAT: 
 %
 %       fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
@@ -33,7 +35,7 @@ function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 %       (fig_num): a figure number to plot results. If set to -1, skips any
 %       input checking or debugging, no figures will be generated, and sets
 %       up code to maximize speed.
-%
+%     
 % OUTPUTS: 
 %       (none, just the plot)
 % 
@@ -160,16 +162,15 @@ if (6<=nargin)
 end
 
 %Does user want to specify format?
-plot_str1 = 'k.';
-plot_str2 = 'mo';
+plot_str = 'k.';
 plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
 
 % Check to see if user passed in a string or color style?
 if 7 <= nargin
     input = varargin{6};
     if ~isempty(input)
-        plot_str1 = input;
-        if isnumeric(plot_str1)  % Numbers are a color style
+        plot_str = input;
+        if isnumeric(plot_str)  % Numbers are a color style
             plot_type = 2;
         end
     end
@@ -230,17 +231,14 @@ if flag_do_plots
 
     if 1==flag_simplePlot
         if plot_type==1
-            if length(plot_str1)>3
-                eval_string = sprintf('concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),%s)',plot_str1);
-                eval(eval_string);
-                hold on
-                eval_string = sprintf('concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),%s)',plot_str2);
+            if length(plot_str)>3
+                eval_string = sprintf('geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),%s)',plot_str);
                 eval(eval_string);
             else
-                geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),plot_str1);
+                geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),plot_str);
             end
         elseif plot_type==2
-            geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'Color',plot_str1);
+            geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'Color',plot_str);
         end
         % % Plot the LIDAR data simply as magenta and black points
         % geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
