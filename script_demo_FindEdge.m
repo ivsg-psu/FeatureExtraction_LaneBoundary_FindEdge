@@ -506,6 +506,8 @@ total_scan_lines_in_each_grid_with_more_than_zero_points = scanLines_count_per_g
 
 %% STEP 5: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring 
 
+% Jiabao - determineTransverseSpanThreshold
+
 % Figure number
 fig_num = 50;
 figure(fig_num); clf;
@@ -1202,7 +1204,7 @@ text(x_coord, 80,current_text,'Color',[0 0 0],'HorizontalAlignment','center','Fo
 
 %% STEP 8: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
 
-%Jiabao - 
+%Jiabao - determineAngleDeviation
 
 input_points = LiDAR_allPoints(:,1:3); 
 
@@ -1371,6 +1373,8 @@ max_angle_btw_unit_normals_and_vertical_not_driven_path = max(angle_btw_unit_nor
 % disp(theta_threshold*(180/pi))
 
 %% STEP 9: Histogram of angle deviation - (Do not need to run after determining a theta_threshold)
+
+% Jiabao - histogramAngleDeviation
 
 figure(1223);clf;
 hold on
