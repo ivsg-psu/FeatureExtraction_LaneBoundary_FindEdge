@@ -56,6 +56,11 @@
 % --functionalize STEP 2.5: Find the LIDAR_ENU and LIDAR_scanLineAndRingID 
 % in domain
 % --functionalize STEP 2: Find the driven path (left and right side points)
+%2024_08_13 - Jiabao Zhao, jpz5469@psu.edu
+% --functionalize %% STEP 4: Find the driven path grids within the grids
+% more than zero points.
+% --fixed some issues with fig
+
 
 
 
@@ -84,6 +89,7 @@
 % add colormap command for fcn_findEdge_plotVehicleXY.
 %
 % script_test for fcn_findEdge_plotLIDARLLA_Aneesh and fcn_findEdge_findPointsInDomain
+% script_test for fcn_findEdgefindGridsWithPoints
 
 %% Prep the workspace
 close all
@@ -287,13 +293,13 @@ fcn_findEdge_plotLIDARLLA(boundary_points_of_domain,(LIDAR_intensity1),(scaling)
 LIDAR_intensity = [];
 scaling = [];
 color_map = [];
-ENU_3D_fig_num = 7;
+ENU_3D_fig_num = 8;
 format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 20');
 fcn_findEdge_plotLIDARXYZ(LIDAR_ENU_under_vehicle, (LIDAR_intensity), (scaling), (color_map), (format), (ENU_3D_fig_num));
 daspect([1 1 0.1]); % Adjust aspect ratio
 
 % Plot the LIDAR data underneath the vehicle in LLA
-LLA_fig_num = 8; % figure number
+LLA_fig_num = 9; % figure number
 reference_LLA = [];
 format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 2');
 fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(LLA_fig_num));
@@ -301,9 +307,9 @@ fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(c
 
 %% STEP 2: Find the driven path (left and right side points)
 
-LLA_fig_num = 9;
+LLA_fig_num = 10;
 figure(LLA_fig_num);
-fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (LLA_fig_num))
+boundary_points_driven_path = fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (LLA_fig_num));
 %% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
 % Jiabao and Alek - start here
@@ -373,15 +379,15 @@ gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % L
 LIDAR_allPoints_LLA = gps_object.ENU2WGSLLA(LiDAR_allPoints(:,1:3));
 
 % Currently plotting here without uisng any function 
-fig_num_LLA = 30;
-% Plot the ENU results
-figure(fig_num_LLA);clf;
+% fig_num_LLA = 30;
+% % Plot the ENU results
+% figure(fig_num_LLA);clf;
 
-geoplot(LIDAR_allPoints_LLA(:,1),LIDAR_allPoints_LLA(:,2),'mo','MarkerSize',10);
-hold on
-geoplot(LIDAR_allPoints_LLA(:,1),LIDAR_allPoints_LLA(:,2),'k.','MarkerSize',10);
-geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'g.','MarkerSize',10);
-title('LLA Trace geometry')
+% geoplot(LIDAR_allPoints_LLA(:,1),LIDAR_allPoints_LLA(:,2),'mo','MarkerSize',10);
+% hold on
+% geoplot(LIDAR_allPoints_LLA(:,1),LIDAR_allPoints_LLA(:,2),'k.','MarkerSize',10);
+% geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'g.','MarkerSize',10);
+% title('LLA Trace geometry')
 
 geobasemap satellite
 geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
@@ -448,9 +454,10 @@ plot(gridCenters_greater_than_zero_point_density(:,1), gridCenters_greater_than_
 plot(gridCenters_driven_path(:,1), gridCenters_driven_path(:,2), '.','MarkerSize',30,'Color',[0 1 0]);
 
 
+
 % Plot the grids with 
-fig_num = 8765; 
-figure(fig_num);clf
+fig_num = 14; 
+figure(fig_num);
 
 % plot computed boundary points
 marker_size = 10;

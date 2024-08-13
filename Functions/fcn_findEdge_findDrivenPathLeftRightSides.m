@@ -1,4 +1,4 @@
-function fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, varargin)
+function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, varargin)
 %% fcn_findEdge_findDrivenPathLeftRightSides    Find the driven path (left and right side points)
 %
 % FORMAT: 
@@ -21,7 +21,8 @@ function fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, N
 %
 % OUTPUTS: 
 %
-%       (none), just plot
+%       boundary_points_driven_path: the boundary points near the driving
+%       path. This is an [Nx3] matrix.
 %
 % DEPENDENCIES:
 %
@@ -215,7 +216,7 @@ if flag_do_plots
     daspect([1 1 0.1]);  % Compress the z-axis relative to x and y
 
     % plot the boundary points in LLA
-    LLA_fig_num = 10;
+    LLA_fig_num = 11;
     figure(LLA_fig_num);
     LIDAR_intensity3 = [];
     marker_size = [];
