@@ -191,7 +191,7 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    
+
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
@@ -200,8 +200,6 @@ if flag_do_plots
 
     hold on;
     grid on;
-    axis equal
-
     if 1==flag_simplePlot
         if 1==flag_simplePlot
             if plot_type==1
@@ -255,7 +253,7 @@ if flag_do_plots
     ylabel('North position [m]');
     zlabel('Up position [m]');
     view(3)
-
+    hold off
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;

@@ -205,7 +205,6 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
-    clf;
     hold on;
     grid on;
     axis equal

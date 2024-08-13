@@ -50,15 +50,21 @@
 % 2024_08_11 -  Jiabao Zhao, jpz5469@psu.edu
 % -- added format string as a optional input for fcn_findEdge_plotLIDARLLA 
 % -- functionalize drivable surface 
+% 2024_08_12 - Aneesh Batchu
+% -- Added more stpes to check if enough data is captured.
 % 2024_08_12 -  Jiabao Zhao, jpz5469@psu.edu
 % -- added a fcn_findEdge_plotLIDARLLA_Aneesh that is similar to Dr B code 
 % but the plot is different, which one we use?
 % --functionalize STEP 2.5: Find the LIDAR_ENU and LIDAR_scanLineAndRingID 
 % in domain
 % --functionalize STEP 2: Find the driven path (left and right side points)
-
-
-
+% 2024_08_13 - Jiabao Zhao, jpz5469@psu.edu
+% --functionalize %% STEP 4: Find the driven path grids within the grids
+% more than zero points.
+% --fixed some issues with fig
+% 2024_08_13 - Aneesh Batchu
+% -- Calculated number of scan lines in each grid without a for loop using
+% accumarray
 
 
 
@@ -84,6 +90,7 @@
 % add colormap command for fcn_findEdge_plotVehicleXY.
 %
 % script_test for fcn_findEdge_plotLIDARLLA_Aneesh and fcn_findEdge_findPointsInDomain
+% script_test for fcn_findEdgefindGridsWithPoints
 
 %% Prep the workspace
 close all
@@ -287,13 +294,13 @@ fcn_findEdge_plotLIDARLLA(boundary_points_of_domain,(LIDAR_intensity1),(scaling)
 LIDAR_intensity = [];
 scaling = [];
 color_map = [];
-ENU_3D_fig_num = 7;
+ENU_3D_fig_num = 8;
 format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 20');
 fcn_findEdge_plotLIDARXYZ(LIDAR_ENU_under_vehicle, (LIDAR_intensity), (scaling), (color_map), (format), (ENU_3D_fig_num));
 daspect([1 1 0.1]); % Adjust aspect ratio
 
 % Plot the LIDAR data underneath the vehicle in LLA
-LLA_fig_num = 8; % figure number
+LLA_fig_num = 9; % figure number
 reference_LLA = [];
 format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 2');
 fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(LLA_fig_num));
@@ -301,9 +308,9 @@ fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(c
 
 %% STEP 2: Find the driven path (left and right side points)
 
-LLA_fig_num = 9;
+LLA_fig_num = 10;
 figure(LLA_fig_num);
-fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (LLA_fig_num))
+boundary_points_driven_path = fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (LLA_fig_num));
 %% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
 % Jiabao and Alek - start here
@@ -342,66 +349,10 @@ grid_size = 1; %0.8;%1;%1.25; %1.26
 % The 2D grid boundaries required for the current analysis
 grid_boundaries = [Min_x Max_x Min_y Max_y]; 
 
-% plot all LiDAR points                     ----------- To-Do: ALEKS
-%
-% Change the function name into fcn_geometry_plotPointsinLLA
-% - Add an option for chnaging the marker such as '.' (currently plots),
-% '+', '*', 'o' etc
-% BUG: This function does not work if Legend options are given as zero.
-% Write some test cases in the script
-% BUG: This function should work even if the legend_option is empty
-% BUG: This function should work even if the Legend_name is empty
-% Check this function carefully. Write all the test script clearly. It
-% should cover all the cases. 
-% 
-% marker_size = 10;
-% RGB_triplet = [0.8, 0.8, 0.8]; 
-% legend_option = 1;
-% legend_name = 'LiDAR Points';
-% legend_position = [];
-% plot_LiDAR_allPoints = LiDAR_allPoints; 
-% [~] = fcn_geometry_plotGridCenters(LiDAR_allPoints,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
-
-% Define GPS object - This should be the input for the above function 
-reference_latitude = 40.86368573;
-reference_longitude = -77.83592832;
-reference_altitude = 344.189;
-% Define GPS object
-gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % Load the GPS class
-
-% Use the class to convert ENU to LLA
-LIDAR_allPoints_LLA = gps_object.ENU2WGSLLA(LiDAR_allPoints(:,1:3));
-
-% Currently plotting here without uisng any function 
-fig_num_LLA = 30;
-% Plot the ENU results
-figure(fig_num_LLA);clf;
-
-geoplot(LIDAR_allPoints_LLA(:,1),LIDAR_allPoints_LLA(:,2),'mo','MarkerSize',10);
-hold on
-geoplot(LIDAR_allPoints_LLA(:,1),LIDAR_allPoints_LLA(:,2),'k.','MarkerSize',10);
-geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'g.','MarkerSize',10);
-title('LLA Trace geometry')
-
-geobasemap satellite
-geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
-%%%%%%%%%%--the plot above could be replace with this fcn_findEdge_plotVehicleXY
-% fig_num = 1514874;
-% format = sprintf('''mo'',''MarkerSize'',10');
-% fcn_findEdge_plotVehicleXY(LiDAR_allPoints(:,1:2),format,fig_num);
-% hold on 
-% format = sprintf('''k.'',''MarkerSize'',10');
-% fcn_findEdge_plotVehicleXY(LiDAR_allPoints(:,1:2),format,fig_num);
-% format = sprintf('''g.'',''MarkerSize'',10');
-% fcn_findEdge_plotVehicleXY(boundary_points_driven_path(:,1:2),format,fig_num);
-% hold off
-
-% however, this will not do a good job sicne we need to edit the color and
-% shape of the points. In addition, you can not overlap this. 
-
 fig_num_first_classification = 40; 
 figure(fig_num_first_classification);clf
 
+% Seperate the data into grids
 [gridIndices_cell_array, total_N_points_in_each_grid, gridCenters, grids_with_zero_points,...
     grids_greater_than_zero_points, gridCenters_zero_point_density,...
     gridCenters_greater_than_zero_point_density, gridIndices, grid_AABBs] = fcn_findEdge_findGridsWithPoints(input_points,...
@@ -448,9 +399,10 @@ plot(gridCenters_greater_than_zero_point_density(:,1), gridCenters_greater_than_
 plot(gridCenters_driven_path(:,1), gridCenters_driven_path(:,2), '.','MarkerSize',30,'Color',[0 1 0]);
 
 
+
 % Plot the grids with 
-fig_num = 8765; 
-figure(fig_num);clf
+fig_num = 14; 
+figure(fig_num);
 
 % plot computed boundary points
 marker_size = 10;
@@ -526,20 +478,29 @@ text(x_location, 200,current_text,'Color',[0 0 0],'HorizontalAlignment','center'
 
 %% STEP 5: Grid conditions - Determining number of scan lines in each grid greater than zero points Point density 
 
-% This was also done in STEP 5, however, it was done using a for loop. Need to
-% do it without using a for loop.
+% % This was also done in STEP 5, however, it was done using a for loop. Need to
+% % do it without using a for loop.
+% 
+% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+% for ith_grid = 1:length(grids_greater_than_zero_points)
+%      %Get all points in this domain and plot them
+%     rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
+% 
+%      %Find number of LiDAR scan lines in each grid
+%     scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
+% 
+%     % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORK     S WITHOUT A FOR LOOP
+%     total_scan_lines_in_each_grid_with_more_than_zero_points = [total_scan_lines_in_each_grid_with_more_than_zero_points; scan_lines_ith_grid]; %#ok<AGROW> % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORKS WITHOUT A FOR LOOP
+% end
 
-total_scan_lines_in_each_grid_with_more_than_zero_points = [];
-for ith_grid = 1:length(grids_greater_than_zero_points)
-     %Get all points in this domain and plot them
-    rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
+% fcn_findEdge_calcNumberOfGridScanLines
 
-     %Find number of LiDAR scan lines in each grid
-    scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
+% Initialize the array to store scan line counts for each grid index
+scanLines_count_per_grid = accumarray(gridIndices, LIDAR_scanLines(:,1), [], @(x) length(unique(x)));
 
-    % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORK     S WITHOUT A FOR LOOP
-    total_scan_lines_in_each_grid_with_more_than_zero_points = [total_scan_lines_in_each_grid_with_more_than_zero_points; scan_lines_ith_grid]; %#ok<AGROW> % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORKS WITHOUT A FOR LOOP
-end
+% Extract scan line counts for grids greater than zero points
+total_scan_lines_in_each_grid_with_more_than_zero_points = scanLines_count_per_grid(grids_greater_than_zero_points);
+
 
 %% STEP 5: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring 
 
