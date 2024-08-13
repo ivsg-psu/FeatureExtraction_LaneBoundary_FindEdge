@@ -1,4 +1,4 @@
-function [gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold, grids_greater_than_zero_points, gridCenters,varargin)
+function [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold, grids_greater_than_zero_points, gridCenters,varargin)
 %% fcn_findEdge_classifyGridsBasedOnTransverseSpan
 %Grids with required point density and low point density
 %

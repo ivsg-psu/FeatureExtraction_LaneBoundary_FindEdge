@@ -366,9 +366,12 @@ fig_num = 13;
 ENU_3D_fig_num = 14;
 format = sprintf('''.'',''MarkerSize'',30,''Color'',[0.8 0.8 0.8]');
 format1 = sprintf('''.'',''MarkerSize'',30,''Color'',[0 1 0]');
+
 [~, ~,total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
     = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
     grids_greater_than_zero_points, total_N_points_in_each_grid, (format), (format1),[],[], (fig_num), (ENU_3D_fig_num));
+
+
 %% STEP 5: Grid conditions - Point density (Do not need to run after determining point density)
 
 % Figure number of histogram
@@ -755,18 +758,22 @@ fig_num = 70;
 
 [grid_indices_with_required_point_density, gridCenters_low_point_density] = fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points,total_N_points_in_each_grid,point_density,gridCenters,[],[],fig_num);
 
+
 %% STEP 6: Grids with more than one scan line and grids with one scan line
 
 fig_num = 71; 
 
-[gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,[],[],fig_num);
+[grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,[],[],fig_num);
+
 
 %% STEP 6: Grids greater than minimum transverse span threshold and lesser than minimum transverse span threshold 
 
 
 fig_num = 72; 
 
-[gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
+[grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
+
+
 %% STEP 6: Qualified and unqualified grids: grids that pass all three conditions above are qualified
 
 
@@ -885,15 +892,89 @@ plot_gridCenters_with_less_than_transverse_span_threshold = [gridCenters_with_le
 
 %% STEP 7: Recalculate the driven path grids among qualified grids
 
-fig_num = 13;
-ENU_3D_fig_num = 14;
-format = sprintf('''.'',''MarkerSize'',40,''Color'',[0.2 0.2 0.2]');
-format1 = sprintf('''o'',''MarkerSize'',10,''Color'',[0 1 0], ''LineWidth'',2');
+% fig_num = 131;
+% ENU_3D_fig_num = 114;
+% format = sprintf('''.'',''MarkerSize'',40,''Color'',[0.2 0.2 0.2]');
+% format1 = sprintf('''o'',''MarkerSize'',10,''Color'',[0 1 0], ''LineWidth'',2');
+% legend_name = 'Qualified grids';
+% legend_name2 = 'Driven path grids';
+% 
+% [gridCenters_driven_path, current_grid_numbers_of_driven_path,total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
+%     = fcn_findEdge_findDrivenPathGrids(gridCenters_qualified_grids, boundary_points_driven_path,...
+%     original_qualified_grids, total_N_points_in_each_grid,(format), (format1),(legend_name),(legend_name2), (fig_num), (ENU_3D_fig_num));
+% 
+% % [~, ~,total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
+% %     = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
+% %     grids_greater_than_zero_points, total_N_points_in_each_grid, (format), (format1),[],[], (fig_num), (ENU_3D_fig_num));
+% 
+
+% "inpolygon" is used to find the grids within the boundary points 
+[in_qg,on_qg] = inpolygon(gridCenters_qualified_grids(:,1),gridCenters_qualified_grids(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
+
+% Original grid numbers of driven path
+original_grid_numbers_of_driven_path = original_qualified_grids(in_qg); 
+
+% Current grid numbers in driven path 
+current_grid_numbers_of_driven_path = current_qualified_grids(in_qg); %find(in); 
+
+% % Total points in each grid in the driven path
+% total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(original_grid_numbers_of_driven_path); 
+% 
+% % Total points in each grid with points greater than zero
+% total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(current_qualified_grids); 
+
+% Grid centers of the driven path
+gridCenters_driven_path = [gridCenters_qualified_grids(in_qg,1),gridCenters_qualified_grids(in_qg,2)];
+
+
+fig_num = 517;
+figure(fig_num); clf;
+
+hold on
+grid on
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Grid centers and boundary points')
+
+plot(gridCenters_qualified_grids(:,1), gridCenters_qualified_grids(:,2), '.','MarkerSize',40,'Color',[0.2 0.2 0.2]);
+% plot(boundary_points_driven_path(:,1), boundary_points_driven_path(:,2), '.', 'MarkerSize',30, 'Color',[0 1 0]); 
+
+% plot the grids in the driven path
+plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',2) % points strictly inside
+
+% for ith_text = 1:length(current_qualified_grids(:,1))
+%     current_text = sprintf('%.0d',ith_text);
+%     % Place the text on the grid center
+%     text(gridCenters_qualified_grids(ith_text,1), gridCenters_qualified_grids(ith_text,2),current_text,'Color',[1 1 1],'HorizontalAlignment','center','FontSize', 6, 'FontWeight','bold');
+% end
+
+
+% Plot the grids with 
+fig_num = 804; 
+figure(fig_num);clf
+
+% plot computed boundary points
+marker_size = 10;
+RGB_triplet = [0 0 0]; 
+legend_option = 1;
 legend_name = 'Qualified grids';
-legend_name2 = 'Driven path grids';
-[gridCenters_driven_path, current_grid_numbers_of_driven_path,total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
-    = fcn_findEdge_findDrivenPathGrids(gridCenters_qualified_grids, boundary_points_driven_path,...
-    original_qualified_grids, total_N_points_in_each_grid,(format), (format1),(legend_name),(legend_name2), (fig_num), (ENU_3D_fig_num));
+legend_position = [];
+marker_type = [];
+plot_gridCenters_qualified_grids = [gridCenters_qualified_grids(:,1:2), zeros(length(gridCenters_qualified_grids(:,1)),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_qualified_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+
+% plot driven path
+marker_size = 25;
+RGB_triplet = [0 1 0]; 
+legend_option = 1;
+legend_name = 'Driven path grids';
+legend_position = [];
+marker_type = [];
+plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+
 %% STEP 8: Qualified grid conditions - Standard deviation in Z (Do not need to run after determining a std_threshold)
 
 input_points =  LiDAR_allPoints(:,1:3);
@@ -1952,7 +2033,8 @@ nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(len
 
 % boundaryLineNumber_start = scanLineNumber_start;%scanLineNumber_start - 8; 
 % boundaryLineNumber_end = scanLineNumber_end;%scanLineNumber_end - 6; 
-
+scanLineNumber_start = 1400; 
+scanLineNumber_end = 1450; 
 VehiclePose_current = VehiclePose(scanLineNumber_start:scanLineNumber_end,1:2);
 
 % Get the number of rows 

@@ -1,4 +1,4 @@
-function [gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points, total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,varargin)
+function [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points, total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,varargin)
 %% fcn_findEdge_classifyGridsBasedOnScanLines
 %Grids with required point density and low point density
 %
