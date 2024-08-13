@@ -65,6 +65,8 @@
 % 2024_08_13 - Aneesh Batchu
 % -- Calculated number of scan lines in each grid without a for loop using
 % accumarray
+% 2024_08_13 - Aleksandr Goncharov, opg5041@psu.edu
+% -- Added Step 6 functions into the main demo.
 
 
 
@@ -805,158 +807,22 @@ transverse_span_threshold = 0.15;
 
 %% STEP 6: Grids with required point density and low point density
 
-% These grids have low point density but not zero point density 
-original_grids_with_low_point_density = grids_greater_than_zero_points((total_N_points_in_each_grid(grids_greater_than_zero_points,1) > 0) & (total_N_points_in_each_grid(grids_greater_than_zero_points,1) < point_density)); 
-
-% These are grids that contain points more than or equal to point density
-original_grids_with_required_point_density = grids_greater_than_zero_points(total_N_points_in_each_grid(grids_greater_than_zero_points,1) >= point_density);
-grid_indices_with_required_point_density = (total_N_points_in_each_grid(grids_greater_than_zero_points,1) >= point_density);
-
-% Current grid numbers of the grids with low point density
-% These are the grid numbers of the grids with respect to grids_greater_than_zero_points
-% The numbering starts with "1"
-
-% These are the grid numbers of low point density
-current_grids_with_low_point_density = find((total_N_points_in_each_grid(grids_greater_than_zero_points,1) > 0) & (total_N_points_in_each_grid(grids_greater_than_zero_points,1) < point_density)); 
-
-% These are the current grid numbers of required point density
-current_grids_with_required_point_density = find(total_N_points_in_each_grid(grids_greater_than_zero_points,1) >= point_density); 
-
-% Grid Centers of the grids with low point density (Unmapped grid centers)
-gridCenters_low_point_density = gridCenters(original_grids_with_low_point_density,1:2);  
-
-% Grid Centers of the grids with required point density 
-gridCenters_required_point_density = gridCenters(original_grids_with_required_point_density,1:2);  
-
-% Plot the grids with low point density and required density 
 fig_num = 70; 
-figure(fig_num);clf
 
-marker_size = 25;
-RGB_triplet = [0.8, 0.8, 0.8]; 
-legend_option = 1;
-legend_name = 'Grids with low point density';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_low_point_density = [gridCenters_low_point_density, zeros(length(gridCenters_low_point_density(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_low_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
-% plot grid centers
-marker_size = 25;
-RGB_triplet = [0.2, 0.2, 0.2]; 
-legend_option = 1;
-legend_name = 'Grids with required density';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_required_point_density = [gridCenters_required_point_density, zeros(length(gridCenters_required_point_density(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_required_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+[grid_indices_with_required_point_density, gridCenters_low_point_density] = fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points,total_N_points_in_each_grid,point_density,gridCenters,[],[],fig_num);
 
 %% STEP 6: Grids with more than one scan line and grids with one scan line
 
-% These grids contain more than one scan line
-original_grids_with_more_than_one_scan_line = grids_greater_than_zero_points(total_scan_lines_in_each_grid_with_more_than_zero_points>1);
-grid_indices_with_more_than_one_scan_line = (total_scan_lines_in_each_grid_with_more_than_zero_points>1);
-
-% These grids contain only one scan line
-original_grids_with_one_scan_line = grids_greater_than_zero_points(~grid_indices_with_more_than_one_scan_line);
-
-% Current grid numbers of the grids with more than one scan line
-% These are the grid numbers of the grids with respect to grids_greater_than_zero_points
-% The numbering starts with "1"
-
-% Current grid numbers of the grids with more than one scan line
-current_grids_with_more_than_one_scan_line = find(grid_indices_with_more_than_one_scan_line);
-
-% Current grid numbers of the grids with one scan line
-current_grids_with_one_scan_line = find(~grid_indices_with_more_than_one_scan_line);
-
-% Grid centers of the grids with more than zero points and more than one scan line
-gridCenters_with_more_than_one_scan_line = gridCenters(original_grids_with_more_than_one_scan_line,1:2);
-
-% Grid centers of the grids with one scan line
-gridCenters_with_one_scan_line = gridCenters(original_grids_with_one_scan_line,1:2);
-
-% Plot grids with one scan line and more than one scan line
 fig_num = 71; 
-figure(fig_num);clf
 
-marker_size = 25;
-RGB_triplet = [0.8, 0.8, 0.8]; 
-legend_option = 1;
-legend_name = 'Grids with one scan line';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_with_one_scan_line = [gridCenters_with_one_scan_line, zeros(length(gridCenters_with_one_scan_line(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_one_scan_line,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
-
-% plot grid centers
-marker_size = 25;
-RGB_triplet = [0.2, 0.2, 0.2]; 
-legend_option = 1;
-legend_name = 'Grids with more than one scan line';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_with_more_than_one_scan_line = [gridCenters_with_more_than_one_scan_line, zeros(length(gridCenters_with_more_than_one_scan_line(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_more_than_one_scan_line,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
+[gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,[],[],fig_num);
 
 %% STEP 6: Grids greater than minimum transverse span threshold and lesser than minimum transverse span threshold 
 
-% Grid indices of the original grids greater than transverse span threshold
-grid_indices_with_more_than_transverse_span_threshold = (transverse_span_each_grid>transverse_span_threshold);
-
-% The transverse span of these original grids are more than transverse span
-% threshold
-original_grids_with_more_than_transverse_span_threshold = grids_greater_than_zero_points(grid_indices_with_more_than_transverse_span_threshold);
-
-% The transverse span of these grids are less than/equal to transverse span
-% threshold
-original_grids_with_less_than_transverse_span_threshold = grids_greater_than_zero_points(~grid_indices_with_more_than_transverse_span_threshold);
-
-% Current grid numbers of the grids with more than one scan line
-% These are the grid numbers of the grids with respect to grids_greater_than_zero_points
-% The numbering starts with "1"
-
-% Current grid numbers of the grids with more than transverse span
-% threshold
-current_grids_with_more_than_transverse_span_threshold = find(grid_indices_with_more_than_transverse_span_threshold);
-
-% Current grid numbers of the grids with less than/equal transverse span
-% threshold
-current_grids_with_less_than_transverse_span_threshold = find(~grid_indices_with_more_than_transverse_span_threshold);
-
-% Grid centers of the grids with more than transerse span threshold
-gridCenters_with_more_than_transverse_span_threshold = gridCenters(original_grids_with_more_than_transverse_span_threshold,1:2);
-
-% Grid centers of the grids with less than/equal transverse span threshold
-gridCenters_with_less_than_transverse_span_threshold = gridCenters(original_grids_with_less_than_transverse_span_threshold,1:2);
-
-% Plot grids greater than minimum transverse span threshold and lesser than minimum transverse span threshold 
 
 fig_num = 72; 
-figure(fig_num);clf
 
-marker_size = 25;
-RGB_triplet = [0.8, 0.8, 0.8]; 
-legend_option = 1;
-legend_name = 'Grids lesser than minimum transverse span threshold';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_with_less_than_transverse_span_threshold = [gridCenters_with_less_than_transverse_span_threshold, zeros(length(gridCenters_with_less_than_transverse_span_threshold(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_less_than_transverse_span_threshold,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
-
-% plot grid centers
-marker_size = 25;
-RGB_triplet = [0.2, 0.2, 0.2]; 
-legend_option = 1;
-legend_name = 'Grids greater than minimum transverse span threshold';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_with_more_than_transverse_span_threshold = [gridCenters_with_more_than_transverse_span_threshold, zeros(length(gridCenters_with_more_than_transverse_span_threshold(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_more_than_transverse_span_threshold,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
+[gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 %% STEP 6: Qualified and unqualified grids: grids that pass all three conditions above are qualified
 
 
@@ -1335,6 +1201,8 @@ current_text = sprintf('std threshold = %.4f',std_threshold);
 text(x_coord, 80,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
 
 %% STEP 8: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
+
+%Jiabao - 
 
 input_points = LiDAR_allPoints(:,1:3); 
 

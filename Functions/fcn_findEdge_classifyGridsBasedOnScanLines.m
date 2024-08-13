@@ -148,12 +148,6 @@ original_grids_with_one_scan_line = grids_greater_than_zero_points(~grid_indices
 % These are the grid numbers of the grids with respect to grids_greater_than_zero_points
 % The numbering starts with "1"
 
-% Current grid numbers of the grids with more than one scan line
-current_grids_with_more_than_one_scan_line = find(grid_indices_with_more_than_one_scan_line);
-
-% Current grid numbers of the grids with one scan line
-current_grids_with_one_scan_line = find(~grid_indices_with_more_than_one_scan_line);
-
 % Grid centers of the grids with more than zero points and more than one scan line
 gridCenters_with_more_than_one_scan_line = gridCenters(original_grids_with_more_than_one_scan_line,1:2);
 
