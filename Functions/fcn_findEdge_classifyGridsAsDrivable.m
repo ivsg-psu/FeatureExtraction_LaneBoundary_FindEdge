@@ -11,7 +11,7 @@ function [standard_deviation_in_z, ...
     gridCenters_drivable_grids, ...
     gridCenters_non_drivable_grids, ... 
     concatenate_gridCenters_drivable_non_drivable_grids] = ...
-    fcn_findEdge_classifyGridsAsDrivable(gridIndices_cell_array, original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, varargin)
+    fcn_findEdge_classifyGridsAsDrivable(gridIndices_cell_array, original_qualified_grids, input_points, std_threshold, theta_threshold, gridCenters, varargin)
 %% fcn_findEdge_classifyGridsAsDrivable
 % classify mapped grids into drivable and non-drivable
 %
@@ -182,18 +182,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % The indices of the mapped grids are extracted and concatenated 
-original_mapped_gridIndices_cell = gridIndices_cell_array(original_mapped_grids); 
+original_qualified_gridIndices_cell = gridIndices_cell_array(original_qualified_grids); 
 
 % Total number of mapped grids
-total_mapped_grids = length(original_mapped_gridIndices_cell); 
+total_qualified_grids = length(original_qualified_gridIndices_cell); 
 
 % Standard deviations in orthogonal distances of points in the grid to
 % plane
 % standard_deviation_in_plane_orthogonals = zeros(total_mapped_grids,1); 
-standard_deviation_in_z = zeros(total_mapped_grids,1); 
+standard_deviation_in_z = zeros(total_qualified_grids,1); 
 
 % Unit normal vectors of the plane fits of each mapped grid
-unit_normal_vectors = zeros(total_mapped_grids,3); 
+unit_normal_vectors = zeros(total_qualified_grids,3); 
 
 
 % z_height of all the points 
@@ -205,9 +205,9 @@ unit_normal_vectors = zeros(total_mapped_grids,3);
 %     h_waitbar = waitbar(0,'Performing surface analysis...');
 % end
 
-for ith_mapped_grid = 1:total_mapped_grids
-    [~, standard_deviation_in_z(ith_mapped_grid,:), ~, unit_normal_vectors(ith_mapped_grid,:), ~, ~] =...
-    fcn_findEdge_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
+for ith_qualified_grid = 1:total_qualified_grids
+    [~, standard_deviation_in_z(ith_qualified_grid,:), ~, unit_normal_vectors(ith_qualified_grid,:), ~, ~] =...
+    fcn_findEdge_fitPlaneLinearRegression(input_points(original_qualified_gridIndices_cell{ith_qualified_grid},:),-1);
     % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
     % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
 end
@@ -220,11 +220,11 @@ if ~isempty(std_threshold) && isempty(theta_threshold)
     % Find the grids that are within standard deviation limit
     % This is not enough (delta Y) is also important
     % mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
-    mapped_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
+    qualified_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
     
     % Grids that satisy the conditions of (STEP 1). The grids that
     % are within the std threshold
-    mapped_grids_within_all_thresholds = (mapped_grids_within_std_threshold == 1);
+    qualified_grids_within_all_thresholds = (qualified_grids_within_std_threshold == 1);
 
     % The angle between unit vertical and the unit_normal_vector is computed to
     % determine how close the normal vector is to vertical direction. In
@@ -246,11 +246,11 @@ elseif isempty(std_threshold) && ~isempty(theta_threshold)
 
     % Find the grids (with a fitted plane) that are within the vertical
     % threshold (change to a different name: vertical threshold)
-    mapped_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
+    qualified_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
 
     % Grids that satisy the conditions (STEP 2). The grids that
     % are within the vertical threshold
-    mapped_grids_within_all_thresholds = (mapped_grids_within_vertical_threshold == 1);
+    qualified_grids_within_all_thresholds = (qualified_grids_within_vertical_threshold == 1);
 
 else
 
@@ -259,7 +259,7 @@ else
     % Find the grids that are within standard deviation limit
     % This is not enough (delta Y) is also important
     % mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
-    mapped_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
+    qualified_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
 
     % STEP 2
     % Comparing normal vector with verticle direction
@@ -274,26 +274,26 @@ else
 
     % Find the grids (with a fitted plane) that are within the vertical
     % threshold (change to a different name: vertical threshold)
-    mapped_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
+    qualified_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
 
     % Grids that satisy the conditions of (STEP 1 & STEP 2). The grids that
     % are within the standar deviation and vertical threshold
-    mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 1) & (mapped_grids_within_std_threshold == 1);
+    qualified_grids_within_vertical_and_std_thresholds = (qualified_grids_within_vertical_threshold == 1) & (qualified_grids_within_std_threshold == 1);
     
     % mapped grids within all the thresholds 
-    mapped_grids_within_all_thresholds = mapped_grids_within_vertical_and_std_thresholds;
+    qualified_grids_within_all_thresholds = qualified_grids_within_vertical_and_std_thresholds;
 
     % Grids that failed to satisfy both the conditions (STEP 1 and STEP 2)
-    mapped_grids_failed_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 0) & (mapped_grids_within_std_threshold == 0);
+    qualified_grids_failed_vertical_and_std_thresholds = (qualified_grids_within_vertical_threshold == 0) & (qualified_grids_within_std_threshold == 0);
 
     % Grids that failed to satisfy STEP 1 but not STEP 2
-    mapped_grids_failed_std_threshold = find((mapped_grids_within_vertical_threshold == 0) & (mapped_grids_within_std_threshold == 1));
+    qualified_grids_failed_std_threshold = find((qualified_grids_within_vertical_threshold == 0) & (qualified_grids_within_std_threshold == 1));
 
      % Grids that failed to satisfy STEP 2 but not STEP 1
-    mapped_grids_failed_vertical_threshold = find((mapped_grids_within_vertical_threshold == 1) & (mapped_grids_within_std_threshold == 0));
+    qualified_grids_failed_vertical_threshold = find((qualified_grids_within_vertical_threshold == 1) & (qualified_grids_within_std_threshold == 0));
 
     % Uncertain mapped grids
-    uncertain_grid_indices = [mapped_grids_failed_std_threshold;mapped_grids_failed_vertical_threshold]; 
+    uncertain_grid_indices = [qualified_grids_failed_std_threshold;qualified_grids_failed_vertical_threshold]; 
 
     % Sort the uncertain grid indices
     sorted_uncertain_grid_indices = sort(uncertain_grid_indices); 
@@ -305,19 +305,19 @@ else
     % original_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds);
 
     % Failed grids
-    original_failed_grids = original_mapped_grids(mapped_grids_failed_vertical_and_std_thresholds);
+    original_failed_grids = original_qualified_grids(qualified_grids_failed_vertical_and_std_thresholds);
 
     % Uncertain grids
-    original_uncertain_grids = original_mapped_grids(uncertain_grid_indices);
+    original_uncertain_grids = original_qualified_grids(uncertain_grid_indices);
 
     % % Find the non-drivable grids (original)
     % original_non_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds == 0);
 
     % Final failed grid numbers of the mapped grids
-    current_failed_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_failed_grids));
+    current_failed_grid_numbers_in_mapped_grids = find(ismember(original_qualified_grids, original_failed_grids));
 
     % Final failed grid numbers of the mapped grids
-    current_uncertain_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_uncertain_grids));
+    current_uncertain_grid_numbers_in_mapped_grids = find(ismember(original_qualified_grids, original_uncertain_grids));
 
     % Grid centers of failed grids
     gridCenters_failed_grids = [gridCenters(original_failed_grids,1), gridCenters(original_failed_grids,2)];
@@ -328,7 +328,7 @@ else
 end
 
 % Find the drivable grids (original)
-original_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds); 
+original_drivable_grids = original_qualified_grids(qualified_grids_within_all_thresholds); 
 % 
 % % Failed grids
 % original_failed_grids = original_mapped_grids(mapped_grids_failed_vertical_and_std_thresholds); 
@@ -337,13 +337,13 @@ original_drivable_grids = original_mapped_grids(mapped_grids_within_all_threshol
 % original_uncertain_grids = original_mapped_grids(uncertain_grid_indices); 
 % 
 % Find the non-drivable grids (original)
-original_non_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds == 0);
+original_non_drivable_grids = original_qualified_grids(qualified_grids_within_all_thresholds == 0);
 
 % Final drivable grid numbers of the mapped grids
-current_drivable_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_drivable_grids));
+current_drivable_grid_numbers_in_mapped_grids = find(ismember(original_qualified_grids, original_drivable_grids));
 
 % Final non drivable grid numbers of the mapped grids
-current_non_drivable_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_non_drivable_grids));
+current_non_drivable_grid_numbers_in_mapped_grids = find(ismember(original_qualified_grids, original_non_drivable_grids));
 
 % % Final failed grid numbers of the mapped grids
 % current_failed_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_failed_grids));
