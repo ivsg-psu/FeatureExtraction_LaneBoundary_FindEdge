@@ -50,6 +50,16 @@
 % 2024_08_11 -  Jiabao Zhao, jpz5469@psu.edu
 % -- added format string as a optional input for fcn_findEdge_plotLIDARLLA 
 % -- functionalize drivable surface 
+% 2024_08_12 -  Jiabao Zhao, jpz5469@psu.edu
+% -- added a fcn_findEdge_plotLIDARLLA_Aneesh that is similar to Dr B code 
+% but the plot is different, which one we use?
+% --functionalize STEP 2.5: Find the LIDAR_ENU and LIDAR_scanLineAndRingID 
+% in domain
+% --functionalize STEP 2: Find the driven path (left and right side points)
+
+
+
+
 
 
 %% To-do items
@@ -72,6 +82,8 @@
 % Delete as many plot commands in the script as we can by just calling the
 % "core" plotting commands we already developed.
 % add colormap command for fcn_findEdge_plotVehicleXY.
+%
+% script_test for fcn_findEdge_plotLIDARLLA_Aneesh and fcn_findEdge_findPointsInDomain
 
 %% Prep the workspace
 close all
@@ -169,8 +181,6 @@ flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num));
 
 % Plot the vehicle in 2D ENU
-ENU_XY_fig_num = 2;
-figure(ENU_XY_fig_num);
 format = sprintf(' ''-'', ''Color'', [0 0 0], ''MarkerSize'', 10, ''LineWidth'', 3');
 clf;
 fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num); % -- add string as optional input (format)
@@ -181,7 +191,7 @@ fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num); % -- add string as opt
 station_1 = 1400; 
 station_2 = 1450;
 
-range_of_LiDAR = 100;
+range_of_LiDAR = 10;
 
 [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,station_1,station_2,range_of_LiDAR);  
 
@@ -200,6 +210,7 @@ ringsRange = []; % If leave empty, it loads all rings
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
 
 % Plot the LIDAR in 2D ENU
+ENU_XY_fig_num = 2;
 figure(ENU_XY_fig_num);
 format = sprintf(' ''-'', ''Color'', [0 0 1], ''MarkerSize'', 1');
 fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),format,ENU_XY_fig_num);
@@ -241,149 +252,32 @@ format = [];
 fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
 
 %% STEP 2.5: Find the LIDAR_ENU and LIDAR_scanLineAndRingID in domain
-% :Check if enough data have been measured based on LiDAR range:
 
-% Then, run script_test_geometry_findPointsInDomain. 
-
-
-vehicle_change_in_pose_XY = diff(VehiclePose(:,1:2));
-
-% Repeat the last value again, since diff removes one row. We want the same
-% number of vectors as the number of points, and diff removed one point.
-vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_XY(end,:)];
-
-% Convert these to unit vectors
-unit_vehicle_change_in_pose_XY = fcn_findEdge_calcUnitVector(vehicle_change_in_pose_XY);
-
-% Find orthogonal vetors by rotating by 90 degrees in the CCW direction
-unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
-
-% Define lane width limits. Take 40 percent of the lane width. Numbers
-% obtained by converting 12 ft (standard lane) to meters
-% lane_half_width = (3.6576/2) * 0.40; 
-% Right transverse shift 
-right_transverse_shift = 6*3.6576;  
-
-% Transverse distance of the right boundary points from vehicle center 
-right_transverse_distance_of_boundary_points = [right_transverse_shift*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
-
-% Left transverse shift 
-left_transverse_shift = 6*3.6576;  
-
-% Transverse distance of the right boundary points from vehicle center 
-left_transverse_distance_of_boundary_points = [left_transverse_shift*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
+[concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
 
 
-longitudinal_shift = 5; 
-% Shift
-longitudinal_shift_distance = [unit_vehicle_change_in_pose_XY*longitudinal_shift, zeros(length(unit_vehicle_change_in_pose_XY),1)]; 
+% plot vehicle trajectory in LLA
+fig_num = 7;
+reference_LLA = [];
+zoom_in_location = [40.865718697633348 -77.830965127435817];
+zoomLevel = 20.5;
+LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose(:,1:3), (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
-% Left boundary points of the driven path
-left_boundary_points = VehiclePose(:,1:3) + left_transverse_distance_of_boundary_points - longitudinal_shift_distance; 
+% plot LLA of LIDAR points
+marker_size = [];
+fcn_findEdge_plotLIDARLLA_Aneesh(LIDAR_ENU, LIDAR_intensity, in_domain, concatenate_LiDAR_XYZ_points_new, (scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+scaling = 3;
 
-% right boundary points of the driven path
-right_boundary_points = VehiclePose(:,1:3) - right_transverse_distance_of_boundary_points - longitudinal_shift_distance; 
+% Plot the vehicle pose
+format = sprintf('''.'',''Color'',[1 1 0],''MarkerSize'',10');
+LIDAR_intensity1 = [];
+fcn_findEdge_plotLIDARLLA(VehiclePose(station_1:station_2,1:3),(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
+scaling = 3;
 
-% Find the boundary points
-boundary_points_of_domain = [right_boundary_points(station_1:station_2,1:3);
-    flipud(left_boundary_points(station_1:station_2,1:3));
-    right_boundary_points(station_1,1:3)];
-
-% "inpolygon" is used to find the concatenated points within the boundary
-[in_domain,on] = inpolygon(LIDAR_ENU(:,1),LIDAR_ENU(:,2),boundary_points_of_domain(:,1),boundary_points_of_domain(:,2));
-
-concatenate_LiDAR_XYZ_points_new = LIDAR_ENU(in_domain,:);
-
-% Plotting
-
-LLA_fig_num = 13342;
-figure(LLA_fig_num);clf;
-
-gps_object = GPS(); 
-
-LLA_VehiclePose = gps_object.ENU2WGSLLA(VehiclePose(:,1:3));
-
-% Do plot, and set it up so that zoom is correct, tick marks are correct,
-% map is centered where we want, etc. To see options, do the geoplot, then
-% zoom into the location we want, and then do:
-%
-% format long % This sets the format so we can see all the digits
-% temp = gca  % This Gets Current Axis (GCA) and saves it as temp
-%
-% Next, click on "show all properties" and copy out the ZoomLevel and
-% MapCenter values into the correct locations below. This way, every time
-% we run this script, it automatically zooms and centers onto the correct
-% location.
-
-h_geoplot = geoplot(LLA_VehiclePose(:,1),LLA_VehiclePose(:,2),'-','Color',[0 0 1],'MarkerSize',10);
-hold on;
-h_parent =  get(h_geoplot,'Parent');
-set(h_parent,'ZoomLevel',20.5,'MapCenter',[40.865718697633348 -77.830965127435817]);
-geobasemap satellite
-geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
-
-
-% NOTE: transition the geoplotting to use the PlotTestTrack library 
-% Plot start and end points
-geoplot(LLA_VehiclePose(1,1),LLA_VehiclePose(1,2),'.','Color',[0 1 0],'MarkerSize',10);
-geoplot(LLA_VehiclePose(end,1),LLA_VehiclePose(end,2),'o','Color',[1 0 0],'MarkerSize',10);
-
-% Plot the LIDAR in LLA
-% Use the class to convert LLA to ENU
-concatenate_LiDAR_LLA_points = gps_object.ENU2WGSLLA(LIDAR_ENU(:,1:3));
-concatenate_LiDAR_LLA_points_new = gps_object.ENU2WGSLLA(concatenate_LiDAR_XYZ_points_new(:,1:3));
-
-% Plot the LLA of LIDAR points
-figure(LLA_fig_num);
-
-if 1==0
-    % Plot the LIDAR data simply as magenta and black points
-    geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
-    geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
-else
-
-    intensity_min = min(LIDAR_intensity);
-    intensity_max = max(LIDAR_intensity);
-    scaling = 3;
-    intensity_fraction = scaling*LIDAR_intensity(in_domain,:)/(intensity_max - intensity_min);
-
-    % Use user-defined colormap_string to map intensity to colors. For a
-    % full example, see fcn_geometry_fillColorFromNumberOrName
-    old_colormap = colormap;
-    % color_ordering = colormap('hot');
-    color_ordering = flipud(colormap('sky'));
-    colormap(old_colormap);
-    N_colors = length(color_ordering(:,1));
-
-    % Make sure the plot number is a fraction between 0 and 1
-    plot_number = min(max(0,intensity_fraction),1);
-
-    % Convert the plot number to a row
-    color_row = floor((N_colors-1)*plot_number) + 1;
-
-
-    % Plot the LIDAR data with intensity
-    for ith_color = min(color_row):max(color_row)
-        % Find the color
-        color_vector = color_ordering(ith_color,:);
-
-        % Find all the points that are in this color
-        index_in_this_color = find(color_row==ith_color);
-
-        % geoplot(concatenate_LiDAR_LLA_points(index_in_this_color,1),concatenate_LiDAR_LLA_points(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',5);
-
-        geoplot(concatenate_LiDAR_LLA_points_new(index_in_this_color,1),concatenate_LiDAR_LLA_points_new(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',5);
-    end
-end
-
-% Plot the vehicle pose on top of this
-geoplot(LLA_VehiclePose(station_1:station_2,1),LLA_VehiclePose(station_1:station_2,2),'.','Color',[1 1 0],'MarkerSize',10);
-
-%
-
-boundary_points_of_domian_LLA = gps_object.ENU2WGSLLA(boundary_points_of_domain);
-
-geoplot(boundary_points_of_domian_LLA(:,1),boundary_points_of_domian_LLA(:,2),'r.','MarkerSize',30);
+% Plot the boundary points
+format = sprintf('''r.'',''MarkerSize'',30');
+LIDAR_intensity1 = [];
+fcn_findEdge_plotLIDARLLA(boundary_points_of_domain,(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
 
 %% STEP 1: Load the vehicle pose and the find the driven path. :Vehicle pose: 
 %Find the drivable surface
@@ -404,139 +298,15 @@ reference_LLA = [];
 format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 2');
 fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(LLA_fig_num));
 
+
+%% STEP 2: Find the driven path (left and right side points)
+
+LLA_fig_num = 9;
+figure(LLA_fig_num);
+fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (LLA_fig_num))
 %% CODE ABOVE THIS LINE WORKS, CODE BELOW THIS LINE NEEDS WORK 
 %%%
 % Jiabao and Alek - start here
-
-%% STEP 2: Find the driven path (left and right side points) (Yet to be functionalized)
-% This section of the code is also available in "script_test_geometry_boundaryPointsDrivenPath"
-
-% Alek
-% Jiabao is working this right now
-
-
-% This is done in "script_test_geometry_boundaryPointsDrivenPath" - Steven 
-
-% This script can be found in "Functions" directory of "Geom Class" repo
-% That script needs to be deleted once this library is done
-
-%%% FORMERLY script_test_geometry_boundaryPointsDrivenPath
-% This script is written to find the boundary points of driven path
-%
-% 2024_07_18 - Aneesh Batchu
-% -- wrote the code originally
-
-% To-DO: 
-% Need to use "shift" (a varible name) to shift the boundary points
-
-%%%% Calculate the vehicle orientation
-
-vehicle_change_in_pose_XY = diff(VehiclePose(:,1:2));
-
-% Repeat the last value again, since diff removes one row. We want the same
-% number of vectors as the number of points, and diff removed one point.
-vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_XY(end,:)];
-
-% Convert these to unit vectors
-unit_vehicle_change_in_pose_XY = fcn_INTERNAL_calcUnitVector(vehicle_change_in_pose_XY);
-
-% Find orthogonal vetors by rotating by 90 degrees in the CCW direction
-unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
-
-% Define lane width limits. Take 40 percent of the lane width. Numbers
-% obtained by converting 12 ft (standard lane) to meters
-lane_half_width = (3.6576/2) * 0.40;  
-
-% Transverse distance of the left and right boundary points of the driven
-% path from vehicle center 
-transverse_distance_of_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
-
-shift = 5; 
-% Shift
-shift_distance = [unit_vehicle_change_in_pose_XY*shift, zeros(length(unit_vehicle_change_in_pose_XY),1)]; 
-
-% Left boundary points of the driven path
-left_boundary_points = VehiclePose(:,1:3) + transverse_distance_of_boundary_points - shift_distance; 
-
-% right boundary points of the driven path
-right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points - shift_distance; 
-
-% % Left boundary points of the driven path
-% left_boundary_points = VehiclePose(:,1:3) + transverse_distance_of_boundary_points; 
-% 
-% % Left boundary points of the driven path
-% right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points; 
-
-
-scanLineNumber_start = scanLineRange(1);
-scanLineNumber_end   = scanLineRange(2);
-
-boundaryLineNumber_start = max(scanLineNumber_start-1,1); 
-boundaryLineNumber_end   = min(scanLineNumber_end+1, Nscans);
-
-% lengths_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY(scanLineNumber_start:scanLineNumber_end,:), zeros((scanLineNumber_end-scanLineNumber_start+1),1)];
-% 
-% left_boundary_points = VehiclePose(scanLineNumber_start:scanLineNumber_end,1:3) + lengths_boundary_points;
-% right_boundary_points = VehiclePose(scanLineNumber_start:scanLineNumber_end,1:3) - lengths_boundary_points;
-
-fig_num = 1098;
-figure(fig_num);clf;
-
-hold on;
-grid on;
-axis equal
-
-plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 0],'MarkerSize',30,'LineWidth',3);
-plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[1 1 0],'MarkerSize',10,'LineWidth',3);
-
-% Show the orthogonal arrows showing vehicle motion directions. Green
-% is forward, bLue is Left
-quiver3(...
-    VehiclePose(boundaryLineNumber_start,1),VehiclePose(boundaryLineNumber_start,2),VehiclePose(boundaryLineNumber_start,3), ...
-    unit_vehicle_change_in_pose_XY(boundaryLineNumber_start,1),unit_vehicle_change_in_pose_XY(boundaryLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 0 1]);
-quiver3(...
-    VehiclePose(boundaryLineNumber_start,1),VehiclePose(boundaryLineNumber_start,2),VehiclePose(boundaryLineNumber_start,3), ...
-    unit_ortho_vehicle_vectors_XY(boundaryLineNumber_start,1),unit_ortho_vehicle_vectors_XY(boundaryLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 0 1]);
-
-plot3(left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 1 0],'MarkerSize',30,'LineWidth',3);
-plot3(right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 1],'MarkerSize',30,'LineWidth',3);
-
-
-xlabel('East position [m]');
-ylabel('North position [m]');
-zlabel('Up position [m]');
-view(3)
-hold off
-
-LIDAR_intensity = [];
-scaling = [];
-color_map = [];
-fig = figure;
-ax = axes('Parent', fig);
-format = sprintf('''.'',''Color'',[0 0 0],''MarkerSize'',30,''LineWidth'',3');
-fcn_findEdge_plotLIDARXYZ(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,:), (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
-format = sprintf('''.'',''Color'',[1 1 0],''MarkerSize'',10,''LineWidth'',3');
-fcn_findEdge_plotLIDARXYZ(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,:), (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
-% -- Alek
-
-ENU_3D_fig_num = 3;
-figure(ENU_3D_fig_num);
-
-plot3(left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 1 0],'MarkerSize',30,'LineWidth',3);
-plot3(right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 1],'MarkerSize',30,'LineWidth',3);
-
-boundary_points_driven_path = [right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1:3);
-    flipud(left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1:3));
-    right_boundary_points(boundaryLineNumber_start,1:3)];
-
-boundary_points_driven_path_LLA = gps_object.ENU2WGSLLA(boundary_points_driven_path);
-
-LLA_fig_num = 2;
-figure(LLA_fig_num);
-% Plot the LIDAR data underneath the vehicle in LLA
-figure(LLA_fig_num);
-hold off
-geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'b.','MarkerSize',30);
 
 %% STEP 3: Seperate the data into grids
 

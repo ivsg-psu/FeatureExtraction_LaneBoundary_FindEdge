@@ -139,6 +139,7 @@ if (3<=nargin)
     end
 end
 
+% Does user want to specify zoom level?
 zoomLevel = [];
 if (4<=nargin)
     temp = varargin{3};
@@ -202,7 +203,6 @@ LLA_VehiclePose = gps_object.ENU2WGSLLA(VehiclePose(:,1:3)); % convert data posi
 % location.
 if flag_do_plots
     figure(LLA_fig_num)
-    clf
 
     h_geoplot = geoplot(LLA_VehiclePose(:,1),LLA_VehiclePose(:,2),'-','Color',[0 0 1],'MarkerSize',10);
     hold on;

@@ -1,23 +1,22 @@
-function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
-%% fcn_findEdge_plotLIDARLLA      
+function fcn_findEdge_plotLIDARLLA_Aneesh(LIDAR_ENU, LIDAR_intensity, in_domain,concatenate_LiDAR_XYZ_points_new, varargin)
+%% fcn_findEdge_plotLIDARLLA_Aneesh   
 % plot the LIDAR data in LLA coordinates
 %    
 % NOTE: colormap will be used when LIDAR intensity data is available,
 % otherwise debug section will use format as the color of plot.
 % FORMAT: 
 %
-%       fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
+%       fcn_findEdge_plotLIDARLLA_Aneesh(LIDAR_ENU, LIDAR_intensity ,(scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
 %
 % INPUTS:
 %
 %       LIDAR_ENU: ENU data of the LIDAR points which will be converted to
 %       LLA coordinates.
 %
-%       (OPTIONAL INPUTS)
+%       LIDAR_intensity：The intensity of LIDAR increases with the strength
+%       of the reflection; a greater value indicates a stronger reflection.
 %
-%       (LIDAR_intensity): The intensity of the LIDAR data during mapping as a
-%       [Nx1] vector. Higher intensity value means the target surface is
-%       more reflective.
+%       (OPTIONAL INPUTS)
 %
 %       (scaling): scales the intensity of the points
 %
@@ -28,9 +27,6 @@ function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 %       (reference_LLA):the [reference latitude reference_longitude
 %       reference_altitude] of the mapping vehicle during mapping. This
 %       have to be in LLA coordinates.
-%
-%       (format): A format string, e.g. 'b-', that dictates the plot style or
-%       a color vector, e.g. [1 0 0.23], that dictates the line color.
 %
 %       (fig_num): a figure number to plot results. If set to -1, skips any
 %       input checking or debugging, no figures will be generated, and sets
@@ -45,22 +41,14 @@ function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 %   
 %   See the script:
 %   
-%   script_test_fcn_findEdge_plotLIDARLLA
+%   script_test_fcn_findEdge_plotLIDARLLA_Aneesh
 %
 %   for a full test suite
 %
-% This function was written on 2024_08_07 by Aleksandr Goncharov
-% Questions or comments? -- Contact opg5041@psu.edu or 267-304-8354
+% This function was written on 2024_08_12 by Jiabao Zhao
+% Questions or comments? -- Contact jpz5469@psu.edu
 %
 % Revision History:
-% 2024_08_06 -Aleksandr Goncharov
-% -- Functionalized code from the FindEdge Demo 
-% 2024_08_07 -Jiabao Zhao
-% -- reordered and simplified the inputs, allowing variable input arguments
-% -- minor clean-up of comments.
-% 2024_08_09 -Jiabao Zhao
-% -- Added format string as optional input. String could be marker size,
-% shape or color.
 
 %% Debugging and Input checks
 
@@ -110,34 +98,23 @@ end
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,8);
+        narginchk(4,9);
     end
 end 
 
-%Does user want to enter LIDAR_intensity?
-LIDAR_intensity = [];
-flag_simplePlot = 1;
-if (2<=nargin)
-    temp = varargin{1};
-    if ~isempty(temp)
-        LIDAR_intensity = temp;
-        flag_simplePlot = 0;
-    end
-end
-
 %Does user want to specify scaling?
 scaling=3;
-if (3<=nargin)
-    temp = varargin{2};
+if (5<=nargin)
+    temp = varargin{1};
     if ~isempty(temp)
         scaling = temp;
     end
 end
 
 %Does user want to specify color_map?
-color_map='jet';
-if (4<=nargin)
-    temp = varargin{3};
+color_map='sky';
+if (6<=nargin)
+    temp = varargin{2};
     if ~isempty(temp)
         color_map = temp;
     end
@@ -145,8 +122,8 @@ end
 
 %Does user want to specify marker_size?
 marker_size=5;
-if (5<=nargin)
-    temp = varargin{4};
+if (7<=nargin)
+    temp = varargin{3};
     if ~isempty(temp)
         marker_size = temp;
     end
@@ -154,31 +131,16 @@ end
 
 %Does user want to specify reference_LLA?
 reference_LLA = [];
-if (6<=nargin)
-    temp = varargin{5};
+if (8<=nargin)
+    temp = varargin{4};
     if ~isempty(temp)
         reference_LLA = temp;
     end
 end
 
-%Does user want to specify format?
-plot_str = 'k.';
-plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
-
-% Check to see if user passed in a string or color style?
-if 7 <= nargin
-    input = varargin{6};
-    if ~isempty(input)
-        plot_str = input;
-        if isnumeric(plot_str)  % Numbers are a color style
-            plot_type = 2;
-        end
-    end
-end
-
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (7<=nargin)
+if (0==flag_max_speed) &&  (6<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -204,14 +166,8 @@ if ~isempty(reference_LLA)
 else
     gps_object = GPS();
 end
-
 concatenate_LiDAR_LLA_points = gps_object.ENU2WGSLLA(LIDAR_ENU(:,1:3));
-
-if 0==flag_simplePlot
-    intensity_max=max(LIDAR_intensity);
-    intensity_min=min(LIDAR_intensity);
-end
-
+concatenate_LiDAR_LLA_points_new = gps_object.ENU2WGSLLA(concatenate_LiDAR_XYZ_points_new(:,1:3));
 
 
 %% Plot the results (for debugging)?
@@ -228,27 +184,15 @@ end
 
 if flag_do_plots
     figure(fig_num)
-    if 1==flag_simplePlot
-        if plot_type==1
-            if length(plot_str)>3
-                eval_string = sprintf('geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),%s)',plot_str);
-                eval(eval_string);
-            else
-                geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),plot_str);
-            end
-        elseif plot_type==2
-            geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'Color',plot_str);
-        end
-        % % Plot the LIDAR data simply as magenta and black points
-        % geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
-        % hold on
-        % geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
-
+    if 1==0
+        % Plot the LIDAR data simply as magenta and black points
+        geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
+        geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
     else
-        intensity_fraction =  scaling*(LIDAR_intensity - intensity_min)/(intensity_max - intensity_min);
+        intensity_min = min(LIDAR_intensity);
+        intensity_max = max(LIDAR_intensity);
+        intensity_fraction = scaling*LIDAR_intensity(in_domain,:)/(intensity_max - intensity_min);
 
-        % Fix intensity fraction to be between 0 and 1
-        intensity_fraction = min(max(intensity_fraction,0),1);
         % Use user-defined colormap_string to map intensity to colors. For a
         % full example, see fcn_geometry_fillColorFromNumberOrName
         old_colormap = colormap;
@@ -263,6 +207,7 @@ if flag_do_plots
         % Convert the plot number to a row
         color_row = floor((N_colors-1)*plot_number) + 1;
 
+
         % Plot the LIDAR data with intensity
         for ith_color = min(color_row):max(color_row)
             % Find the color
@@ -270,18 +215,14 @@ if flag_do_plots
 
             % Find all the points that are in this color
             index_in_this_color = find(color_row==ith_color);
-            geoplot(concatenate_LiDAR_LLA_points(index_in_this_color,1),concatenate_LiDAR_LLA_points(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',marker_size);
+
+            % geoplot(concatenate_LiDAR_LLA_points(index_in_this_color,1),concatenate_LiDAR_LLA_points(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',5);
+
+            geoplot(concatenate_LiDAR_LLA_points_new(index_in_this_color,1),concatenate_LiDAR_LLA_points_new(index_in_this_color,2), '.','Color',color_vector,'MarkerSize',marker_size);
         end
     end
-    geobasemap satellite
-    geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
-    if flag_do_debug
-        fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
-    end
-
 end
 end
-
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   ______                _   _
