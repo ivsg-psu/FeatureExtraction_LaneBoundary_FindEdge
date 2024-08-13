@@ -329,13 +329,7 @@ end
 
 % Find the drivable grids (original)
 original_drivable_grids = original_qualified_grids(qualified_grids_within_all_thresholds); 
-% 
-% % Failed grids
-% original_failed_grids = original_mapped_grids(mapped_grids_failed_vertical_and_std_thresholds); 
-% 
-% % Uncertain grids
-% original_uncertain_grids = original_mapped_grids(uncertain_grid_indices); 
-% 
+
 % Find the non-drivable grids (original)
 original_non_drivable_grids = original_qualified_grids(qualified_grids_within_all_thresholds == 0);
 
@@ -345,12 +339,6 @@ current_drivable_grid_numbers_in_mapped_grids = find(ismember(original_qualified
 % Final non drivable grid numbers of the mapped grids
 current_non_drivable_grid_numbers_in_mapped_grids = find(ismember(original_qualified_grids, original_non_drivable_grids));
 
-% % Final failed grid numbers of the mapped grids
-% current_failed_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_failed_grids));
-% 
-% % Final failed grid numbers of the mapped grids
-% current_uncertain_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_uncertain_grids));
-
 % Grid centers of drivable grids 
 gridCenters_drivable_grids = [gridCenters(original_drivable_grids,1), gridCenters(original_drivable_grids,2), ones(length(original_drivable_grids),1)]; 
 
@@ -359,16 +347,6 @@ gridCenters_non_drivable_grids = [gridCenters(original_non_drivable_grids,1), gr
 
 % Concatenate the grid centers of drivable and non-drivable grids (2D)
 concatenate_gridCenters_drivable_non_drivable_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids];
-% 
-% % Grid centers of failed grids 
-% gridCenters_failed_grids = [gridCenters(original_failed_grids,1), gridCenters(original_failed_grids,2)]; 
-% 
-% % Grid centers of failed grids 
-% gridCenters_uncertain_grids = [gridCenters(original_uncertain_grids,1), gridCenters(original_uncertain_grids,2)]; 
-
-
-% Concatenate the grid centers of drivable and non-drivable grids (2D)
-% gridCenters_mapped_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids];
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
