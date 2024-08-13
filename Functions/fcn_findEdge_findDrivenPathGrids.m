@@ -151,7 +151,7 @@ if 9<= nargin && 0==flag_max_speed
 end
 
 % Does user want to specify another fig_num?
-if 7<= nargin && 0==flag_max_speed
+if 10<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
         ENU_XY_fig_num1 = temp;
