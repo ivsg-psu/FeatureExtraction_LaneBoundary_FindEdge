@@ -424,9 +424,11 @@ fig_num = 72;
 
 %% STEP 6: Qualified and unqualified grids: grids that pass all three conditions above are qualified
 
+fig_num=27;
+
 [current_qualified_grids,current_unqualified_grids,original_qualified_grids,gridCenters_qualified_grids,gridCenters_unqualified_grids] = ...
     fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,grid_indices_with_more_than_transverse_span_threshold,...
-    grids_greater_than_zero_points,gridCenters,[],[],27);
+    grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 
 
 %% STEP 6: Plot circles corresponding to each fail condition
