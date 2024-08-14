@@ -47,6 +47,7 @@ function LLA_data = fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triple
 % 2024_08_07 - Jiabao Zhao
 % -- pull this code from geometry class and rename it
 
+%%
 flag_max_speed = 0;
 if (nargin==11 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
