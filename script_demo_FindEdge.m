@@ -424,59 +424,10 @@ fig_num = 72;
 
 %% STEP 6: Qualified and unqualified grids: grids that pass all three conditions above are qualified
 
+[current_qualified_grids,current_unqualified_grids,original_qualified_grids,gridCenters_qualified_grids,gridCenters_unqualified_grids] = ...
+    fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,grid_indices_with_more_than_transverse_span_threshold,...
+    grids_greater_than_zero_points,gridCenters,[],[],27);
 
-% Grid indices of original grids with required point density, more than one
-% scan line, and more than transverse span threshold
-grid_indices_qualified_grids = (grid_indices_with_required_point_density == 1) & (grid_indices_with_more_than_one_scan_line == 1) & (grid_indices_with_more_than_transverse_span_threshold == 1);
-
-% --------------------------Qualified grid numbers-----------------------------------
-% The grids with more than one scan line, more/equal to point density and
-% greater than minimum transverse span threshold
-original_qualified_grids = grids_greater_than_zero_points(grid_indices_qualified_grids); 
-
-% --------------------------Unqualified grid numbers-----------------------------------
-% Find grids with low point density, grids with only one LiDAR scan and
-% lesser than minimum transverse span threshold
-% The grids that are not qualified grids are clasified as unqualified grids
-original_unqualified_grids = grids_greater_than_zero_points(~grid_indices_qualified_grids); 
-
-% Current qualified grid numbers 
-current_qualified_grids = find(grid_indices_qualified_grids); 
-
-% Current unqualified grid numbers 
-current_unqualified_grids = find(~grid_indices_qualified_grids); 
-
-% Grid centers of qualified grids
-gridCenters_qualified_grids = gridCenters(original_qualified_grids,1:2); 
-
-% Grid centers of unqualified grids
-gridCenters_unqualified_grids = gridCenters(original_unqualified_grids,1:2); 
-
-
-% Plot qualified and unqualified grids
-
-fig_num = 27; 
-figure(fig_num);clf
-
-marker_size = 25;
-RGB_triplet = [0.8, 0.8, 0.8]; 
-legend_option = 1;
-legend_name = 'Unqualified grids';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_unqualified_grids = [gridCenters_unqualified_grids, zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_unqualified_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
-
-% plot grid centers
-marker_size = 25;
-RGB_triplet = [0.2, 0.2, 0.2]; 
-legend_option = 1;
-legend_name = 'Qualified grids';
-legend_position = [];
-marker_type = [];
-plot_gridCenters_qualified_grids = [gridCenters_qualified_grids, zeros(length(gridCenters_qualified_grids(:,1)),1)]; 
-[~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_qualified_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% STEP 6: Plot circles corresponding to each fail condition
 % less than required point density - Red (small circle)
