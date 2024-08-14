@@ -380,79 +380,17 @@ format1 = sprintf('''.'',''MarkerSize'',30,''Color'',[0 1 0]');
 
 %% STEP 5: Grid conditions - Point density (Do not need to run after determining point density)
 
-% Figure number of histogram
+
 fig_num = 52; 
-figure(fig_num); clf; 
-% Add labels and title 
-hold on
-grid on
-xlabel('Points per grid');
-ylabel('Frequency');
-title('Statistic 1: Determining suitable point density');
 
 
-% edges = (floor(min(total_points_in_each_grid_with_points_greater_than_zero)/10)*10):10:(ceil(max(total_points_in_each_grid_with_points_greater_than_zero)/10)*10); % Define the bin edges
+[point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,[],[],fig_num);
 
-% Create the histogram
-% actual_driving_surface_grids_hist = histogram(total_points_in_each_grid_in_the_driven_path,edges,'Visible','on'); 
-
-% total_grids_hist = histogram(total_points_in_each_grid_with_points_greater_than_zero,edges,'Visible','on'); 
-total_grids_greater_than_zero_hist = histogram(total_points_in_each_grid_with_points_greater_than_zero,20,'Visible','on'); 
-actual_driven_path_grids_hist = histogram(total_points_in_each_grid_in_the_driven_path,10,'Visible','on'); 
-
-% Extract the counts for both histograms
-counts1 = total_grids_greater_than_zero_hist.Values;
-[~,index_max_counts2] = max(counts1);
-counts2 = actual_driven_path_grids_hist.Values;
-
-binEdges = total_grids_greater_than_zero_hist.BinEdges;
-
-% Calculate the overlapping counts
-% % overlapCounts = min(counts2, counts1);
-
-% Find a ratio
- % point_density = sum(binEdges(index_max_counts2:(index_max_counts2+1)))/2; 
-
-% point_density = floor(mean(total_points_in_each_grid_in_the_driven_path) - 7.5*(std(total_points_in_each_grid_in_the_driven_path)));
-x_location = floor(mean(total_points_in_each_grid_in_the_driven_path) - 1.5*(std(total_points_in_each_grid_in_the_driven_path)));
-
-% point_density = floor(mean(total_points_in_each_grid_in_the_driven_path));
-
-
-% Minimum number of points required 
-point_density = floor(20*((grid_size^2)/(0.3^2))); 
-disp('Chosen point density')
-disp(point_density)
-% mean(total_points_in_each_grid_in_the_driven_path)/mean(total_points_in_each_grid_with_points_greater_than_zero);
-
-plot(point_density,0, 'k.', 'MarkerSize',20)
-current_text = sprintf('point density = %.2d',point_density);
-text(x_location, 200,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
 
 %% STEP 5: Grid conditions - Determining number of scan lines in each grid greater than zero points Point density 
 
-% % This was also done in STEP 5, however, it was done using a for loop. Need to
-% % do it without using a for loop.
-% 
-% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
-% for ith_grid = 1:length(grids_greater_than_zero_points)
-%      %Get all points in this domain and plot them
-%     rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
-% 
-%      %Find number of LiDAR scan lines in each grid
-%     scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
-% 
-%     % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORK     S WITHOUT A FOR LOOP
-%     total_scan_lines_in_each_grid_with_more_than_zero_points = [total_scan_lines_in_each_grid_with_more_than_zero_points; scan_lines_ith_grid]; %#ok<AGROW> % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORKS WITHOUT A FOR LOOP
-% end
 
-% fcn_findEdge_calcNumberOfGridScanLines
-
-% Initialize the array to store scan line counts for each grid index
-scanLines_count_per_grid = accumarray(gridIndices, LIDAR_scanLines(:,1), [], @(x) length(unique(x)));
-
-% Extract scan line counts for grids greater than zero points
-total_scan_lines_in_each_grid_with_more_than_zero_points = scanLines_count_per_grid(grids_greater_than_zero_points);
+[total_scan_lines_in_each_grid_with_more_than_zero_points] = fcn_findEdge_calcNumberOfGridScanLines(gridIndices,LIDAR_scanLines,grids_greater_than_zero_points);
 
 
 %% STEP 5: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring 
@@ -687,197 +625,25 @@ plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenter
 
 %% STEP 8: Qualified grid conditions - Standard deviation in Z (Do not need to run after determining a std_threshold)
 
-input_points =  LiDAR_allPoints(:,1:3);
-
-% The indices of the mapped grids are extracted and concatenated 
-original_mapped_gridIndices_cell = gridIndices_cell_array(original_qualified_grids); 
-
-% Total number of mapped grids
-total_mapped_grids = length(original_mapped_gridIndices_cell); 
-
-% Standard deviations in orthogonal distances of points in the grid to
-% plane
-% standard_deviation_in_plane_orthogonals = zeros(total_mapped_grids,1); 
-standard_deviation_in_z = zeros(total_mapped_grids,1); 
-
-for ith_mapped_grid = 1:total_mapped_grids
-    % points = input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:);
-    % points = points(~isnan(points(:,1)),:);
-    [~, standard_deviation_in_z(ith_mapped_grid,:), ~, ~, ~, ~] =...
-    fcn_findEdge_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
-    % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
-    % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
-end
-
-fig_num = 80; 
-figure(fig_num);clf;
-
-hold on
-axis on
-grid on 
-xlabel('X[m]')
-ylabel('Y[m]')
-title('Grid centers mapped grids in ENU')
-
-% % plot(gridCenters_required_point_density(:,1), gridCenters_required_point_density(:,2), '.','MarkerSize',40,'Color',[0.2 0.2 0.2]);
-% plot(gridCenters_drivable_grids(:,1), gridCenters_drivable_grids(:,2), '.','MarkerSize',50,'Color',[0 1 0]);
-% plot(gridCenters_non_drivable_grids(:,1), gridCenters_non_drivable_grids(:,2), '.','MarkerSize',50,'Color',[1 0 0]);
-
-plot(gridCenters_qualified_grids(:,1), gridCenters_qualified_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
-
-% plot the grids in the driven path
-plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',2) % points strictly inside
 
 
-for ith_text = 1:length(current_qualified_grids(:,1))
-    current_text = sprintf('%.0d',(ith_text));
-     % Place the text on the grid center
-    text(gridCenters_qualified_grids(ith_text,1), gridCenters_qualified_grids(ith_text,2),current_text,'Color',[1 1 1],'HorizontalAlignment','center','FontSize', 6, 'FontWeight','bold');
-end
+fig_1=81;
+fig_2=82;
+fig_3=83;
 
-
-
-% Plot grid lines and standard deviation
-fig_num = 81;
-figure(fig_num)
-
-hold on
-grid on
-xlabel('X[m]')
-ylabel('Y[m]')
-title('Standard deviation of Z of mapped grids')
-
-% Pre-allocation: To find the total number of points in each grid
-total_points_in_mapped_grids = zeros(length(original_qualified_grids),1);
-
-% Pre-allocation: these are the coordinates of the corners of each grid
-% line. Total no of lines required for each grid including NaNs is 11. Therefore, 11 is multiplied
-gridlines_mapped_grids = zeros(11*length(original_qualified_grids),2); % length(gridlines) = 11
-
-for ith_domain = 1:length(original_qualified_grids)
-    % Get current color
-    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
-
-    current_color = [0.5 0.5 0.5];
-    % Plot current AABB
-    current_AABB = grid_AABBs(original_qualified_grids(ith_domain),1:4);
-
-    % Nudge the current AABB inward
-    current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
-
-    % Calculate the gridlines
-    gridlines = [...
-        current_AABB(1,1) current_AABB(1,3); ...
-        current_AABB(1,1) current_AABB(1,4); ...
-        nan nan;
-        current_AABB(1,2) current_AABB(1,3); ...
-        current_AABB(1,2) current_AABB(1,4); ...
-        nan nan;
-        current_AABB(1,1) current_AABB(1,3); ...
-        current_AABB(1,2) current_AABB(1,3); ...
-        nan nan;
-        current_AABB(1,1) current_AABB(1,4); ...
-        current_AABB(1,2) current_AABB(1,4); ...
-        ];
-
-    % Get all points in this domain and plot them
-    rows_in_domain = gridIndices==original_qualified_grids(ith_domain);
-    points_in_domain = input_points(rows_in_domain,:);
-
-    total_points_in_mapped_grids(ith_domain) = length(points_in_domain);
-
-    length_gridlines = length(gridlines);
-    % % Plot the mapped points green
-    % p1 = plot(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
-
-    % Plot the result
-    % p1 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
-    plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
-    % hold on
-    % plot(points_in_domain(:,1),points_in_domain(:,2),'.','Color',[0.2,0.2,0.2],'MarkerSize',10)
-    gridlines_mapped_grids(1+(ith_domain-1)*length_gridlines:ith_domain*length_gridlines,:) = gridlines;
-
-end
-
-% plot the grids in the driven path
-plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',30,'Color',[0 1 0], 'LineWidth',2) % points strictly inside
-
-% [0.4660 0.6740 0.1880] - Green (Not so bright)
-standard_deviation_in_z_round = round(standard_deviation_in_z,3);
-% mapped_grid_numbers = 1:length(gridCenters_required_point_density(:,1));
-for ith_text = 1:length(gridCenters_qualified_grids(:,1))
-    current_text = sprintf('%.3f',standard_deviation_in_z_round(ith_text));
-    % Place the text on the grid center
-    text(gridCenters_qualified_grids(ith_text,1), gridCenters_qualified_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 10, 'FontWeight','bold','FontSmoothing','on');
-end
-
-
-% Find driven path indices in current mapped grids
-driven_path_grid_indices_in_current_mapped_grids = ismember(current_qualified_grids,current_grid_numbers_of_driven_path);
-
-% Standard deviation in Z of driven path grids
-std_in_z_driven_path = standard_deviation_in_z(driven_path_grid_indices_in_current_mapped_grids);
-
-% Standard deviation in Z of other mapped grids
-std_in_z_other_mapped_grids = standard_deviation_in_z(~driven_path_grid_indices_in_current_mapped_grids); 
-
-
-% Plot grid lines and standard deviation
-fig_num = 82;
-figure(fig_num);clf;
-
-hold on
-grid on
-xlabel('Qualified grid centers')
-ylabel('Standard deviation in Z')
-title('Qualified grid centers vs standard deviation in Z ')
-
-plot(current_qualified_grids, standard_deviation_in_z,'.','MarkerSize',30,'Color',[0.2 0.2 0.2])
-plot(current_grid_numbers_of_driven_path, std_in_z_driven_path,'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',1.5)
-plot(current_qualified_grids(~driven_path_grid_indices_in_current_mapped_grids), std_in_z_other_mapped_grids,'.','MarkerSize',10,'Color',[1 0 0])
-
-
-% Find mean std in z of driven path
-mean_std_in_z_driven_path = mean(std_in_z_driven_path); 
-
-% Find mean std in z of not driven path
-mean_std_in_z_not_driven_path = mean(std_in_z_other_mapped_grids(~isnan(std_in_z_other_mapped_grids))); 
-
-% Find max std in z of not driven path
-max_std_in_z_not_driven_path = max(std_in_z_other_mapped_grids); 
-
-% Std Threshold
-% Instead of choosing 6, try to find a ratio
-% ratio: mean_std_in_z_driven_path/mean_std_of_all_grids
-% std_threshold = mean_std_in_z_driven_path*6;
-% 
-% disp(std_threshold)
+[~,original_mapped_gridIndices_cell,total_mapped_grids,total_points_in_mapped_grids,standard_deviation_in_z,gridlines_mapped_grids,...
+    driven_path_grid_indices_in_current_mapped_grids,std_in_z_driven_path,std_in_z_other_mapped_grids,mean_std_in_z_driven_path,mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path] = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
+    current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,fig_1,fig_2,fig_3);
 
 %% STEP 9: Histogram of standard deviation - (Do not need to run after determining a std_threshold)
 
-figure(123);clf;
-hold on
-grid on
-xlabel('Standard deviation in z error after plane fit')
-ylabel('Frequency')
-title('Statistic 3: Determining suitable standard deviation in z')
-% histogram(standard_deviation_in_z)
-histogram(standard_deviation_in_z,100)
-histogram(std_in_z_driven_path,5)
-
-% std_threshold = mean_std_in_z_driven_path + 6*std(std_in_z_driven_path); 
-x_coord = mean_std_in_z_driven_path + 100*std(std_in_z_driven_path); 
+ 
 std_threshold = 0.1;%0.08; 
-% plot(std_threshold,max(std_in_z_driven_path), 'k.', 'MarkerSize',20)
-disp('mean of std_threshold of driven path')
-disp(mean_std_in_z_driven_path)
-disp('chosen std_threshold')
-disp(std_threshold)
-% std_threshold = 0.05; 
-plot(std_threshold,0, 'k.', 'MarkerSize',18)
-current_text = sprintf('std threshold = %.4f',std_threshold);
-text(x_coord, 80,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
+fig_num=123;
+N_bins_stdz=100;
+N_bins_std_drivenpath=5;
 
+fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num))
 %% STEP 8: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
 
 [angle_btw_unit_normals_and_vertical, mean_angle_btw_unit_normals_and_vertical_driven_path,...
