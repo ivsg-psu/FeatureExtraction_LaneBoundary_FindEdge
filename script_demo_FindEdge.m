@@ -1021,16 +1021,18 @@ geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_fai
 % gridCenters_required_point_density, figure num
 % OUTPUTS - X, Y, Z 
 
-fig_num_mapped_unmapped = 767787; 
+% prepGridCentersForBoundaryDetection
 
-XYZ_matrix_mapped_grids = [gridCenters_qualified_grids(:,1:2) ones(length(gridCenters_qualified_grids(:,1)),1)]; 
+fig_num_qualified_unqualified = 767787; 
 
-XYZ_matrix_unmapped_grids = [gridCenters_unqualified_grids(:,1:2) zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
+XYZ_matrix_qualified_grids = [gridCenters_qualified_grids(:,1:2) ones(length(gridCenters_qualified_grids(:,1)),1)]; 
 
-XYZ_matrix_mapped_unmapped_gridcenters = [XYZ_matrix_mapped_grids; XYZ_matrix_unmapped_grids]; 
+XYZ_matrix_unqualified_grids = [gridCenters_unqualified_grids(:,1:2) zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
+
+XYZ_matrix_qualified_unqualified_gridcenters = [XYZ_matrix_qualified_grids; XYZ_matrix_unqualified_grids]; 
 
 % Find the unique elements
-XYZ_matrix = unique(XYZ_matrix_mapped_unmapped_gridcenters,'rows'); 
+XYZ_matrix = unique(XYZ_matrix_qualified_unqualified_gridcenters,'rows'); 
 
 % Reverse the matrix
 XYZ_matrix_reversed = flipud(XYZ_matrix);
@@ -1079,9 +1081,9 @@ Z = reshape(Z, size(X));
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
-figure(fig_num_mapped_unmapped);
+figure(fig_num_qualified_unqualified);
 clf;
-boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_mapped_unmapped);
+boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -1275,16 +1277,16 @@ plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenter
 % gridCenters_required_point_density, figure num
 % OUTPUTS - X, Y, Z 
 
-fig_num_mapped_unmapped = 767787; 
+fig_num_qualified_unqualified = 767787; 
 
-XYZ_matrix_mapped_grids = [gridCenters_qualified_grids(:,1:2) ones(length(gridCenters_qualified_grids(:,1)),1)]; 
+XYZ_matrix_qualified_grids = [gridCenters_qualified_grids(:,1:2) ones(length(gridCenters_qualified_grids(:,1)),1)]; 
 
-XYZ_matrix_unmapped_grids = [gridCenters_unqualified_grids(:,1:2) zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
+XYZ_matrix_unqualified_grids = [gridCenters_unqualified_grids(:,1:2) zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
 
-XYZ_matrix_mapped_unmapped_gridcenters = [XYZ_matrix_mapped_grids; XYZ_matrix_unmapped_grids]; 
+XYZ_matrix_qualified_unqualified_gridcenters = [XYZ_matrix_qualified_grids; XYZ_matrix_unqualified_grids]; 
 
 % Find the unique elements
-XYZ_matrix = unique(XYZ_matrix_mapped_unmapped_gridcenters,'rows'); 
+XYZ_matrix = unique(XYZ_matrix_qualified_unqualified_gridcenters,'rows'); 
 
 % Reverse the matrix
 XYZ_matrix_reversed = flipud(XYZ_matrix);
@@ -1333,9 +1335,9 @@ Z = reshape(Z, size(X));
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
-figure(fig_num_mapped_unmapped);
+figure(fig_num_qualified_unqualified);
 clf;
-boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_mapped_unmapped);
+boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -1772,16 +1774,16 @@ plot_boundary_points_left = [boundary_points_left, zeros(length(boundary_points_
 % gridCenters_required_point_density, figure num
 % OUTPUTS - X, Y, Z 
 
-fig_num_mapped_unmapped = 767787; 
+fig_num_qualified_unqualified = 767787; 
 
-XYZ_matrix_mapped_grids = [gridCenters_updated_original_mapped_grids(:,1:2) ones(length(gridCenters_updated_original_mapped_grids(:,1)),1)]; 
+XYZ_matrix_qualified_grids = [gridCenters_updated_original_mapped_grids(:,1:2) ones(length(gridCenters_updated_original_mapped_grids(:,1)),1)]; 
 
-XYZ_matrix_unmapped_grids = [gridCenters_updated_original_unmapped_grids(:,1:2) zeros(length(gridCenters_updated_original_unmapped_grids(:,1)),1)]; 
+XYZ_matrix_unqualified_grids = [gridCenters_updated_original_unmapped_grids(:,1:2) zeros(length(gridCenters_updated_original_unmapped_grids(:,1)),1)]; 
 
-XYZ_matrix_mapped_unmapped_gridcenters = [XYZ_matrix_mapped_grids; XYZ_matrix_unmapped_grids]; 
+XYZ_matrix_qualified_unqualified_gridcenters = [XYZ_matrix_qualified_grids; XYZ_matrix_unqualified_grids]; 
 
 % Find the unique elements
-XYZ_matrix = unique(XYZ_matrix_mapped_unmapped_gridcenters,'rows'); 
+XYZ_matrix = unique(XYZ_matrix_qualified_unqualified_gridcenters,'rows'); 
 
 % Reverse the matrix
 XYZ_matrix_reversed = flipud(XYZ_matrix);
@@ -1830,9 +1832,9 @@ Z = reshape(Z, size(X));
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
-figure(fig_num_mapped_unmapped);
+figure(fig_num_qualified_unqualified);
 clf;
-boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_mapped_unmapped);
+boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
