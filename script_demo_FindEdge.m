@@ -1023,56 +1023,11 @@ geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_fai
 
 % prepGridCentersForBoundaryDetection
 
+
 fig_num_qualified_unqualified = 767787; 
 
-XYZ_matrix_qualified_grids = [gridCenters_qualified_grids(:,1:2) ones(length(gridCenters_qualified_grids(:,1)),1)]; 
-
-XYZ_matrix_unqualified_grids = [gridCenters_unqualified_grids(:,1:2) zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
-
-XYZ_matrix_qualified_unqualified_gridcenters = [XYZ_matrix_qualified_grids; XYZ_matrix_unqualified_grids]; 
-
-% Find the unique elements
-XYZ_matrix = unique(XYZ_matrix_qualified_unqualified_gridcenters,'rows'); 
-
-% Reverse the matrix
-XYZ_matrix_reversed = flipud(XYZ_matrix);
-
-% Find unique rows based on the first two columns (X and Y)
-[~,XYZ_matrix_indices] = unique(XYZ_matrix_reversed(:,1:2),'rows'); 
-
-% Create the new matrix with only unique rows, keeping the last occurrence of each duplicate
-XYZ_matrix_reversed = XYZ_matrix_reversed(XYZ_matrix_indices,:);  
-
-% Reverse the matrix back to the original order
-XYZ_matrix = flipud(XYZ_matrix_reversed);
-
-XYZ_matrix = round(XYZ_matrix,4);
-
-x_range = unique(XYZ_matrix(:,1))'; 
-y_range = unique(XYZ_matrix(:,2))';
-
-
-% Generate X and Y using meshgrid
-[X, Y] = meshgrid(x_range, y_range);
-
-% Initialize Z matrix
-Z = NaN(size(X));
-
-% Combine X and Y from meshgrid into pairs
-XY_pairs = [X(:) Y(:)];
-
-XY_pairs = round(XY_pairs,4); 
-
-% Find the indices of XY pairs in the original XYZ matrix
-[~, idx] = ismember(XY_pairs, XYZ_matrix(:, 1:2), 'rows');
-
-% C = setdiff(XY_pairs, XY_pairs(idx==0,:), 'rows');
-
-% Fill Z matrix with corresponding Z values
-Z(idx~=0) = XYZ_matrix(idx(idx~=0), 3);
-
-% Reshape Z to match the dimensions of X and Y
-Z = reshape(Z, size(X));
+[X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+    (gridCenters_qualified_grids, gridCenters_unqualified_grids);
 
 %%%%%%%%%%%%%%---------------------------------------------------------------------------
 % x_limits = [min(x_range) max(x_range)];  
@@ -1099,58 +1054,8 @@ boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_siz
 
 fig_num_drivable_non_drivable = 98898;
 
-XYZ_matrix_drivable_grids = [gridCenters_drivable_grids(:,1:2) ones(length(gridCenters_drivable_grids(:,1)),1)]; 
-XYZ_matrix_uncertain_grids = [gridCenters_uncertain_grids(:,1:2) ones(length(gridCenters_uncertain_grids(:,1)),1)];
-
-XYZ_matrix_failed_grids = [gridCenters_failed_grids(:,1:2) zeros(length(gridCenters_failed_grids(:,1)),1)]; 
-
-XYZ_matrix = [XYZ_matrix_drivable_grids; XYZ_matrix_uncertain_grids; XYZ_matrix_failed_grids]; 
-
-% % XYZ_matrix = [gridCenters_mapped_grids(:,1:2) gridCenters_mapped_grids(:,4)];
-% XYZ_matrix = concatenate_gridCenters_drivable_non_drivable_grids;
-
-XYZ_matrix = unique(XYZ_matrix,'rows'); 
-
-% Reverse the matrix
-XYZ_matrix_reversed = flipud(XYZ_matrix);
-
-% Find unique rows based on the first two columns (X and Y)
-[~,XYZ_matrix_indices] = unique(XYZ_matrix_reversed(:,1:2),'rows'); 
-
-% Create the new matrix with only unique rows, keeping the last occurrence of each duplicate
-XYZ_matrix_reversed = XYZ_matrix_reversed(XYZ_matrix_indices,:);  
-
-% Reverse the matrix back to the original order
-XYZ_matrix = flipud(XYZ_matrix_reversed);
-
-XYZ_matrix = round(XYZ_matrix,4); 
-% Given x_range and y_range
-% x_range = min(XYZ_matrix(:,1)):grid_size:max(XYZ_matrix(:,1)); % min_x:gridSize:max_x 
-% y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:max_y 
-
-x_range = unique(XYZ_matrix(:,1))'; 
-y_range = unique(XYZ_matrix(:,2))';
-% Generate X and Y using meshgrid
-[X, Y] = meshgrid(x_range, y_range);
-
-% Initialize Z matrix
-Z = NaN(size(X));
-
-% Combine X and Y from meshgrid into pairs
-XY_pairs = [X(:) Y(:)];
-
-XY_pairs = round(XY_pairs,4); 
-
-% Find the indices of XY pairs in the original XYZ matrix
-[~, idx] = ismember(XY_pairs, XYZ_matrix(:, 1:2), 'rows');
-
-% C = setdiff(XY_pairs, XY_pairs(idx==0,:), 'rows');
-
-% Fill Z matrix with corresponding Z values
-Z(idx~=0) = XYZ_matrix(idx(idx~=0), 3);
-
-% Reshape Z to match the dimensions of X and Y
-Z = reshape(Z, size(X));
+[X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+    (gridCenters_drivable_grids, gridCenters_uncertain_grids);
 
 % x_limits = [min(x_range) max(x_range)];  
 % y_limits = [min(y_range) max(y_range)]; 
@@ -1279,54 +1184,8 @@ plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenter
 
 fig_num_qualified_unqualified = 767787; 
 
-XYZ_matrix_qualified_grids = [gridCenters_qualified_grids(:,1:2) ones(length(gridCenters_qualified_grids(:,1)),1)]; 
-
-XYZ_matrix_unqualified_grids = [gridCenters_unqualified_grids(:,1:2) zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
-
-XYZ_matrix_qualified_unqualified_gridcenters = [XYZ_matrix_qualified_grids; XYZ_matrix_unqualified_grids]; 
-
-% Find the unique elements
-XYZ_matrix = unique(XYZ_matrix_qualified_unqualified_gridcenters,'rows'); 
-
-% Reverse the matrix
-XYZ_matrix_reversed = flipud(XYZ_matrix);
-
-% Find unique rows based on the first two columns (X and Y)
-[~,XYZ_matrix_indices] = unique(XYZ_matrix_reversed(:,1:2),'rows'); 
-
-% Create the new matrix with only unique rows, keeping the last occurrence of each duplicate
-XYZ_matrix_reversed = XYZ_matrix_reversed(XYZ_matrix_indices,:);  
-
-% Reverse the matrix back to the original order
-XYZ_matrix = flipud(XYZ_matrix_reversed);
-
-XYZ_matrix = round(XYZ_matrix,4);
-
-x_range = unique(XYZ_matrix(:,1))'; 
-y_range = unique(XYZ_matrix(:,2))';
-
-
-% Generate X and Y using meshgrid
-[X, Y] = meshgrid(x_range, y_range);
-
-% Initialize Z matrix
-Z = NaN(size(X));
-
-% Combine X and Y from meshgrid into pairs
-XY_pairs = [X(:) Y(:)];
-
-XY_pairs = round(XY_pairs,4); 
-
-% Find the indices of XY pairs in the original XYZ matrix
-[~, idx] = ismember(XY_pairs, XYZ_matrix(:, 1:2), 'rows');
-
-% C = setdiff(XY_pairs, XY_pairs(idx==0,:), 'rows');
-
-% Fill Z matrix with corresponding Z values
-Z(idx~=0) = XYZ_matrix(idx(idx~=0), 3);
-
-% Reshape Z to match the dimensions of X and Y
-Z = reshape(Z, size(X));
+[X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+    (gridCenters_qualified_grids, gridCenters_unqualified_grids);
 
 %%%%%%%%%%%%%%---------------------------------------------------------------------------
 % x_limits = [min(x_range) max(x_range)];  
