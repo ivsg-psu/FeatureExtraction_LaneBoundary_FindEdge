@@ -10,6 +10,14 @@
 %       2024_08_12 - Aleksandr Goncharov
 %       -- Wrote the script for the function
 
+%% TO-do
+
+% 2024_08_14 - Aneesh Batchu
+% -- Write assertions
+% -- Don't use a1 and a2 as the output. Specify the variable clearly
+
+
+
 %% TEST 1: Simple Case - Default Values
 
 Test_Vehicle_Pose = [(-100:.1:100);(-100:.1:100)].';

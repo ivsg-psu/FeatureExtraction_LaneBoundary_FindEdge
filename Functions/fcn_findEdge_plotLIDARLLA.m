@@ -52,7 +52,9 @@ function fcn_findEdge_plotLIDARLLA(LIDAR_ENU,varargin)
 % This function was written on 2024_08_07 by Aleksandr Goncharov
 % Questions or comments? -- Contact opg5041@psu.edu or 267-304-8354
 %
-% Revision History:
+% Revision history:
+% 2024_07_17 - S Brennan
+% -- wrote the code originally
 % 2024_08_06 -Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
 % 2024_08_07 -Jiabao Zhao

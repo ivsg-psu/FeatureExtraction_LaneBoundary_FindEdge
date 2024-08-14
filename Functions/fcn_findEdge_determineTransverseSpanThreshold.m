@@ -50,8 +50,11 @@ function  [transverse_span_threshold,transverse_span_each_grid]= fcn_findEdge_de
 %
 % This function was written by Jiabao Zhao on 2024_08_14
 %
-%%% REVISION HISTORY:
-% 
+% Revision history:
+% 2024_07_28 - Aneesh Batchu
+% -- wrote the code originally
+% 2024_08_14 - Jiabao Zhao
+% -- Functionalized this code
 
 %% Debugging and Input checks
 

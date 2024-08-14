@@ -47,8 +47,12 @@ function [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLe
 %
 % This function was written by Jiabao Zhao on 2024_08_14
 %
-%%% REVISION HISTORY:
-%
+% Revision history
+% 2024_08_31 - Aneesh Batchu
+% -- wrote the code originally 
+% 2024_08_14 - Jiabao Zhao
+% -- Functionalized this code
+
 
 %% Debugging and Input checks
 

@@ -38,6 +38,11 @@ function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathLeftRightSid
 %
 % This function was written on 2024_08_13 by Jiabao Zhao
 
+% 2024_07_18 - Aneesh Batchu
+% -- wrote the code originally
+% 2024_08_13 - Jiabao Zhao
+% -- Functionalized this code
+
 %% Debugging and Input checks
 
 % Check if flag_max_speed set. This occurs if the fig_num variable input
@@ -110,19 +115,8 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% This is done in "script_test_geometry_boundaryPointsDrivenPath" - Steven 
-
-% This script can be found in "Functions" directory of "Geom Class" repo
-% That script needs to be deleted once this library is done
-
 %%% FORMERLY script_test_geometry_boundaryPointsDrivenPath
 % This script is written to find the boundary points of driven path
-%
-% 2024_07_18 - Aneesh Batchu
-% -- wrote the code originally
-
-% To-DO: 
-% Need to use "shift" (a varible name) to shift the boundary points
 
 %%%% Calculate the vehicle orientation
 vehicle_change_in_pose_XY = diff(VehiclePose(:,1:2));

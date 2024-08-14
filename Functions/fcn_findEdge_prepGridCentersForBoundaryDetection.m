@@ -43,8 +43,12 @@ function [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
 % This function was written on 2024_08_14 by Jiabao Zhao
 % Questions or comments? jpz5469@psu.edu
 %
-%%% Revision history
-%
+% Revision history
+% 2024_06_20 - Aneesh Batchu
+% -- Wrote the code originally
+% 2024_08-14 - Jiabao Zhao
+% -- Functionalized this code
+
 
 %% flag_check_inputs
 

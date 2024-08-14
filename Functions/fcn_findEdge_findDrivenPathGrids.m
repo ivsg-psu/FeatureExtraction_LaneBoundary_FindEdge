@@ -49,8 +49,13 @@ function [gridCenters_driven_path, current_grid_numbers_of_driven_path, total_po
 %
 % This function was written on 2024_08_13 by Jiabao Zhao
 % Questions or comments? jpz5469@psu.edu
-%
-%%% Revision history
+
+
+% Revision History
+% 2024_07_15 - Aneesh Batchu
+% -- Wrote the code originally
+% 2024_08_13 - Jiabao Zhao
+% -- Functionalized this code
 
 %% Debugging and Input checks
 

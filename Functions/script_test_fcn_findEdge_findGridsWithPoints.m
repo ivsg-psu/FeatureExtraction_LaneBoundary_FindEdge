@@ -8,6 +8,9 @@
 % 2024_08_07 - Jiabao Zhao
 % -- pull this code from geometry class and rename it
 
+% To-do 
+% 2024_08_14 - Aneesh Batchu
+% -- write assertions (add more examples)
 
 %% Test 1 
 % figure number
@@ -36,3 +39,6 @@ point_density = 60;
  grids_with_zero_points,grids_greater_than_zero_points,...
  gridCenters_zero_point_density, gridCenters_greater_than_zero_point_density]...
  = fcn_findEdge_findGridsWithPoints(input_points,grid_size,grid_boundaries,fig_num_LLA);
+
+
+

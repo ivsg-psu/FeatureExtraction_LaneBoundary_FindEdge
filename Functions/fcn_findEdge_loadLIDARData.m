@@ -52,9 +52,12 @@ function [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData(
 % Questions or comments? jpz5469@psu.edu
 
 % Revision history
+% 2024_07_17 - S Brennan
+% -- wrote the code
 % 2024_08_05 - Sean Brennan
 % -- Created function by copying out of load script in Geometry library
-
+% 2024_08_05 - Jiabao Zhao
+% -- Functionalized this code
 
 %% Debugging and Input checks
 

@@ -40,6 +40,8 @@ function [point_density] = fcn_findEdge_determineGridPointDensity(total_points_i
 % This function was written by Aneesh Batchu
 %
 % REVISION HISTORY:
+% 2024_07_25 - Aneesh Batchu
+% -- wrote the code originally
 % 2024_08_13 - Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
 

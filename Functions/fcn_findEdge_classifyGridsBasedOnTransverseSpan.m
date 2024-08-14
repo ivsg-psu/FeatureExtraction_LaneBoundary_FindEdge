@@ -43,9 +43,11 @@ function [grid_indices_with_more_than_transverse_span_threshold, gridCenters_wit
 %
 %   for a full test suite
 %
-% This function was written by Aneesh Batchu
+% This code was functionalized by Aleksandr Goncharov on 2024_08_13
 %
-% REVISION HISTORY:
+% Revision history: 
+% 2024_07_29 - Aneesh Batchu
+% -- wrote the code originally
 % 2024_08_13 - Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
 

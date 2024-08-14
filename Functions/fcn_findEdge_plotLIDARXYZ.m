@@ -42,7 +42,9 @@ function fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, varargin)
 % This function was written on 2024_08_06 by Aleksandr Goncharov
 % Questions or comments? opg5041@psu.edu -  267-304-8354
 %
-% Revision History
+% Revision history:
+% 2024_07_17 - S. Brennan
+% -- wrote the code originally
 % 2024_08_06 - Aleksandr Goncharov
 % -- Created the function by taking parts of the code from the
 % script_demo_FindEdge and functionalizing it.

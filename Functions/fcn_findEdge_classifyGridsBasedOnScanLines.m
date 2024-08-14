@@ -39,9 +39,11 @@ function [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_l
 %
 %   for a full test suite
 %
-% This function was written by Aneesh Batchu
+% This code was functionlized by Aleksandr Goncharov on 2024_08_13.  
 %
-% REVISION HISTORY:
+% Revision history
+% 2024_07_20 - Aneesh Batchu
+% -- wrote the code originally
 % 2024_08_13 - Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
 

@@ -43,9 +43,11 @@ function [grid_indices_with_required_point_density, gridCenters_low_point_densit
 %
 %   for a full test suite
 %
-% This function was written by Aneesh Batchu
+% This code was functionalized by Aleksandr Goncharov on 2024_08_13
 %
-% REVISION HISTORY:
+% Revision history
+% 2024_07_15 - Aneesh Batchu
+% -- Wrote the code originally 
 % 2024_08_13 - Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
 

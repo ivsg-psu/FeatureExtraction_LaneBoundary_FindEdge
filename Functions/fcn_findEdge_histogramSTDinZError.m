@@ -30,9 +30,11 @@ function fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,s
 %
 %   for a full test suite
 %
-% This function was written by Aneesh Batchu
+% This code was functionalized by Aleksandr Goncharov on 2024_08_13 
 %
-% REVISION HISTORY:
+% Revision history: 
+% 2024_07_20 - Aneesh Batchu
+% -- Wrote the code originally
 % 2024_08_13 - Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
 

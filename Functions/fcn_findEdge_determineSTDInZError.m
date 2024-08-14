@@ -63,9 +63,11 @@ function [input_points,original_mapped_gridIndices_cell,total_mapped_grids,total
 %
 %   for a full test suite
 %
-% This function was written by Aneesh Batchu
+% This code was functionalized by Aleksandr Goncharov on 2024_08_13 
 %
-% REVISION HISTORY:
+% Revision history: 
+% 2024_07_15 - Aneesh Batchu
+% -- Wrote the code originally
 % 2024_08_13 - Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
 
