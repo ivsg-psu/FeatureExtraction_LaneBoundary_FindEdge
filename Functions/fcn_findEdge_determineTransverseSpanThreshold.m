@@ -145,38 +145,7 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Plot the results (for debugging)?
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____       _                 
-%  |  __ \     | |                
-%  | |  | | ___| |__  _   _  __ _ 
-%  | |  | |/ _ \ '_ \| | | |/ _` |
-%  | |__| |  __/ |_) | |_| | (_| |
-%  |_____/ \___|_.__/ \__,_|\__, |
-%                            __/ |
-%                           |___/ 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if flag_do_plots
-figure(fig_num); 
-
-hold on
-grid on
-xlabel('X[m]')
-ylabel('Y[m]')
-title('Gridlines and points of the grids greater than zero point density')
-
-
-% allocation: these are the coordinates of the corners of each grid
-% line. Total no of lines required for each grid including NaNs is 11. Therefore, 11 is multiplied 
-gridlines_grids_greater_than_zero = zeros(11*length(grids_greater_than_zero_points),2); % length(gridlines) = 11
-
-concatenate_gridPoints_scanLines_rings = [];
-orthogonal_dist_each_grid = []; 
 transverse_span_each_grid = [];
-
-% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
 for ith_grid = 1:length(grids_greater_than_zero_points)
     % Get current color
     % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
@@ -303,12 +272,10 @@ for ith_grid = 1:length(grids_greater_than_zero_points)
             % Mean of absolute values of transverse distances
             mean_dist = mean(abs(transverse_dist_grid_points_other_scanLines));
 
-            % Concatenate the orthogonal distances
-            orthogonal_dist_each_grid = [orthogonal_dist_each_grid; mean_dist]; %#ok<AGROW>
+ 
         else
 
-            % Conacatenate orthogonal distance
-            orthogonal_dist_each_grid = [orthogonal_dist_each_grid; 0]; %#ok<AGROW>
+
 
             % Conatenate maximum transverse span
             transverse_span_each_grid = [transverse_span_each_grid; 0]; %#ok<AGROW>
@@ -317,11 +284,187 @@ for ith_grid = 1:length(grids_greater_than_zero_points)
 
     else
 
-        % Conacatenate orthogonal distance
-        orthogonal_dist_each_grid = [orthogonal_dist_each_grid; 0]; %#ok<AGROW>
+
 
         % Conatenate maximum transverse span
         transverse_span_each_grid = [transverse_span_each_grid; 0]; %#ok<AGROW>
+
+    end
+end
+% Threshold of transverse span
+transverse_span_threshold = 0.15;
+%% Plot the results (for debugging)?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____       _                 
+%  |  __ \     | |                
+%  | |  | | ___| |__  _   _  __ _ 
+%  | |  | |/ _ \ '_ \| | | |/ _` |
+%  | |__| |  __/ |_) | |_| | (_| |
+%  |_____/ \___|_.__/ \__,_|\__, |
+%                            __/ |
+%                           |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if flag_do_plots
+figure(fig_num); 
+
+hold on
+grid on
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Gridlines and points of the grids greater than zero point density')
+
+
+% allocation: these are the coordinates of the corners of each grid
+% line. Total no of lines required for each grid including NaNs is 11. Therefore, 11 is multiplied 
+gridlines_grids_greater_than_zero = zeros(11*length(grids_greater_than_zero_points),2); % length(gridlines) = 11
+
+concatenate_gridPoints_scanLines_rings = [];
+orthogonal_dist_each_grid = []; 
+
+% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+for ith_grid = 1:length(grids_greater_than_zero_points)
+    % Get current color
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+    current_color = [0.2 0.2 0.2];
+
+    % Plot current AABB
+    current_AABB = grid_AABBs(grids_greater_than_zero_points(ith_grid),1:4);
+
+    % Nudge the current AABB inward
+    current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+    % Calculate the gridlines
+    gridlines = [...
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,1) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,2) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,3); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,4); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        ];
+
+    % Get all points in this domain and plot them
+    rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
+    
+    % XY coordinates of the input points that are in ith_grid
+    points_in_domain = input_points(rows_in_domain,:);
+ 
+    % Scan lines and rings
+    scanLines_and_rings = LIDAR_scanLines(rows_in_domain,:);
+
+    % Find number of LiDAR scan lines in each grid
+    scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
+    
+    % Combine points_in_domain and ScanLines and rings
+    gridPoints_scanLines_rings_to_add = [ith_grid*(ones(length(points_in_domain(:,1)),1)),points_in_domain,scanLines_and_rings];
+
+    % Sort gridPoints_scanLines_rings_to_add based on scan line
+    [~,sorted_gridPoints_scanLines_rings] = sort(gridPoints_scanLines_rings_to_add(:,4));
+
+    % Sorted gridPoints_scanLines_rings_to_add matrix
+    gridPoints_scanLines_rings_to_add = gridPoints_scanLines_rings_to_add(sorted_gridPoints_scanLines_rings,:);
+
+    % Count occurrences of each unique number in scan lines
+    [uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_rings_to_add(:,4));
+    counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
+
+    % Create the new array with the counts
+    count_array = counts;
+
+    % Index of the scan line with more than one occurence
+    index_of_scanLines = find(count_array>1, 1);
+    
+    if ~isempty(index_of_scanLines)
+        % Indices first scan line of the matrix as a seperate matrix
+        indices_gridPoints_scanLines_first_scan = find(gridPoints_scanLines_rings_to_add(:,4) == gridPoints_scanLines_rings_to_add(index_of_scanLines,4));
+
+        % Seperate the scan line with more than one occurence of the matrix as a seperate matrix
+        gridPoints_scanLines_first_scan = gridPoints_scanLines_rings_to_add(indices_gridPoints_scanLines_first_scan,:);
+
+        % Count occurrences of each unique number in rings
+        [uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_first_scan(:,5));
+        counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
+
+        % Create the new array with the counts
+        count_array = counts;
+
+        % Index of the scan line with more than one occurence
+        index_of_rings = find(count_array>1, 1);
+
+        % if length(gridPoints_scanLines_first_scan(:,1)) == 1
+        %
+        %     indices_gridPoints_scanLines_first_scan
+
+        if length(gridPoints_scanLines_first_scan(:,1)) > 1 & (gridPoints_scanLines_first_scan(index_of_rings,5) == gridPoints_scanLines_first_scan(index_of_rings+1,5))
+            change_in_vector = gridPoints_scanLines_first_scan(2,2:3) - gridPoints_scanLines_first_scan(1,2:3);
+            unit_change_in_vector = fcn_INTERNAL_calcUnitVector(change_in_vector);
+            orth_unit_change_in_vector = unit_change_in_vector*[0 1; -1 0];
+
+            % The remaining number of grids
+            remaining_grids = length(indices_gridPoints_scanLines_first_scan)+1:length(gridPoints_scanLines_rings_to_add(:,1));
+
+            %
+            vector_from_base_point_first_scan_to_points_in_otherScans_rings = gridPoints_scanLines_rings_to_add(remaining_grids,2:3) - ...
+                gridPoints_scanLines_first_scan(1,2:3).*(ones(length(remaining_grids),2));
+
+            % Unit orthogonal vector
+            repeated_orth_unit_change_in_vector = orth_unit_change_in_vector.*(ones(length(remaining_grids),2));
+
+            % Calculate the transverse distance
+            transverse_dist_grid_points_other_scanLines = sum(vector_from_base_point_first_scan_to_points_in_otherScans_rings.*repeated_orth_unit_change_in_vector,2);
+
+            % Positive transverse distances
+            positive_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines>=0);
+
+            % Negative transverse distances
+            negative_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines<0);
+
+            % maximum span distance
+            if ~isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines) + max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+            elseif ~isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines);
+
+            elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+            elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+                maximum_span_distance = 0;
+                    
+            end
+
+
+            % Mean of absolute values of transverse distances
+            mean_dist = mean(abs(transverse_dist_grid_points_other_scanLines));
+
+            % Concatenate the orthogonal distances
+            orthogonal_dist_each_grid = [orthogonal_dist_each_grid; mean_dist]; %#ok<AGROW>
+        else
+
+            % Conacatenate orthogonal distance
+            orthogonal_dist_each_grid = [orthogonal_dist_each_grid; 0]; %#ok<AGROW>
+
+            % Conatenate maximum transverse span
+
+
+        end
+
+    else
+
+        % Conacatenate orthogonal distance
+        orthogonal_dist_each_grid = [orthogonal_dist_each_grid; 0]; %#ok<AGROW>
+
 
     end
     % Concatenate the points in domain, scan lines and rings
@@ -453,8 +596,6 @@ for ith_text = 1:length(grids_greater_than_zero_points(:,1))
     text(gridCenters_greater_than_zero_point_density(ith_text,1), gridCenters_greater_than_zero_point_density(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
 end
 
-% Threshold of transverse span
-transverse_span_threshold = 0.15;
 end
 end
 %% Functions follow
@@ -474,3 +615,4 @@ function unit_vectors = fcn_INTERNAL_calcUnitVector(input_vectors)
 vector_length = sum(input_vectors.^2,2).^0.5;
 unit_vectors = input_vectors./vector_length;
 end
+
