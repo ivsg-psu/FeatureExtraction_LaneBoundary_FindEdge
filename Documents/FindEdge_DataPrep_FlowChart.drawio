@@ -1,0 +1,233 @@
+<mxfile host="Electron" modified="2024-08-15T17:30:10.545Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.6 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="kKRD3gOg4M1_Jk9U7LwX" version="24.4.6" type="device">
+  <diagram name="Page-1" id="1t3EqyHOZMW7sC0uhStz">
+    <mxGraphModel dx="1809" dy="973" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="srokErgthjkjzXlaEye1-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="srokErgthjkjzXlaEye1-19" target="srokErgthjkjzXlaEye1-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-19" value="&lt;span style=&quot;font-family: Menlo, Monaco, Consolas, &amp;quot;Courier New&amp;quot;, monospace; text-align: start; white-space: pre;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;fcn_findEdge_loadLIDARData&lt;/font&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#66FF66;" vertex="1" parent="1">
+          <mxGeometry x="120" y="480" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-20" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="219.5" y="420" as="sourcePoint" />
+            <mxPoint x="219.5" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-21" value="test date&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="390" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-22" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="300" y="420" as="sourcePoint" />
+            <mxPoint x="300" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-23" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="140" y="420" as="sourcePoint" />
+            <mxPoint x="140" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-24" value="Vehicle pose file name" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="190" y="380" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-25" value="LiDAR file name" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="270" y="390" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="srokErgthjkjzXlaEye1-29">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1040" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-29" value="&lt;div style=&quot;padding: 30px; text-align: start;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;font-family: Menlo, Monaco, Consolas, &amp;quot;Courier New&amp;quot;, monospace;&quot; class=&quot;lineNode&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;fcn_findEdge_pointsAtRangeOfLiDARFromStation&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#66FF66;" vertex="1" parent="1">
+          <mxGeometry x="480" y="480" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-31" value="Load LiDAR and Vehicle pose data" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="570" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-35" value="Find the scan lines that are &quot;range of LiDAR&quot; meters away from station 1 and station 2" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="484" y="570" width="320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-39" value="Vehicle pose" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="370" y="490" width="75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-41" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="520" y="420" as="sourcePoint" />
+            <mxPoint x="520" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-42" value="Station 1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="480" y="390" width="75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-43" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="640" y="420" as="sourcePoint" />
+            <mxPoint x="640" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-44" value="Station 2" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="606.5" y="390" width="75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-45" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="760" y="420" as="sourcePoint" />
+            <mxPoint x="760" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-46" value="Range of LiDAR&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="720" y="390" width="75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-48" value="Index of Station 1 - range of LiDAR" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="480" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-49" value="Index of Station 2 + range of LiDAR" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="530" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="srokErgthjkjzXlaEye1-50" target="srokErgthjkjzXlaEye1-61">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-78" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="500" as="sourcePoint" />
+            <mxPoint x="960" y="240" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="810" y="500" />
+              <mxPoint x="810" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-108" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="srokErgthjkjzXlaEye1-50">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1360" y="760" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1230" y="540" />
+              <mxPoint x="1230" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-50" value="&lt;div style=&quot;padding: 30px; text-align: start;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;font-family: Menlo, Monaco, Consolas, &amp;quot;Courier New&amp;quot;, monospace;&quot; class=&quot;lineNode&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;fcn_findEdge_extractScanLines&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#66FF66;" vertex="1" parent="1">
+          <mxGeometry x="960" y="480" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=-0.008;entryY=0.925;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="srokErgthjkjzXlaEye1-19" target="srokErgthjkjzXlaEye1-50">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="450" y="540" />
+              <mxPoint x="450" y="650" />
+              <mxPoint x="940" y="650" />
+              <mxPoint x="940" y="554" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-57" value="All LiDAR scans ENU" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="620" y="620" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-58" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="1079.5" y="420" as="sourcePoint" />
+            <mxPoint x="1079.5" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-59" value="Vehicle pose" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="390" width="75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-61" value="&lt;div style=&quot;padding: 30px; text-align: start;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;font-family: Menlo, Monaco, Consolas, &amp;quot;Courier New&amp;quot;, monospace;&quot; class=&quot;lineNode&quot;&gt;&lt;div style=&quot;padding: 30px;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;&quot; class=&quot;lineNode&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;fcn_findEdge_findPointsInDomain&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#66FF66;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="480" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-65" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="1478.46" y="420" as="sourcePoint" />
+            <mxPoint x="1478.46" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-66" value="Station 1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1442.5" y="390" width="75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-67" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="1580" y="420" as="sourcePoint" />
+            <mxPoint x="1580" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-68" value="Station 2" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="390" width="75" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-70" value="Extracts&amp;nbsp; vehicle pose ENU, vehicle pose unit orthogonal vectors, LiDAR ENU scans, LiDAR Intensity, LiDAR scan line and Ring IDs&amp;nbsp;of the scan line range" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="967.5" y="550" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-71" value="Note: scan line range = [Index of Station 1 - range of LiDAR, Index of Station 2 + range of LiDAR]" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="140" width="180" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-74" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="1380" y="420" as="sourcePoint" />
+            <mxPoint x="1380" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-75" value="Vehicle pose" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="390" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-77" value="&lt;div style=&quot;padding: 30px; text-align: start;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;font-family: Menlo, Monaco, Consolas, &amp;quot;Courier New&amp;quot;, monospace;&quot; class=&quot;lineNode&quot;&gt;&lt;div style=&quot;padding: 30px;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;&quot; class=&quot;lineNode&quot;&gt;&lt;div style=&quot;padding: 30px;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;&quot; class=&quot;lineNode&quot;&gt;&lt;div style=&quot;padding: 30px;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;&quot; class=&quot;lineNode&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;fcn_findEdge_findDrivenPathBoundaryPoints&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#66FF66;" vertex="1" parent="1">
+          <mxGeometry x="960" y="200" width="315" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-79" value="This function finds the driven path points in LIDAR scans" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="810" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-80" value="Find the points in the domain from LiDAR ENU scans of the scan line range" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="570" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-81" value="Find the boundary points of the driven path to create a bounding box for finding the driven path grids&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="970" y="300" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-82" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="999" y="140" as="sourcePoint" />
+            <mxPoint x="999" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-83" value="Vehicle pose" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="960" y="110" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-87" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="1099.23" y="140" as="sourcePoint" />
+            <mxPoint x="1099.23" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-88" value="Number of scans" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="110" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-89" value="" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="60" height="60" relative="1" as="geometry">
+            <mxPoint x="1225" y="140" as="sourcePoint" />
+            <mxPoint x="1225" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-90" value="Shift (in m) - to shift the boundary points" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="100" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-101" value="LiDAR ENU" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="490" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-102" value="LiDAR Intensity" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="520" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-109" value="LiDAR ENU" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="710" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-110" value="Vehicle pose unit orthogonal vectors" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1225" y="770" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-111" value="Vehicle ENU" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="730" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srokErgthjkjzXlaEye1-115" value="&lt;div style=&quot;padding: 30px; text-align: start;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;font-family: Menlo, Monaco, Consolas, &amp;quot;Courier New&amp;quot;, monospace;&quot; class=&quot;lineNode&quot;&gt;&lt;div style=&quot;padding: 30px;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;&quot; class=&quot;lineNode&quot;&gt;&lt;div style=&quot;padding: 30px;&quot; class=&quot;rtcContent&quot;&gt;&lt;div style=&quot;&quot; class=&quot;lineNode&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;fcn_findEdge_findDrivableSurface&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#66FF66;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="720" width="240" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
