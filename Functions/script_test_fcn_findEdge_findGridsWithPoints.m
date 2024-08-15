@@ -12,14 +12,13 @@
 
 %% Test 1 
 fig_num = 1; 
-figure(fig_num);
 
 % load the data
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), -1);
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), -1, -1);
 
 % initialize scanlineRnage
 station_1 = 1400; 
@@ -34,10 +33,10 @@ scanLineRange = [station1_minus_range_index station2_plus_range_index];
 ringsRange = []; % If leave empty, it loads all rings
 % Extract scan lines
 [~, ~, ...
-    LIDAR_ENU, ~, LIDAR_scanLineAndRingID] = ...
-    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1,-1);
 
-[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
+[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity, -1);
 
 
 % These are concatenated LiDAR points of chosen scans and cells in the
@@ -80,7 +79,7 @@ test_date_string = '2024_06_28'; % The date of testing. This defines the folder 
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), -1);
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), -1, -1);
 
 % initialize scanlineRnage
 station_1 = 1400; 
@@ -95,10 +94,10 @@ scanLineRange = [station1_minus_range_index station2_plus_range_index];
 ringsRange = []; % If leave empty, it loads all rings
 % Extract scan lines
 [~, ~, ...
-    LIDAR_ENU, ~, LIDAR_scanLineAndRingID] = ...
-    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1,-1);
 
-[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
+[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity, -1);
 
 
 % These are concatenated LiDAR points of chosen scans and cells in the
@@ -124,7 +123,7 @@ grid_boundaries = [Min_x Max_x Min_y Max_y];
 [gridIndices_cell_array, ~, gridCenters, ~,...
     ~, ~,...
     ~, gridIndices, grid_AABBs] = fcn_findEdge_findGridsWithPoints(input_points,...
-    grid_size,grid_boundaries,-1);
+    grid_size,grid_boundaries,[]);
 
 assert(iscell(gridIndices_cell_array))
 assert(isequal(length(gridCenters(1,:)),2))
@@ -133,18 +132,16 @@ assert(isequal(length(grid_AABBs(1,:)),4))
 temp_h = figure(fig_num);
 assert(isempty(get(temp_h,'Children')))
 close(fig_num)
-
 %% Test 3 different grid size
 
 fig_num = 3; 
-figure(fig_num);
 
 % load the data
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), -1);
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), -1, -1);
 
 % initialize scanlineRnage
 station_1 = 1400; 
@@ -159,10 +156,11 @@ scanLineRange = [station1_minus_range_index station2_plus_range_index];
 ringsRange = []; % If leave empty, it loads all rings
 % Extract scan lines
 [~, ~, ...
-    LIDAR_ENU, ~, LIDAR_scanLineAndRingID] = ...
-    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), -1,-1);
 
-[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
+[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity, -1);
+
 
 % These are concatenated LiDAR points of chosen scans and cells in the
 % first step. 

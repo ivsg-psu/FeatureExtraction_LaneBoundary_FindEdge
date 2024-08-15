@@ -13,7 +13,7 @@ test_date_string = '2024_06_28'; % The date of testing. This defines the folder 
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), []);
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), [], []);
 
 
 % Extract scan lines
@@ -24,9 +24,9 @@ range_of_LiDAR = 10;
 scanLineRange = [station1_minus_range_index station2_plus_range_index]; 
 ringsRange = []; 
 [~, ~, ...
-    LIDAR_ENU, ~, LIDAR_scanLineAndRingID] = ...
-    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
-[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]), ([]));
+[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity,[]);
 
 
 % prepare for grids 
@@ -70,7 +70,7 @@ test_date_string = '2024_06_28'; % The date of testing. This defines the folder 
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), []);
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), [], []);
 
 
 % Extract scan lines
@@ -81,9 +81,9 @@ range_of_LiDAR = 10;
 scanLineRange = [station1_minus_range_index station2_plus_range_index]; 
 ringsRange = []; 
 [~, ~, ...
-    LIDAR_ENU, ~, LIDAR_scanLineAndRingID] = ...
-    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
-[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]), ([]));
+[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity,[]);
 
 
 % prepare for grids 
@@ -117,7 +117,6 @@ temp_h2 = figure(fig_num2);
 assert(~isempty(get(temp_h2,'Children')))
 temp_h3 = figure(fig_num3);
 assert(~isempty(get(temp_h3,'Children')))
-
 %%  Test 3 no plotting
  
 % load the data
@@ -128,7 +127,7 @@ test_date_string = '2024_06_28'; % The date of testing. This defines the folder 
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), []);
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), [], []);
 
 
 % Extract scan lines
@@ -139,9 +138,9 @@ range_of_LiDAR = 10;
 scanLineRange = [station1_minus_range_index station2_plus_range_index]; 
 ringsRange = []; 
 [~, ~, ...
-    LIDAR_ENU, ~, LIDAR_scanLineAndRingID] = ...
-    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
-[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
+    LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]), ([]));
+[~, ~, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity,[]);
 
 
 % prepare for grids 
@@ -149,7 +148,7 @@ LiDAR_allPoints = [LIDAR_ENU(in_domain,:), LIDAR_scanLineAndRingID(in_domain,:)]
 LiDAR_allPoints = LiDAR_allPoints(~isnan(LiDAR_allPoints(:,1)),:);
 LIDAR_scanLines = LiDAR_allPoints(:,4:5); 
 input_points = LiDAR_allPoints(:,1:2); 
-grid_size = 10; %0.8;%1;%1.25; %1.26
+grid_size = 1; %0.8;%1;%1.25; %1.26
 % Find minimum and maximum values of x,y,z of LiDAR data
 [Min_x,Max_x,Min_y,Max_y,~,~] = fcn_findEdge_findMaxMinOfXYZ(input_points,-1);
 % The 2D grid boundaries required for the current analysis
@@ -163,7 +162,7 @@ grid_boundaries = [Min_x Max_x Min_y Max_y];
 
 [transverse_span_threshold,transverse_span_each_grid] = fcn_findEdge_determineTransverseSpanThreshold...
     (grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines,...
-    gridCenters_greater_than_zero_point_density,[],[],-1);
+    gridCenters_greater_than_zero_point_density,[],[],[]);
 
 assert(isequal(transverse_span_threshold,0.15));
 assert(isequal(length(transverse_span_each_grid(1,:)),1));
@@ -175,4 +174,6 @@ temp_h2 = figure(fig_num2);
 assert(isempty(get(temp_h2,'Children')))
 temp_h3 = figure(fig_num3);
 assert(isempty(get(temp_h3,'Children')))
-close all
+close(fig_num)
+close(fig_num2)
+close(fig_num3)

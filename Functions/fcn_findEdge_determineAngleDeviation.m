@@ -181,7 +181,7 @@ angle_btw_unit_normals_and_vertical = acos(dot_product);
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-figure(fig_num);
+figure(fig_num);clf
 
 hold on
 axis on

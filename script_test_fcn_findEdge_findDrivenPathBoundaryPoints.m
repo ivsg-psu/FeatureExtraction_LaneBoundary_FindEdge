@@ -30,7 +30,6 @@ shift = 5;
 % Find the driven path
 fig_num = 1;
 fig_num2 = 11;
-figure(fig_num);
 boundary_points_driven_path = fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num), (fig_num2));
 
 assert(isequal(length(boundary_points_driven_path(1,:)),3))
@@ -87,7 +86,7 @@ vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing V
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
 fig_num = [];
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num));
+[VehiclePose, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num));
 
 % get the scanlineRange
 station_1 = 1400; 

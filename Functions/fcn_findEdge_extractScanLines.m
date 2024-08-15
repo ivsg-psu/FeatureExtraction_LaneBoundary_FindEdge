@@ -7,7 +7,8 @@ function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 %
 %      [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 %      LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
-%      fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (fig_num))
+%      fcn_findEdge_extractScanLines(VehiclePose,
+%      LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (fig_num), (fig_num2))
 %
 % INPUTS:  
 %

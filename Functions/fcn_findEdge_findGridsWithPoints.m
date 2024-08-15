@@ -81,7 +81,7 @@ function [gridIndices_cell_array, total_N_points_in_each_grid, gridCenters, grid
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==4 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -123,7 +123,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,5);
+        narginchk(3,4);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -141,7 +141,7 @@ end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if 2<= nargin && 0==flag_max_speed
+if 3<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
