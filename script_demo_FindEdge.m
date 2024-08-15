@@ -130,27 +130,6 @@ library_folders{ith_library} = {'Functions', 'Data'};
 library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_VisualizingFieldData_PlotRoad/archive/refs/tags/PlotRoad_v2024_08_14.zip';
 
 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'LineFitting_v2023_07_24';
-% library_folders{ith_library} = {'Functions'};
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/FeatureExtraction_Association_LineFitting/archive/refs/tags/LineFitting_v2023_07_24.zip';
-% 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'FindCircleRadius_v2023_08_02';
-% library_folders{ith_library} = {'Functions'};                                
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_GeomTools_FindCircleRadius/archive/refs/tags/FindCircleRadius_v2023_08_02.zip';
-% 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'BreakDataIntoLaps_v2023_08_25';
-% library_folders{ith_library} = {'Functions'};                                
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/FeatureExtraction_DataClean_BreakDataIntoLaps/archive/refs/tags/BreakDataIntoLaps_v2023_08_25.zip';
-% 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'ParseXODR_v2023_10_23';
-% library_folders{ith_library} = {'Functions'};                                
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_MapTools_ParseXODR/archive/refs/tags/ParseXODR_v2023_10_23.zip';
-
-
 %% Clear paths and folders, if needed
 if 1==0
     clear flag_findEdge_Folders_Initialized;
@@ -185,7 +164,7 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%% STEP 1: Load the data --- :Load LiDAR data:
+%% STEP 1: Load the data --- :Load LiDAR data: - Jiabao
 
 % Set the "inputs" to the file loading process - need the date and names
 % and date of file creation for the Vehicle Pose data file
@@ -213,7 +192,7 @@ range_of_LiDAR = 10;
 
 [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,station_1,station_2,range_of_LiDAR);  
 
-%% STEP 2 (part 2): find LiDAR ENU and LIDAR_scanLineAndRingID in domain
+%% STEP 2 (part 2): find LiDAR ENU and LIDAR_scanLineAndRingID in domain - Jiabao
 % :Check if enough data have been measured based on LiDAR range:
 
 scanLineRange = [station1_minus_range_index station2_plus_range_index]; 
@@ -228,13 +207,13 @@ ringsRange = []; % If leave empty, it loads all rings
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
 
-% Plot the LIDAR in 2D ENU
-ENU_XY_fig_num = 2;
-figure(ENU_XY_fig_num);
-format = sprintf(' ''-'', ''Color'', [0 0 1], ''MarkerSize'', 1');
-fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),format,ENU_XY_fig_num);
-
-
+% % Plot the LIDAR in 2D ENU
+% ENU_XY_fig_num = 2;
+% figure(ENU_XY_fig_num);
+% format = sprintf(' ''-'', ''Color'', [0 0 1], ''MarkerSize'', 1');
+% fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),format,ENU_XY_fig_num);
+% 
+% 
 % Plot the vehicle in 3D ENU
 ENU_XYZ_fig_num = 3;
 figure(ENU_XYZ_fig_num);
@@ -248,12 +227,12 @@ color_map = [];
 format = [];
 fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
 
-% Plot the LIDAR in XY, XZ, and YZ
-LIDAR_XY_XZ_YZ_fig_num = 4;
-color_triplet = [];
-marker_size = [];
-fcn_findEdge_plotLIDARXY(LIDAR_ENU, (color_triplet), (marker_size), (LIDAR_XY_XZ_YZ_fig_num))
-
+% % Plot the LIDAR in XY, XZ, and YZ
+% LIDAR_XY_XZ_YZ_fig_num = 4;
+% color_triplet = [];
+% marker_size = [];
+% fcn_findEdge_plotLIDARXY(LIDAR_ENU, (color_triplet), (marker_size), (LIDAR_XY_XZ_YZ_fig_num))
+% 
 % Plot the vehicle trajectory in LLA
 fig_num = 5; % figure number
 reference_LLA = [];
@@ -261,16 +240,16 @@ zoom_in_location = [];
 zoomLevel = [];
 LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
-% plot the LIDAR in LLA 
-fig_num = 6;
-scaling = 3;
-color_map = 'sky';
-marker_size = [];
-reference_LLA = [];
-format = [];
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
+% % plot the LIDAR in LLA 
+% fig_num = 6;
+% scaling = 3;
+% color_map = 'sky';
+% marker_size = [];
+% reference_LLA = [];
+% format = [];
+% fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
 
-%% STEP 2 (part 3): Find the LIDAR_ENU and LIDAR_scanLineAndRingID in domain
+%% STEP 2 (part 3): Find the LIDAR_ENU and LIDAR_scanLineAndRingID in domain - Jiabao
 % :Check if enough data have been measured based on LiDAR range:
 
 [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
@@ -298,7 +277,7 @@ format = sprintf('''r.'',''MarkerSize'',30');
 LIDAR_intensity1 = [];
 fcn_findEdge_plotLIDARLLA(boundary_points_of_domain,(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
 
-%% Vehicle pose - STEP 1: Load the vehicle pose and the find the driven path. :Vehicle pose: 
+%% Vehicle pose - STEP 1: Load the vehicle pose and the find the driven path. :Vehicle pose: - Jiabao
 %Find the drivable surface
 [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors);
 
@@ -376,9 +355,12 @@ ENU_3D_fig_num = 14;
 format = sprintf('''.'',''MarkerSize'',30,''Color'',[0.8 0.8 0.8]');
 format1 = sprintf('''.'',''MarkerSize'',30,''Color'',[0 1 0]');
 
+
+current_grids_greater_than_zero_points = 1:length(grids_greater_than_zero_points); 
+
 [~, ~,total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
     = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
-    grids_greater_than_zero_points, total_N_points_in_each_grid, (format), (format1),[],[], (fig_num), (ENU_3D_fig_num));
+    grids_greater_than_zero_points, current_grids_greater_than_zero_points, total_N_points_in_each_grid, (format), (format1),[],[], (fig_num), (ENU_3D_fig_num));
 
 
 %% STEP 5: Grid conditions - Point density (Do not need to run after determining point density)

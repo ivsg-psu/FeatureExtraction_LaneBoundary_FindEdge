@@ -1,6 +1,8 @@
-function [gridCenters_driven_path, current_grid_numbers_of_driven_path, total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
-    = fcn_findEdge_findDrivenPathGrids(gridCenters, boundary_points_driven_path,...
-    grids_numbers_of_gridCenters, total_N_points_in_each_grid, varargin)
+function [gridCenters_driven_path, ...
+    current_grid_numbers_of_driven_path, ...
+    total_points_in_each_grid_in_the_driven_path, ...
+    total_points_in_each_grid_with_points_greater_than_zero] = ...
+    fcn_findEdge_findDrivenPathGrids(gridCenters, boundary_points_driven_path, original_grid_numbers_of_gridCenters, current_grid_numbers_of_gridCenters, total_N_points_in_each_grid, varargin)
 %% fcn_findEdge_findDrivenPathGrids   Find the driven path grids within the grids more than zero points
 % 
 % FORMAT:
@@ -63,7 +65,7 @@ function [gridCenters_driven_path, current_grid_numbers_of_driven_path, total_po
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==10 && isequal(varargin{end},-1))
+if (nargin==11 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -105,12 +107,12 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(4,10);
+        narginchk(5,11);
     end
 end
 
 % Check to see if user passed in a string or color style?
-if 5 <= nargin
+if 6 <= nargin
     input = varargin{1};
     if ~isempty(input)
         format = input;
@@ -118,7 +120,7 @@ if 5 <= nargin
 end
 
 % Check to see if user passed in another string or color style?
-if 6 <= nargin
+if 7 <= nargin
     input = varargin{2};
     if ~isempty(input)
         format2 = input;
@@ -128,7 +130,7 @@ end
 
 legend_name = 'Grids greater than zero points';
 % Check to see if user passed in a legend name? 
-if 7 <= nargin
+if 8 <= nargin
     input = varargin{3};
     if ~isempty(input)
         legend_name = input;
@@ -138,7 +140,7 @@ end
 
 legend_name2 = 'Driven path grids';
 % Check to see if user passed in another legend name? 
-if 8 <= nargin
+if 9 <= nargin
     input = varargin{4};
     if ~isempty(input)
         legend_name2 = input;
@@ -147,7 +149,7 @@ end
 
 
 flag_do_plots = 0;
-if 9<= nargin && 0==flag_max_speed
+if 10<= nargin && 0==flag_max_speed
     temp = varargin{5};
     if ~isempty(temp)
         ENU_XY_fig_num = temp;
@@ -156,7 +158,7 @@ if 9<= nargin && 0==flag_max_speed
 end
 
 % Does user want to specify another fig_num?
-if 10<= nargin && 0==flag_max_speed
+if 11<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
         ENU_XY_fig_num1 = temp;
@@ -185,16 +187,16 @@ end
 [in,~] = inpolygon(gridCenters(:,1),gridCenters(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
 
 % Original grid numbers of driven path
-original_grid_numbers_of_driven_path = grids_numbers_of_gridCenters(in); 
+original_grid_numbers_of_driven_path = original_grid_numbers_of_gridCenters(in); 
 
 % Current grid numbers in driven path 
-current_grid_numbers_of_driven_path = find(in); 
+current_grid_numbers_of_driven_path = current_grid_numbers_of_gridCenters(in);%find(in); 
 
 % Total points in each grid in the driven path
 total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(original_grid_numbers_of_driven_path); 
 
 % Total points in each grid with points greater than zero
-total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(grids_numbers_of_gridCenters); 
+total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(original_grid_numbers_of_gridCenters); 
 
 % Grid centers of the driven path
 gridCenters_driven_path = [gridCenters(in,1),gridCenters(in,2)];
