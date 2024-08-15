@@ -319,8 +319,9 @@ fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(c
 
 fig_num = 10;
 figure(fig_num);
-
-boundary_points_driven_path = fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (fig_num));
+shift = 5;
+fig_num2 = 11;
+boundary_points_driven_path = fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num), (fig_num2));
 
 %% STEP 3: Seperate the data into grids
 

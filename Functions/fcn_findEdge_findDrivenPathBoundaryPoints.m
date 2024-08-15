@@ -1,5 +1,5 @@
-function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, varargin)
-%% fcn_findEdge_findDrivenPathLeftRightSides    Find the driven path (left and right side points)
+function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, varargin)
+%% fcn_findEdge_findDrivenPathBoundaryPoints    Find the driven path (left and right side points)
 %
 % FORMAT: 
 % fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (fig_num))
@@ -11,6 +11,10 @@ function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathLeftRightSid
 %       scanLineRange: the range of scan lines of LIDAR data.
 %
 %       Nscans: numbers of scan lines.
+%
+%       shift: it is a scalar value that is applied to the vehicle's pose. 
+%       This shift is used to adjust the position of the boundary points of 
+%       the driven path relative to the vehicle's pose
 %      
 %       (OPTIONAL INPUTS)
 %
@@ -32,7 +36,7 @@ function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathLeftRightSid
 %   
 %   See the script:
 %   
-%   script_test_
+%   script_test_fcn_findEdge_findDrivenPathBoundaryPoints
 %
 %   for a full test suite
 %
@@ -49,7 +53,7 @@ function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathLeftRightSid
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -90,17 +94,25 @@ end
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,4);
+        narginchk(5,6);
     end
 end 
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (3<=nargin)
-    temp = varargin{end};
+if (0==flag_max_speed) &&  (5<=nargin)
+    temp = varargin{1};
     if ~isempty(temp)
         fig_num = temp;
         flag_do_plots = 1;
+    end
+end
+
+% Does user want to specify another fig_num?
+if (0==flag_max_speed) &&  (6<=nargin)
+    temp = varargin{end};
+    if ~isempty(temp)
+        LLA_fig_num = temp;
     end
 end
 
@@ -139,7 +151,7 @@ lane_half_width = (3.6576/2) * 0.40;
 % path from vehicle center 
 transverse_distance_of_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
 
-shift = 5; 
+
 % Shift
 shift_distance = [unit_vehicle_change_in_pose_XY*shift, zeros(length(unit_vehicle_change_in_pose_XY),1)]; 
 
@@ -210,7 +222,6 @@ if flag_do_plots
     daspect([1 1 0.1]);  % Compress the z-axis relative to x and y
 
     % plot the boundary points in LLA
-    LLA_fig_num = 11;
     figure(LLA_fig_num);
     LIDAR_intensity3 = [];
     marker_size = [];
