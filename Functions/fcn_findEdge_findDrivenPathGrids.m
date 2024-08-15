@@ -1,7 +1,7 @@
 function [gridCenters_driven_path, ...
     current_grid_numbers_of_driven_path, ...
     total_points_in_each_grid_in_the_driven_path, ...
-    total_points_in_each_grid_with_points_greater_than_zero] = ...
+    total_points_in_each_original_grid_numbers_of_gridCenters] = ...
     fcn_findEdge_findDrivenPathGrids(gridCenters, boundary_points_driven_path, original_grid_numbers_of_gridCenters, current_grid_numbers_of_gridCenters, total_N_points_in_each_grid, varargin)
 %% fcn_findEdge_findDrivenPathGrids   Find the driven path grids within the grids more than zero points
 % 
@@ -58,6 +58,10 @@ function [gridCenters_driven_path, ...
 % -- Wrote the code originally
 % 2024_08_13 - Jiabao Zhao
 % -- Functionalized this code
+% 2024_08_15 - Aneesh Batchu
+% -- Made this code universal. Any type grid centers
+% (grids_greater_than_zero_points, qualified_grids) with boundar points can
+% be given as the inputs
 
 %% Debugging and Input checks
 
@@ -196,7 +200,7 @@ current_grid_numbers_of_driven_path = current_grid_numbers_of_gridCenters(in);%f
 total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(original_grid_numbers_of_driven_path); 
 
 % Total points in each grid with points greater than zero
-total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(original_grid_numbers_of_gridCenters); 
+total_points_in_each_original_grid_numbers_of_gridCenters = total_N_points_in_each_grid(original_grid_numbers_of_gridCenters); 
 
 % Grid centers of the driven path
 gridCenters_driven_path = [gridCenters(in,1),gridCenters(in,2)];
