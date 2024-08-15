@@ -170,17 +170,12 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 % and date of file creation for the Vehicle Pose data file
 
 fig_num = 1; 
+fig_num2 = 2; 
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 flag_load_all_data = [];
-
-[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num));
-
-% Plot the vehicle in 2D ENU
-format = sprintf(' ''-'', ''Color'', [0 0 0], ''MarkerSize'', 10, ''LineWidth'', 3');
-clf;
-fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num); % -- add string as optional input (format)
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num),(fig_num2));
 
 %% STEP 2 (part 1): Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2 and find LiDAR ENU and LIDAR_scanLineAndRingID
 % :Check if enough data have been measured based on LiDAR range:
@@ -202,100 +197,23 @@ Nscans = length(VehiclePose(:,1));
 % scanLineRange = [1400 1450];
 ringsRange = []; % If leave empty, it loads all rings
 
+ENU_XYZ_fig_num = 3;
+fig_num = 4;
 % Extract scan lines
 [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
-    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), ([]));
-
-% % Plot the LIDAR in 2D ENU
-% ENU_XY_fig_num = 2;
-% figure(ENU_XY_fig_num);
-% format = sprintf(' ''-'', ''Color'', [0 0 1], ''MarkerSize'', 1');
-% fcn_findEdge_plotVehicleXY(LIDAR_ENU(:,1:2),format,ENU_XY_fig_num);
-% 
-% 
-% Plot the vehicle in 3D ENU
-ENU_XYZ_fig_num = 3;
-figure(ENU_XYZ_fig_num);
-clf;
-% scanLineRange = [1400 1450];
-fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (ENU_XYZ_fig_num)) 
-
-% Plot the LIDAR in 3D ENU
-scaling = [];
-color_map = [];
-format = [];
-fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (format), (ENU_XYZ_fig_num)); 
-
-% % Plot the LIDAR in XY, XZ, and YZ
-% LIDAR_XY_XZ_YZ_fig_num = 4;
-% color_triplet = [];
-% marker_size = [];
-% fcn_findEdge_plotLIDARXY(LIDAR_ENU, (color_triplet), (marker_size), (LIDAR_XY_XZ_YZ_fig_num))
-% 
-% Plot the vehicle trajectory in LLA
-fig_num = 5; % figure number
-reference_LLA = [];
-zoom_in_location = [];
-zoomLevel = [];
-LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
-
-% % plot the LIDAR in LLA 
-% fig_num = 6;
-% scaling = 3;
-% color_map = 'sky';
-% marker_size = [];
-% reference_LLA = [];
-% format = [];
-% fcn_findEdge_plotLIDARLLA(LIDAR_ENU,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
+    fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (ENU_XYZ_fig_num),(fig_num));
 
 %% STEP 2 (part 3): Find the LIDAR_ENU and LIDAR_scanLineAndRingID in domain - Jiabao
-% :Check if enough data have been measured based on LiDAR range:
 
-[concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2);
-
-% plot vehicle trajectory in LLA
 fig_num = 7;
-reference_LLA = [];
-zoom_in_location = [40.865718697633348 -77.830965127435817];
-zoomLevel = 20.5;
-LLA_VehiclePose = fcn_findEdge_plotVehicleLLA(VehiclePose(:,1:3), (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
-
-% plot LLA of LIDAR points
-marker_size = [];
-fcn_findEdge_plotLIDARLLA_Aneesh(LIDAR_ENU, LIDAR_intensity, in_domain, concatenate_LiDAR_XYZ_points_new, (scaling),(color_map),(marker_size),(reference_LLA),(fig_num))
-scaling = 3;
-
-% Plot the vehicle pose
-format = sprintf('''.'',''Color'',[1 1 0],''MarkerSize'',10');
-LIDAR_intensity1 = [];
-fcn_findEdge_plotLIDARLLA(VehiclePose(station_1:station_2,1:3),(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
-scaling = 3;
-
-% Plot the boundary points
-format = sprintf('''r.'',''MarkerSize'',30');
-LIDAR_intensity1 = [];
-fcn_findEdge_plotLIDARLLA(boundary_points_of_domain,(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
+[concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2, LIDAR_intensity,(fig_num));
 
 %% Vehicle pose - STEP 1: Load the vehicle pose and the find the driven path. :Vehicle pose: - Jiabao
 %Find the drivable surface
-[LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors);
-
-% Plot the LIDAR data underneath the vehicle in XYZ
-LIDAR_intensity = [];
-scaling = [];
-color_map = [];
 ENU_3D_fig_num = 8;
-format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 20');
-fcn_findEdge_plotLIDARXYZ(LIDAR_ENU_under_vehicle, (LIDAR_intensity), (scaling), (color_map), (format), (ENU_3D_fig_num));
-daspect([1 1 0.1]); % Adjust aspect ratio
-
-% Plot the LIDAR data underneath the vehicle in LLA
 fig_num = 9; % figure number
-reference_LLA = [];
-format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 2');
-fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num));
-
+[LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(ENU_3D_fig_num),(fig_num));
 
 %% Vehicle pose - STEP 2: Find the driven path (left and right side points)
 

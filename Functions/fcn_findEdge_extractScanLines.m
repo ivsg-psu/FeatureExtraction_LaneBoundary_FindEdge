@@ -91,7 +91,7 @@ function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -134,7 +134,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,5);
+        narginchk(2,6);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -173,10 +173,18 @@ end
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if (0==flag_max_speed) &&  (2<=nargin)
-    temp = varargin{end};
+    temp = varargin{3};
     if ~isempty(temp)
         fig_num = temp;
         flag_do_plots = 1;
+    end
+end
+
+% Does user want to specify another fig_num?
+if (0==flag_max_speed) &&  (3<=nargin)
+    temp = varargin{4};
+    if ~isempty(temp)
+        fig_num2 = temp;
     end
 end
 
@@ -352,8 +360,27 @@ LIDAR_scanLineAndRingID      = allData(indices_to_pull,12:13);
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
+    test_date_string = [];
+    vehicle_pose_string = [];
+    LIDAR_file_string = [];
+    flag_load_all_data = [];
+    [~, ~] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), [], []);
 
-   fcn_findEdge_plotVehicleXY(VehiclePose_ENU,fig_num);   
+
+    % scanLineRange = [1400 1450];
+    fcn_findEdge_plotVehicleXYZ(VehiclePose,(scanLineRange), (fig_num))
+
+    % Plot the LIDAR in 3D ENU
+    scaling = [];
+    color_map = [];
+    format = [];
+    fcn_findEdge_plotLIDARXYZ(LIDAR_ENU, (LIDAR_intensity), (scaling), (color_map), (format), (fig_num));
+
+    % Plot the vehicle trajectory in LLA
+    reference_LLA = [];
+    zoom_in_location = [];
+    zoomLevel = [];
+    [~] = fcn_findEdge_plotVehicleLLA(VehiclePose, (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num2));
 
 end % Ends check if plotting
 

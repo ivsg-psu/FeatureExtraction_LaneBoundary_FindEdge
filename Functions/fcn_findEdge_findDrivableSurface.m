@@ -1,4 +1,4 @@
-function [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors)
+function [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,varargin)
 %% fcn_findEdge_findDrivableSurface
 % Find drivable points of mapping vehicle in XYZ coordinates
 % 
@@ -50,7 +50,36 @@ function [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU
 %%% Revision history
 
 %% Debugging and Input checks
-% section is empty since there is no plot
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==5 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % % % % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % % % % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_FINDEDGE_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_FINDEDGE_FLAG_CHECK_INPUTS");
+    MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG = getenv("MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_FINDEDGE_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG); 
+        flag_check_inputs  = str2double(MATLABFLAG_FINDEDGE_FLAG_CHECK_INPUTS);
+    end
+end
+
+% flag_do_debug = 1;
+
+if flag_do_debug
+    st = dbstack; %#ok<*UNRCH>
+    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
+    debug_fig_num = 999978; %#ok<NASGU>
+else
+    debug_fig_num = []; %#ok<NASGU>
+end
 
 
 %% check input arguments
@@ -65,8 +94,45 @@ function [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU
 %              |_|
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% section is empty since there is no plot
 
+if 0==flag_max_speed
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(3,5);
+
+        % % Check the points input to be length greater than or equal to 2
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     points, '2column_of_numbers',[2 3]);
+        %
+        % % Check the transverse_tolerance input is a positive single number
+        % fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
+        %
+        % % Check the station_tolerance input is a positive single number
+        % if ~isempty(station_tolerance)
+        %     fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
+        % end
+    end
+end
+
+
+
+% Does user want to specify fig_num?
+flag_do_plots = 0;
+if (0==flag_max_speed) &&  (3<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        fig_num = temp;
+        flag_do_plots = 1;
+    end
+end
+
+% Does user want to specify another fig_num?
+if (0==flag_max_speed) &&  (4<=nargin)
+    temp = varargin{end};
+    if ~isempty(temp)
+        fig_num2 = temp;
+    end
+end
 %% Solve for the Maxs and Mins
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   __  __       _       
@@ -91,24 +157,30 @@ lane_half_width = (3.6576/2) * 0.40;
 indicies_under_vehicle = abs(transverse_only_LIDAR_points)<lane_half_width;
 LIDAR_ENU_under_vehicle = LIDAR_ENU(indicies_under_vehicle,:);
 
-end
+%% Plot the results (for debugging)?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____       _                 
+%  |  __ \     | |                
+%  | |  | | ___| |__  _   _  __ _ 
+%  | |  | |/ _ \ '_ \| | | |/ _` |
+%  | |__| |  __/ |_) | |_| | (_| |
+%  |_____/ \___|_.__/ \__,_|\__, |
+%                            __/ |
+%                           |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if flag_do_plots
+    % Plot the LIDAR data underneath the vehicle in XYZ
+    LIDAR_intensity = [];
+    scaling = [];
+    color_map = [];
+    format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 20');
+    fcn_findEdge_plotLIDARXYZ(LIDAR_ENU_under_vehicle, (LIDAR_intensity), (scaling), (color_map), (format), (fig_num));
+    daspect([1 1 0.1]); % Adjust aspect ratio
 
-% This must be done in ENU coordinates because LLA is not an orthogonal
-% coordinate system. To find the surface, we find the distance of the lidar
-% points in the orthogonal direction by taking the dot product of the LIDAR
-% points, relative to the vehicle center with the unit projection vector
-% pointed to the left of the vehicle.
-% Jiabao
-% gps_object = GPS();
-% % Calculate the vectors
-% vector_from_vehicle_pose_to_LIDAR_points = LIDAR_ENU - VehiclePose_ENU;
-% 
-% % Calculate the transverse distance
-% transverse_only_LIDAR_points = sum(vector_from_vehicle_pose_to_LIDAR_points.*VehiclePose_UnitOrthoVectors,2);
-% 
-% % Define lane width limits. Take 40 percent of the lane width. Numbers
-% % obtained by converting 12 ft (standard lane) to meters
-% lane_half_width = (3.6576/2) * 0.40;  
-% 
-% indicies_under_vehicle = find(abs(transverse_only_LIDAR_points)<lane_half_width);
-% LIDAR_ENU_under_vehicle = LIDAR_ENU(indicies_under_vehicle,:);
+    % Plot the LIDAR data underneath the vehicle in LLA
+    reference_LLA = [];
+    marker_size = [];
+    format = sprintf(' ''.'',''Color'',[0 1 0],''MarkerSize'', 2');
+    fcn_findEdge_plotLIDARLLA(LIDAR_ENU_under_vehicle,(LIDAR_intensity),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num2));
+end
+end

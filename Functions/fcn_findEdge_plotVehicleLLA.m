@@ -203,9 +203,8 @@ LLA_VehiclePose = gps_object.ENU2WGSLLA(VehiclePose(:,1:3)); % convert data posi
 % location.
 if flag_do_plots
     figure(LLA_fig_num)
-
     h_geoplot = geoplot(LLA_VehiclePose(:,1),LLA_VehiclePose(:,2),'-','Color',[0 0 1],'MarkerSize',10);
-    hold on;
+    hold on 
     h_parent =  get(h_geoplot,'Parent');
 
     if ~isempty(zoomLevel)
@@ -224,9 +223,8 @@ if flag_do_plots
     % Plot start and end points
     geoplot(LLA_VehiclePose(1,1),LLA_VehiclePose(1,2),'.','Color',[0 1 0],'MarkerSize',10);
     geoplot(LLA_VehiclePose(end,1),LLA_VehiclePose(end,2),'o','Color',[1 0 0],'MarkerSize',10);
-
 end % Ends check if plotting
-
+    
 if flag_do_debug
     fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
 end

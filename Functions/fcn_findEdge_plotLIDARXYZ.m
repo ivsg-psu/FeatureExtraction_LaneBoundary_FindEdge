@@ -255,7 +255,6 @@ if flag_do_plots
     ylabel('North position [m]');
     zlabel('Up position [m]');
     view(3)
-    hold off
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;
@@ -265,7 +264,7 @@ if flag_do_plots
         percent_larger = 0.3;
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
-
+    hold off
 end
 
 

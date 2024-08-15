@@ -7,7 +7,7 @@ function [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData(
 % 
 % FORMAT:
 %
-%      [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num))
+%      [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num), (fig_num2));
 %
 % INPUTS:     
 %      
@@ -65,7 +65,7 @@ function [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData(
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -108,7 +108,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(0,5);
+        narginchk(0,6);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -165,12 +165,22 @@ end
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if (0==flag_max_speed) &&  (5<=nargin)
-    temp = varargin{end};
+    temp = varargin{5};
     if ~isempty(temp)
         fig_num = temp;
         flag_do_plots = 1;
     end
 end
+
+% Does user want to specify another fig_num?
+
+if (0==flag_max_speed) &&  (6<=nargin)
+    temp = varargin{end};
+    if ~isempty(temp)
+        fig_num2 = temp;
+    end
+end
+
 
 
 %% Solve for the Maxs and Mins
@@ -299,9 +309,8 @@ if flag_do_plots
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
-    end        
+    end
 
-    clf;
     hold on;
     grid on;
     axis equal
@@ -310,7 +319,7 @@ if flag_do_plots
     boundaryLineNumber_start = 1;
     boundaryLineNumber_end = length(VehiclePose);
     plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 0],'MarkerSize',10,'LineWidth',3);
-   
+
 
     title('ENU plot of vehicle trajectory');
     xlabel('East position [m]');
@@ -328,7 +337,10 @@ if flag_do_plots
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
 
-    
+    % Plot the vehicle in 2D ENU
+    format = sprintf(' ''-'', ''Color'', [0 0 0], ''MarkerSize'', 10, ''LineWidth'', 3');
+    fcn_findEdge_plotVehicleXY(VehiclePose, format, fig_num2); % -- add string as optional input (format)
+    hold off
 end % Ends check if plotting
 
 if flag_do_debug

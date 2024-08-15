@@ -193,7 +193,6 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
-    clf;
     hold on;
     grid on;
     axis equal
@@ -235,7 +234,7 @@ if flag_do_plots
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
 
-    
+    hold off
 end % Ends check if plotting
 
 if flag_do_debug
