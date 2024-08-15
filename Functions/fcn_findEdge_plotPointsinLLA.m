@@ -3,8 +3,9 @@ function LLA_data = fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triple
 % that shows where the boundary,driveable/non-driveable area, and unmapped area
 % 
 % FORMAT:  
-% LLA_data =
-% fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(fig_num))
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 %
 % INPUTS:
 % ENU_data: Data points 

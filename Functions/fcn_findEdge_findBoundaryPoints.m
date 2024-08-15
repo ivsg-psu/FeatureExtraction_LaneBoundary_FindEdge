@@ -10,7 +10,7 @@ function boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,varar
 %
 % FORMAT:
 %
-% boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,(x_limits),(y_limits),(fig_num))
+% [boundary_points] = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,(x_limits),(y_limits),(fig_num))
 %
 % INPUTS:
 %

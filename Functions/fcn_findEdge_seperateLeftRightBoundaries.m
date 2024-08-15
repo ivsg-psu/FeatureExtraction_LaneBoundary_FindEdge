@@ -4,7 +4,7 @@ function [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLe
 % 
 % FORMAT:
 %
-%    [boundary_points_left, boundary_points_right] = fcn_findEdge_plotPointsinLLA...
+%    [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
 %    (VehiclePose,station_1,station_2,nearest_boundary_points, grid_size,
 %    transverse_shift, (fig_num)).
 %

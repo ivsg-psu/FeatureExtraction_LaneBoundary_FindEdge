@@ -382,7 +382,11 @@ figure(fig_num); clf;
 [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 
 %% STEP 6: Qualified and unqualified grids: grids that pass all three conditions above are qualified
-
+%fcn_findEdge_classifyQualifiedGrids
+%
+% [original_qualified_grids,gridCenters_qualified_grids,gridCenters_unqualified_grids] = ...
+%       fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,...
+%       grid_indices_with_more_than_transverse_span_threshold, grids_greater_than_zero_points,gridCenters,(format_unqualified),(format_qualified),(fig_num))
 
 fig_num=27;
 figure(fig_num); clf;
@@ -392,6 +396,13 @@ figure(fig_num); clf;
     grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 
 %% STEP 6: Plot circles corresponding to each fail condition
+% fcn_findEdge_plotPointsinLLA
+%
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
+%
+%
 % less than required point density - Red (small circle)
 % less than one scan line - Green (medium circle)
 % less than transverse span threshold - Blue (Large circle)
@@ -452,25 +463,11 @@ plot_gridCenters_with_less_than_transverse_span_threshold = [gridCenters_with_le
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_less_than_transverse_span_threshold,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% STEP 7: Recalculate the driven path grids among qualified grids
-% :Find the driven paths in the qualified grids:
-
-% (Function is broken) -- NEED TO FIX IT
-
-% fig_num = 131;
-% ENU_3D_fig_num = 114;
-% format = sprintf('''.'',''MarkerSize'',40,''Color'',[0.2 0.2 0.2]');
-% format1 = sprintf('''o'',''MarkerSize'',10,''Color'',[0 1 0], ''LineWidth'',2');
-% legend_name = 'Qualified grids';
-% legend_name2 = 'Driven path grids';
-% 
-% [gridCenters_driven_path, current_grid_numbers_of_driven_path,total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
-%     = fcn_findEdge_findDrivenPathGrids(gridCenters_qualified_grids, boundary_points_driven_path,...
-%     original_qualified_grids, total_N_points_in_each_grid,(format), (format1),(legend_name),(legend_name2), (fig_num), (ENU_3D_fig_num));
-% 
-% % [~, ~,total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
-% %     = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
-% %     grids_greater_than_zero_points, total_N_points_in_each_grid, (format), (format1),[],[], (fig_num), (ENU_3D_fig_num));
-% 
+%fcn_findEdge_findDrivenPathGrids
+%
+% [total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
+%      = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
+%      grids_greater_than_zero_points, (fig_num))
 
 fig_num = 517;
 figure(fig_num); clf;
@@ -483,76 +480,16 @@ figure(ENU_3D_fig_num);clf
     original_qualified_grids, current_qualified_grids, total_N_points_in_each_grid, (format), (format1),'Qualified grids',[], (fig_num), (ENU_3D_fig_num));
 
 
-% % "inpolygon" is used to find the grids within the boundary points 
-% [in_qg,on_qg] = inpolygon(gridCenters_qualified_grids(:,1),gridCenters_qualified_grids(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
-% 
-% % Original grid numbers of driven path
-% original_grid_numbers_of_driven_path = original_qualified_grids(in_qg); 
-% 
-% % Current grid numbers in driven path 
-% current_grid_numbers_of_driven_path = current_qualified_grids(in_qg); %find(in); 
-% 
-% % Total points in each grid in the driven path
-% total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(original_grid_numbers_of_driven_path); 
-% 
-% % Total points in each grid with points greater than zero
-% total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(current_qualified_grids); 
-% 
-% % Grid centers of the driven path
-% gridCenters_driven_path = [gridCenters_qualified_grids(in_qg,1),gridCenters_qualified_grids(in_qg,2)];
-% 
-
-% fig_num = 517;
-% figure(fig_num); clf;
-% 
-% hold on
-% grid on
-% xlabel('X[m]')
-% ylabel('Y[m]')
-% title('Grid centers and boundary points')
-% 
-% plot(gridCenters_qualified_grids(:,1), gridCenters_qualified_grids(:,2), '.','MarkerSize',40,'Color',[0.2 0.2 0.2]);
-% % plot(boundary_points_driven_path(:,1), boundary_points_driven_path(:,2), '.', 'MarkerSize',30, 'Color',[0 1 0]); 
-% 
-% % plot the grids in the driven path
-% plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',2) % points strictly inside
-% 
-% % for ith_text = 1:length(current_qualified_grids(:,1))
-% %     current_text = sprintf('%.0d',ith_text);
-% %     % Place the text on the grid center
-% %     text(gridCenters_qualified_grids(ith_text,1), gridCenters_qualified_grids(ith_text,2),current_text,'Color',[1 1 1],'HorizontalAlignment','center','FontSize', 6, 'FontWeight','bold');
-% % end
-% 
-% 
-% % Plot the grids with 
-% fig_num = 804; 
-% figure(fig_num);clf
-% 
-% % plot computed boundary points
-% marker_size = 10;
-% RGB_triplet = [0 0 0]; 
-% legend_option = 1;
-% legend_name = 'Qualified grids';
-% legend_position = [];
-% marker_type = [];
-% plot_gridCenters_qualified_grids = [gridCenters_qualified_grids(:,1:2), zeros(length(gridCenters_qualified_grids(:,1)),1)];
-% [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_qualified_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-% 
-% 
-% % plot driven path
-% marker_size = 25;
-% RGB_triplet = [0 1 0]; 
-% legend_option = 1;
-% legend_name = 'Driven path grids';
-% legend_position = [];
-% marker_type = [];
-% plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
-% [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-% 
 
 %% STEP 8: Qualified grid conditions - Standard deviation in Z (Do not need to run after determining a std_threshold)
-% :Fit a plane to each grid using linear regression:
-% (NEED TO FIX THIS) - STD THRESHOLD - OUTPUT
+%fcn_findEdge_determineSTDInZError
+%
+% FORMAT: 
+% [input_points,original_mapped_gridIndices_cell,total_mapped_grids,total_points_in_mapped_grids,standard_deviation_in_z,gridlines_mapped_grids,...
+%  driven_path_grid_indices_in_current_mapped_grids,std_in_z_driven_path,std_in_z_other_mapped_grids,mean_std_in_z_driven_path,mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path]...
+%               = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
+%               current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,(fig_num_gridCenters),(fig_num_gridSTD),(fig_num))
+
 
 fig_num_1 = 81;
 figure(fig_num_1); clf;
@@ -571,8 +508,9 @@ figure(fig_num_3); clf;
 std_threshold = 0.1; 
 
 %% STEP 9: Histogram of standard deviation - (Do not need to run after determining a std_threshold)
-% :Find the standard deviations of the z-fit errors for all qualified grids, and compare these standard deviations with those of the grids in the driven path to determine the suitable standard deviation threshold:
- 
+%fcn_findEdge_histogramSTDinZError
+%
+%   fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num))
 fig_num = 123;
 figure(fig_num); clf;
 N_bins_stdz=100;
@@ -581,7 +519,11 @@ N_bins_std_drivenpath=5;
 fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num));
 
 %% STEP 8: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
-% :Fit a plane to each grid using linear regression:
+%fcn_findEdge_determineAngleDeviation
+%
+% [angle_btw_unit_normals_and_vertical, mean_angle_btw_unit_normals_and_vertical_driven_path] = ...
+%       fcn_findEdge_determineAngleDeviation(LiDAR_allPoints, gridIndices_cell_array, original_qualified_grids,...
+%       gridCenters_qualified_grids,current_qualified_grids,gridCenters_driven_path,(fig_num),(fig_num2),(fig_num3) )
 
 fig_num_1 = 883;
 figure(fig_num_1); clf;
@@ -600,7 +542,9 @@ figure(fig_num_3); clf;
     grid_AABBs, grid_size, gridIndices, current_grid_numbers_of_driven_path, fig_num_1,fig_num_2,fig_num_3);
 
 %% STEP 9: Histogram of angle deviation - (Do not need to run after determining a theta_threshold)
-% :Find the angles between the unit normal vectors of the fitted planes and vertical ([0 0 1]) for all qualified grids, and compare these angles with those of the grids in the driven path to determine the suitable theta threshold:
+%fcn_findEdge_histogramAngleDeviation
+%
+%[theta_threshold] = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical,angle_btw_unit_normals_and_vertical_driven_path,mean_angle_btw_unit_normals_and_vertical_driven_path, varargin)
 
 fig_num = 1223;
 figure(fig_num); clf;
@@ -610,10 +554,14 @@ theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_an
     mean_angle_btw_unit_normals_and_vertical_driven_path, fig_num);
 
 %% STEP 10: Voting - Drivable, Non-drivable and Uncertain
-% :Voting:
+%fcn_findEdge_classifyGridsAsDrivable
+%
+%[standard_deviation_in_z, angle_btw_unit_normals_and_vertical, original_drivable_grids, original_non_drivable_grids,current_drivable_grid_numbers_in_mapped_grids, ...
+% current_non_drivable_grid_numbers_in_mapped_grids,gridCenters_drivable_grids,gridCenters_non_drivable_grids]=...
+%           fcn_findEdge_classifyGridsAsDrivable(original_grids_with_required_point_density,input_points,std_threshold, theta_threshold, gridCenters, (fig_num))
 
-% NOTE: The code refers non-drivable grids as failed grids and non-drivable
-% as (failed grids and uncertain grids) - NEED to change
+
+
 
 input_points = LiDAR_allPoints(:,1:3); 
 
@@ -647,11 +595,11 @@ figure(fig_num);clf
     fcn_findEdge_classifyGridsAsDrivable(gridIndices_cell_array, original_qualified_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
 %% STEP 10: Plot the drivable, non-drivable and uncertain grid centers 
-% :Voting:
-
-% (The code refers non-drivable as failed) Non-drivable: Everything (uncertain and failed) other than drivable
- 
-% Plot qualified and unqualified grids
+%fcn_findEdge_plotPointsinLLA
+%
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 
 fig_num = 987; 
 figure(fig_num);clf
@@ -731,20 +679,19 @@ geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_fai
 
 
 %% STEP 11: Find all boundary points: When uncertain grids are assumed as drivable
-% :Boundary points:
-
-% Part1 - Find the boundary points of mapped and unmapped grids
-
-% Revision History
-% Funtionalized this code
-% Added plotting options
-
-% INPUTS - gridCenters_low_point_density,
-% gridCenters_required_point_density, figure num
-% OUTPUTS - X, Y, Z 
-
-% prepGridCentersForBoundaryDetection
-
+%fcn_findEdge_prepGridCentersForBoundaryDetection
+%
+% [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection(gridCenters_qualified_grids, gridCenters_unqualified_grids, varargin)
+%
+%fcn_findEdge_findBoundaryPoints
+%
+% [boundary_points] = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,(x_limits),(y_limits),(fig_num))
+%
+%fcn_findEdge_plotPointsinLLA
+%
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 
 fig_num_qualified_unqualified = 767787; 
 
@@ -893,17 +840,20 @@ plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenter
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% STEP 11: Find boundary points: When uncertain grids are assumed as non drivable
-% :Boundary points:
+%fcn_findEdge_prepGridCentersForBoundaryDetection
+%
+% [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection(gridCenters_qualified_grids, gridCenters_unqualified_grids, varargin)
+%
+%fcn_findEdge_findBoundaryPoints
+%
+% [boundary_points] = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,(x_limits),(y_limits),(fig_num))
+%
+%fcn_findEdge_plotPointsinLLA
+%
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 
-% Part1 - Find the boundary points of mapped and unmapped grids
-
-% Revision History
-% Funtionalized this code
-% Added plotting options
-
-% INPUTS - gridCenters_low_point_density,
-% gridCenters_required_point_density, figure num
-% OUTPUTS - X, Y, Z 
 
 fig_num_qualified_unqualified = 767787; 
 
@@ -1040,6 +990,12 @@ plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenter
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% plot the boundary points
+%fcn_findEdge_plotPointsinLLA
+%
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
+
 figure(7639);clf;
 
 % plot computed boundary points
@@ -1053,7 +1009,16 @@ plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_po
 [~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% STEP 12: Find the nearest boundary points
-% :The nearest boundary points:
+%fcn_findEdge_findNearestBoundaryPoints
+%
+% [true_borders] = fcn_findEdge_findNearestBoundaryPoints(boundaryPointsXY,
+%      gridCenters_non_drivable_grids, gridCenters_driven_path, (fig _num))
+%
+%fcn_findEdge_plotPointsinLLA
+%
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 
 fig_num = 7676;
 
@@ -1087,7 +1052,8 @@ nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(len
 [~] = fcn_findEdge_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% STEP 13: Seperate the right and left boundaries from the nearest boundaries 
-% :Right nearest boundary points: & :Left nearest boundary points:
+%fcn_findEdge_seperateLeftRightBoundaries
+%[boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries(VehiclePose,station_1,station_2,nearest_boundary_points, grid_size,transverse_shift, (fig_num)).
 
 % Transverse shift 
 transverse_shift = 6*3.6576; 
@@ -1096,6 +1062,11 @@ fig_num = 7876;
     (VehiclePose,station_1,station_2,nearest_boundary_points, grid_size, transverse_shift, fig_num);
 
 %% Plot right boundary points
+%fcn_findEdge_plotPointsinLLA
+%
+% [LLA_data] =
+%       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
+%       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 
 fig_num = 12824; 
 figure(fig_num); 

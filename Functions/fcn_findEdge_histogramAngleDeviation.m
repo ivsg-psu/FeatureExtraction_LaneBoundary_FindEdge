@@ -6,7 +6,7 @@ function theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_n
 % FORMAT:
 %
 %      fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical, ...
-%      angle_btw_unit_normals_and_vertical_driven_path,varargin)
+%      angle_btw_unit_normals_and_vertical_driven_path,(fig_num))
 %
 % INPUTS:     
 %       
