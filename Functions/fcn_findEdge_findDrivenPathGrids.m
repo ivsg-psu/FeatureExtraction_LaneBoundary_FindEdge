@@ -1,6 +1,6 @@
 function [gridCenters_driven_path, current_grid_numbers_of_driven_path, total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
-    = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
-    grids_greater_than_zero_points, total_N_points_in_each_grid, varargin)
+    = fcn_findEdge_findDrivenPathGrids(gridCenters, boundary_points_driven_path,...
+    grids_numbers_of_gridCenters, total_N_points_in_each_grid, varargin)
 %% fcn_findEdge_findDrivenPathGrids   Find the driven path grids within the grids more than zero points
 % 
 % FORMAT:
@@ -182,10 +182,10 @@ end
 % Plot all the grids greater than zero point density
 
 % "inpolygon" is used to find the grids within the boundary points 
-[in,~] = inpolygon(gridCenters_greater_than_zero_point_density(:,1),gridCenters_greater_than_zero_point_density(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
+[in,~] = inpolygon(gridCenters(:,1),gridCenters(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
 
 % Original grid numbers of driven path
-original_grid_numbers_of_driven_path = grids_greater_than_zero_points(in); 
+original_grid_numbers_of_driven_path = grids_numbers_of_gridCenters(in); 
 
 % Current grid numbers in driven path 
 current_grid_numbers_of_driven_path = find(in); 
@@ -194,10 +194,10 @@ current_grid_numbers_of_driven_path = find(in);
 total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(original_grid_numbers_of_driven_path); 
 
 % Total points in each grid with points greater than zero
-total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(grids_greater_than_zero_points); 
+total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(grids_numbers_of_gridCenters); 
 
 % Grid centers of the driven path
-gridCenters_driven_path = [gridCenters_greater_than_zero_point_density(in,1),gridCenters_greater_than_zero_point_density(in,2)];
+gridCenters_driven_path = [gridCenters(in,1),gridCenters(in,2)];
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -212,7 +212,7 @@ gridCenters_driven_path = [gridCenters_greater_than_zero_point_density(in,1),gri
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
     figure(ENU_XY_fig_num);
-    fcn_findEdge_plotVehicleXY(gridCenters_greater_than_zero_point_density(:,1:2),(format),(ENU_XY_fig_num));
+    fcn_findEdge_plotVehicleXY(gridCenters(:,1:2),(format),(ENU_XY_fig_num));
     fcn_findEdge_plotVehicleXY(gridCenters_driven_path(:,1:2),(format2),(ENU_XY_fig_num));
 
 
@@ -225,7 +225,7 @@ if flag_do_plots
     legend_option = 1;
     legend_position = [];
     marker_type = [];
-    plot_gridCenters_greater_than_zero_point_density = [gridCenters_greater_than_zero_point_density(:,1:2), zeros(length(gridCenters_greater_than_zero_point_density(:,1)),1)];
+    plot_gridCenters_greater_than_zero_point_density = [gridCenters(:,1:2), zeros(length(gridCenters(:,1)),1)];
     [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_greater_than_zero_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],ENU_XY_fig_num1);
 
     % plot driven path
