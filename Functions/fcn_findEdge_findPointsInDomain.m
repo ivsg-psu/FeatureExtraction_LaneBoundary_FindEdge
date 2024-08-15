@@ -4,7 +4,7 @@ function [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain
 % 
 % FORMAT:
 %
-%      [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2)
+%      [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity,(fig_num))
 %
 % INPUTS:     
 %       
@@ -15,6 +15,8 @@ function [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain
 %      station_1: the starting scan line of the LIDAR data
 %
 %      station_2: the ending scan line of the LIDAR data
+%
+%      LIDAR_intensity
 %      
 %      (OPTIONAL INPUTS)
 %

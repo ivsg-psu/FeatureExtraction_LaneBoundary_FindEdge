@@ -167,7 +167,9 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 
 
 %% STEP 1: Load the data --- :Load LiDAR data: - Jiabao
-
+% fcn_findEdge_loadLIDARData FORMAT:
+% [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num), (fig_num2));
+%
 % Set the "inputs" to the file loading process - need the date and names
 % and date of file creation for the Vehicle Pose data file
 
@@ -181,6 +183,9 @@ flag_load_all_data = [];
 
 %% STEP 2 (part 1): Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2 and find LiDAR ENU and LIDAR_scanLineAndRingID
 % :Check if enough data have been measured based on LiDAR range:
+% 
+% fcn_findEdge_pointsAtRangeOfLiDARFromStation FORMAT:
+% [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range))
 
 station_1 = 1400; 
 station_2 = 1450;
@@ -191,6 +196,9 @@ range_of_LiDAR = 10;
 
 %% STEP 2 (part 2): find LiDAR ENU and LIDAR_scanLineAndRingID in domain - Jiabao
 % :Check if enough data have been measured based on LiDAR range:
+%
+% fcn_findEdge_pointsAtRangeOfLiDARFromStation FORMAT:
+% [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range))
 
 scanLineRange = [station1_minus_range_index station2_plus_range_index]; 
 
@@ -208,16 +216,27 @@ fig_num = 4;
 
 %% STEP 2 (part 3): Find the LIDAR_ENU and LIDAR_scanLineAndRingID in domain - Jiabao
 
+%fcn_findEdge_findPointsInDomain FORMAT:
+% [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,(fig_num))
+
+
 fig_num = 7;
 [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2, LIDAR_intensity,(fig_num));
 
 %% Vehicle pose - STEP 1: Load the vehicle pose and the find the driven path. :Vehicle pose: - Jiabao
 %Find the drivable surface
+% fcn_findEdge_findDrivableSurface FORMAT:
+%
+% [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(fig_num),(fig_num2))  
+
+
 ENU_3D_fig_num = 8;
 fig_num = 9; % figure number
 [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(ENU_3D_fig_num),(fig_num));
 
 %% Vehicle pose - STEP 2: Find the driven path (left and right side points)
+% fcn_findEdge_findDrivenPathBoundaryPoints FORMAT:
+% fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num))
 
 fig_num = 10;
 figure(fig_num);
@@ -229,6 +248,15 @@ boundary_points_driven_path = fcn_findEdge_findDrivenPathBoundaryPoints(VehicleP
 % :Separate the data into grids:
 % :Find the grids containing more than zero points:
 
+
+% fcn_findEdge_findMaxMinOfXYZ FORMAT:
+% [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(N_points,(fig_num))
+%
+% fcn_findEdge_findGridsWithPoints FORMAT:
+% [gridIndices_cell_array, total_N_points_in_each_grid, gridCenters,
+%  grids_with_zero_point, grids_greater_than_zero_points,
+%  gridCenters_zero_point_density,gridCenters_greater_than_zero_point_density] = fcn_findEdge_findGridsWithPoints(input_points,grid_size,grid_boundaries,(fig_num))
+%
 fig_num = 40; 
 figure(fig_num);clf
 
@@ -268,6 +296,11 @@ grid_boundaries = [Min_x Max_x Min_y Max_y];
 
 %% STEP 4: Find the driven path grids within the grids more than zero points
 % :Find the driven path grids. (The grids inside bounding box):
+%
+% fcn_findEdge_findDrivenPathGrids FORMAT:
+%
+% [total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
+%           = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,grids_greater_than_zero_points, (fig_num))
 
 fig_num = 13;
 ENU_3D_fig_num = 14;
@@ -285,6 +318,19 @@ current_grids_greater_than_zero_points = 1:length(grids_greater_than_zero_points
 
 %% STEP 5: Grid conditions - Point density (Do not need to run after determining point density)
 % :Determine the suitable "point density" for the analysis by comparing the point densities of driven grids with those of neighboring grids:
+% fcn_findEdge_determineGridPointDensity FORMAT:
+%
+% [point_density] = 
+%       fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero ...
+%       ,total_points_in_each_grid_in_the_driven_path,grid_size,(N_bins_grid_with_points_greater_than_zero)...
+%       (N_bins_grid_in_the_driven_path),(fig_num))
+%
+%fcn_findEdge_classifyGridsBasedOnDensity FORMAT:
+%
+% [grid_indices_with_required_point_density, gridCenters_low_point_density] = 
+%       fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero ...
+%       ,total_points_in_each_grid_in_the_driven_path,grid_size,(N_bins_grid_with_points_greater_than_zero)...
+%       (N_bins_grid_in_the_driven_path),(fig_num))
 
 fig_num = 52; 
 figure(fig_num); clf; 
@@ -302,7 +348,14 @@ figure(fig_num); clf;
 
 %% STEP 5: Grid conditions - Determining number of scan lines in each grid greater than zero points Point density 
 % :Determine the number of LiDAR scan lines in each grid:
-
+%
+% fcn_findEdge_calcNumberOfGridScanLines FORMAT:
+%   [total_scan_lines_in_each_grid_with_more_than_zero_points] = fcn_findEdge_calcNumberOfGridScanLines(gridIndices,LIDAR_scanLines,grids_greater_than_zero_points)
+%
+% fcn_findEdge_classifyGridsBasedOnScanLines FORMAT:
+%   [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points...
+%                                                        ,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters, (format_1),(format_2), (fig_num))
+    
 [total_scan_lines_in_each_grid_with_more_than_zero_points] = fcn_findEdge_calcNumberOfGridScanLines(gridIndices,LIDAR_scanLines,grids_greater_than_zero_points);
 
 
@@ -314,6 +367,14 @@ figure(fig_num); clf;
 
 %% STEP 5: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring 
 % :Find the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring.:
+%
+%   fcn_findEdge_determineTransverseSpanThreshold FORMAT:
+% [transverse_span_threshold,transverse_span_each_grid]= 
+%       fcn_findEdge_determineTransverseSpanThreshold(grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines, fig_num, fig_num2, fig_num3)
+%
+%   fcn_findEdge_classifyGridsBasedOnTransverseSpan FORMAT:
+% [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] =
+%       fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points, gridCenters, (format_1),(format_2),(fig_num))
 
 fig_num_1 = 50; 
 figure(fig_num_1); clf; 

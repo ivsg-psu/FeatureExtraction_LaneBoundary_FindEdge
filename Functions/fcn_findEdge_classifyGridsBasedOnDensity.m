@@ -4,7 +4,7 @@ function [grid_indices_with_required_point_density, gridCenters_low_point_densit
 %
 % FORMAT:
 %
-%      fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points...
+%      [grid_indices_with_required_point_density, gridCenters_low_point_density] =  fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points...
 %      ,total_N_points_in_each_grid,point_density, gridCenters, (format_1),(format_2),
 %      (fig_num))
 %

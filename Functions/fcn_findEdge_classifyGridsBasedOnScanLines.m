@@ -4,9 +4,8 @@ function [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_l
 %
 % FORMAT:
 %
-%      fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points...
-%      ,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters, (format_1),(format_2),
-%      (fig_num))
+%     [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points...
+%      ,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters, (format_1),(format_2), (fig_num))
 %
 % INPUTS:
 %      grids_greater_than_zero_points: mask that shows every grid with more than 0 points.      

@@ -4,7 +4,8 @@ function [grid_indices_with_more_than_transverse_span_threshold, gridCenters_wit
 %
 % FORMAT:
 %
-%      fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid...
+% [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = ...
+%       fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid...
 %      ,transverse_span_threshold,grids_greater_than_zero_points, gridCenters, (format_1),(format_2),
 %      (fig_num))
 %

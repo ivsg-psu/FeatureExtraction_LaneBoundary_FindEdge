@@ -2,7 +2,7 @@ function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathBoundaryPoin
 %% fcn_findEdge_findDrivenPathBoundaryPoints    Find the driven path (left and right side points)
 %
 % FORMAT: 
-% fcn_findEdge_findDrivenPathLeftRightSides(VehiclePose, scanLineRange, Nscans, (fig_num))
+% fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num))
 %
 % INPUTS:
 %       
