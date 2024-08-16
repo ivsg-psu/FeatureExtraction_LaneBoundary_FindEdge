@@ -464,6 +464,9 @@ figure(fig_num); clf;
     fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,grid_indices_with_more_than_transverse_span_threshold,...
     grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 
+assert((length(current_qualified_grids)+length(current_unqualified_grids)) == (length(gridCenters_unqualified_grids)+length(gridCenters_qualified_grids)))
+
+
 %% PLOTTING: Plot circles corresponding to each fail condition
 % fcn_findEdge_plotPointsinLLA
 %
@@ -490,6 +493,10 @@ marker_type = [];
 plot_gridCenters_unqualified_grids = [gridCenters_unqualified_grids, zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_unqualified_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 % plot grid centers
 marker_size = 10;
@@ -500,6 +507,10 @@ legend_position = [];
 marker_type = [];
 plot_gridCenters_qualified_grids = [gridCenters_qualified_grids, zeros(length(gridCenters_qualified_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_qualified_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 % Plot the fail conditions
 marker_size = 5;
@@ -510,7 +521,10 @@ legend_position = [];
 marker_type = 'o';
 plot_gridCenters_low_point_density = [gridCenters_low_point_density, zeros(length(gridCenters_low_point_density(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_low_point_density,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 marker_size = 7.5;
 RGB_triplet = [0, 1, 0]; 
@@ -520,7 +534,10 @@ legend_position = [];
 marker_type = 'o';
 plot_gridCenters_with_one_scan_line = [gridCenters_with_one_scan_line, zeros(length(gridCenters_with_one_scan_line(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_one_scan_line,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 marker_size = 10;
 RGB_triplet = [0, 0, 1]; 
@@ -530,7 +547,10 @@ legend_position = [];
 marker_type = 'o';
 plot_gridCenters_with_less_than_transverse_span_threshold = [gridCenters_with_less_than_transverse_span_threshold, zeros(length(gridCenters_with_less_than_transverse_span_threshold(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_less_than_transverse_span_threshold,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 %% STEP 9: Recalculate the driven path grids among qualified grids
 %fcn_findEdge_findDrivenPathGrids
 %
@@ -547,7 +567,7 @@ figure(ENU_3D_fig_num);clf
 [gridCenters_driven_path, current_grid_numbers_of_driven_path,~, ~]...
     = fcn_findEdge_findDrivenPathGrids(gridCenters_qualified_grids, boundary_points_driven_path,...
     original_qualified_grids, current_qualified_grids, total_N_points_in_each_grid, (format), (format1),'Qualified grids',[], (fig_num), (ENU_3D_fig_num));
-
+assert(length(current_grid_numbers_of_driven_path)==length(gridCenters_driven_path))
 %% Grid Voting Functions
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -596,6 +616,7 @@ figure(fig_num_3); clf;
   mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path] = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
                                                                                 current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,fig_num_1,fig_num_2,fig_num_3);
 
+assert(length(total_points_in_mapped_grids)==length(original_mapped_gridIndices_cell) & length(standard_deviation_in_z)==length(driven_path_grid_indices_in_current_mapped_grids))
 % Histogram of standard deviation - (Do not need to run after determining a std_threshold)
 
 fig_num = 123;
@@ -607,6 +628,12 @@ N_bins_std_drivenpath=5;
 std_threshold = 0.1; 
 
 fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num));
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 
 %% STEP 10.2: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
 % Find the angles between the unit normal vectors of the fitted planes and
@@ -635,6 +662,11 @@ figure(fig_num_3); clf;
     (LiDAR_allPoints, gridIndices_cell_array, original_qualified_grids,...
     gridCenters_qualified_grids,current_qualified_grids,gridCenters_driven_path, ...
     grid_AABBs, grid_size, gridIndices, current_grid_numbers_of_driven_path, fig_num_1,fig_num_2,fig_num_3);
+
+if (fig_num_3>0)
+    temp_h3 = figure(fig_num_3);
+    assert(~isempty(get(temp_h3,'Children')))
+end
 
 % Histogram of angle deviation - (Do not need to run after determining a theta_threshold)
 %fcn_findEdge_histogramAngleDeviation
@@ -689,6 +721,20 @@ figure(fig_num);clf
     concatenate_gridCenters_drivable_non_drivable_grids] = ...
     fcn_findEdge_classifyGridsAsDrivable(gridIndices_cell_array, original_qualified_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
+
+assert(~isempty(standard_deviation_in_z))
+assert(~isempty(angle_btw_unit_normals_and_vertical))
+assert(~isempty(original_drivable_grids))
+assert(~isempty(original_non_drivable_grids))
+assert(~isempty(current_drivable_grid_numbers_in_mapped_grids))
+assert(~isempty(current_non_drivable_grid_numbers_in_mapped_grids))
+assert(~isempty(current_failed_grid_numbers_in_mapped_grids))
+assert(~isempty(current_uncertain_grid_numbers_in_mapped_grids))
+assert(~isempty(gridCenters_failed_grids))
+assert(~isempty(gridCenters_drivable_grids))
+assert(~isempty(gridCenters_non_drivable_grids))
+assert(~isempty(concatenate_gridCenters_drivable_non_drivable_grids))
+
 %% PLOTTING: Plot the drivable, non-drivable and uncertain grid centers 
 %fcn_findEdge_plotPointsinLLA
 %
@@ -708,6 +754,11 @@ marker_type = [];
 plot_gridCenters_drivable_grids = [gridCenters_drivable_grids(:,1:2), zeros(length(gridCenters_drivable_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_drivable_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 % plot grid centers
 marker_size = 25;
 RGB_triplet = [1 0 0]; 
@@ -718,6 +769,11 @@ marker_type = [];
 plot_gridCenters_failed_grids = [gridCenters_failed_grids(:,1:2), zeros(length(gridCenters_failed_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_failed_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 % plot grid centers
 marker_size = 25;
 RGB_triplet = [0 0 1];%[0.9290 0.6940 0.1250]; 
@@ -727,6 +783,11 @@ legend_position = [];
 marker_type = [];
 plot_gridCenters_uncertain_grids = [gridCenters_uncertain_grids(:,1:2), zeros(length(gridCenters_uncertain_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_uncertain_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 if ~isempty(std_threshold)
     % Find the indices of std threshold failed indices
@@ -744,6 +805,12 @@ marker_type = 'o';
 legend_position = [];
 plot_std_threshold_failed_gridCenters = [std_threshold_failed_gridCenters, zeros(length(std_threshold_failed_gridCenters(:,1)),1)]; 
 [LLA_data_std_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_std_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],-1);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 % fcn_geometry_plotPointsinLLA(plot_gridCenters_updated_original_unmapped_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 % fcn_geometry_plotPointsinLLA(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
@@ -768,6 +835,11 @@ marker_type = 'o';
 legend_position = [];
 plot_theta_threshold_failed_gridCenters = [theta_threshold_failed_gridCenters, zeros(length(theta_threshold_failed_gridCenters(:,1)),1)]; 
 [LLA_data_theta_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_theta_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],-1);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_failed_grids(:,2), 'o','MarkerSize',marker_size,'Color',RGB_triplet, 'LineWidth',2, 'DisplayName','Theta threshold failed grids') 
 
@@ -806,6 +878,9 @@ fig_num_qualified_unqualified = 767787;
 [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_qualified_grids, gridCenters_unqualified_grids);
 
+assert(isequal(size(X), size(Y)))
+assert(isequal(size(X), size(Z)))
+
 %%%%%%%%%%%%%%---------------------------------------------------------------------------
 % x_limits = [min(x_range) max(x_range)];  
 % y_limits = [min(y_range) max(y_range)]; 
@@ -818,6 +893,8 @@ y_limits = [];
 figure(fig_num_qualified_unqualified);
 clf;
 boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
+
+assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -838,6 +915,9 @@ fig_num_drivable_non_drivable = 98898;
 [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_drivable_grids, gridCenters_uncertain_grids);
 
+assert(isequal(size(X), size(Y)))
+assert(isequal(size(X), size(Z)))
+
 %% STEP 13.2: Find the boundary points of drivable and non-drivable grids
 % x_limits = [min(x_range) max(x_range)];  
 % y_limits = [min(y_range) max(y_range)]; 
@@ -849,6 +929,9 @@ y_limits = [];
 figure(fig_num_drivable_non_drivable)
 clf;
 boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
+
+assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
+
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -882,6 +965,11 @@ marker_type = [];
 plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 % plot computed boundary points
 
 marker_size = 25;
@@ -893,6 +981,10 @@ marker_type = [];
 plot_gridCenters_drivable_grids = [gridCenters_drivable_grids(:,1:2), zeros(length(gridCenters_drivable_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_drivable_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 % plot grid centers
 marker_size = 25;
@@ -904,6 +996,11 @@ marker_type = [];
 plot_gridCenters_failed_grids = [gridCenters_failed_grids(:,1:2), zeros(length(gridCenters_failed_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_failed_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 % plot grid centers
 marker_size = 25;
 RGB_triplet = [0 0 1];%[0.9290 0.6940 0.1250]; 
@@ -914,6 +1011,10 @@ marker_type = [];
 plot_gridCenters_uncertain_grids = [gridCenters_uncertain_grids(:,1:2), zeros(length(gridCenters_uncertain_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_uncertain_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 % marker_size = 10;
 % RGB_triplet = [0 0 1]; 
@@ -934,6 +1035,10 @@ marker_type = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 % plot driven path
 marker_size = 10;
 RGB_triplet = [0 0.8 0]; 
@@ -943,6 +1048,11 @@ legend_position = [];
 marker_type = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 %% STEP 11: Find boundary points: When uncertain grids are assumed as non drivable
 %fcn_findEdge_prepGridCentersForBoundaryDetection
@@ -965,6 +1075,9 @@ fig_num_qualified_unqualified = 767787;
 [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_qualified_grids, gridCenters_unqualified_grids);
 
+assert(isequal(size(X), size(Y)))
+assert(isequal(size(X), size(Z)))
+
 %%%%%%%%%%%%%%---------------------------------------------------------------------------
 % x_limits = [min(x_range) max(x_range)];  
 % y_limits = [min(y_range) max(y_range)]; 
@@ -975,6 +1088,8 @@ y_limits = [];
 figure(fig_num_qualified_unqualified);
 clf;
 boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
+
+assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -994,6 +1109,9 @@ fig_num_drivable_non_drivable = 98898;
 [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters(original_drivable_grids,1:2), gridCenters(original_non_drivable_grids,1:2));
 
+assert(isequal(size(X), size(Y)))
+assert(isequal(size(X), size(Z)))
+
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
@@ -1001,6 +1119,8 @@ y_limits = [];
 figure(fig_num_drivable_non_drivable)
 clf;
 boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
+
+assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -1042,6 +1162,11 @@ marker_type = [];
 plot_gridCenters_drivable_grids = [gridCenters_drivable_grids(:,1:2), zeros(length(gridCenters_drivable_grids(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_drivable_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 
 % plot grid centers
 marker_size = 25;
@@ -1053,6 +1178,11 @@ marker_type = [];
 plot_gridCenters_non_drivable_grids = [gridCenters_non_drivable_grids(:,1:2), zeros(length(gridCenters_non_drivable_grids(:,1)),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 
 % plot computed boundary points
 marker_size = 25;
@@ -1063,6 +1193,11 @@ legend_position = [];
 marker_type = [];
 plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 % % plot computed boundary points
 % marker_size = 10;
@@ -1084,6 +1219,11 @@ marker_type = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 % plot driven path
 marker_size = 10;
 RGB_triplet = [0 0.8 0]; 
@@ -1093,6 +1233,11 @@ legend_position = [];
 marker_type = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
 
 %% plot the boundary points
 %fcn_findEdge_plotPointsinLLA
@@ -1113,6 +1258,11 @@ marker_type = [];
 plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 %% STEP 15:Find the nearest boundary points to the driven path 
 %fcn_findEdge_findNearestBoundaryPoints
 %
@@ -1131,6 +1281,10 @@ fig_num = 7676;
 [~, nearestBorderIndicies, nearestBorderXY] = fcn_findEdge_findNearestBoundaryPoints(true_boundary_points, ...
     gridCenters_driven_path, grid_size, grid_boundaries, fig_num);
 
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+
 % Figure number
 fig_num = 1224; 
 figure(fig_num); clf;
@@ -1146,6 +1300,11 @@ nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(len
 
 [~] = fcn_findEdge_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 marker_size = 10;
 RGB_triplet = [1 1 1]; 
 legend_option = 0;
@@ -1156,6 +1315,11 @@ nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(len
 
 [~] = fcn_findEdge_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 %% STEP 16: Seperate the right and left boundaries from the nearest boundaries 
 %fcn_findEdge_seperateLeftRightBoundaries
 %[boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries(VehiclePose,station_1,station_2,nearest_boundary_points, grid_size,transverse_shift, (fig_num)).
@@ -1165,6 +1329,9 @@ transverse_shift = 6*3.6576;
 fig_num = 7876; 
 [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
     (VehiclePose,station_1,station_2,nearest_boundary_points, grid_size, transverse_shift, fig_num);
+
+assert(isequal(length(boundary_points_left(1,:)),2))
+assert(isequal(length(boundary_points_right(1,:)),2))
 
 %% PLOTTING: Plot right boundary points
 %fcn_findEdge_plotPointsinLLA
@@ -1186,6 +1353,12 @@ marker_type = [];
 plot_boundary_points_right = [boundary_points_right, zeros(length(boundary_points_right),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
+
 marker_size = 12;
 RGB_triplet = [1 0 0]; 
 legend_option = 0;
@@ -1195,6 +1368,12 @@ marker_type = [];
 
 plot_boundary_points_right = [boundary_points_right, zeros(length(boundary_points_right),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 
 % Plot right boundary points
 
@@ -1211,6 +1390,12 @@ marker_type = [];
 plot_boundary_points_left = [boundary_points_left, zeros(length(boundary_points_left),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
+
 marker_size = 12;
 RGB_triplet = [0 0 1]; 
 legend_option = 0;
@@ -1220,6 +1405,12 @@ marker_type = [];
 
 plot_boundary_points_left = [boundary_points_left, zeros(length(boundary_points_left),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+if (fig_num>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+end
+
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
