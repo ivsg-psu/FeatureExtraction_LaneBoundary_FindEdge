@@ -27,7 +27,9 @@ fig_num=1111;
 
 total_scan_lines_in_each_grid_with_more_than_zero_points = randi([1, 5], num_grids, 1);
 
-fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,format_one,format_greater,fig_num);
+[grid_indices_with_more_than_one_scan_line, ~] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,format_one,format_greater,fig_num);
+
+assert(length(grids_greater_than_zero_points)==length(grid_indices_with_more_than_one_scan_line))
 
 %% TEST 2 - Different Larger data set - Randomly Generated Values - Simple Script
 
@@ -44,9 +46,9 @@ fig_num=2222;
 
 total_scan_lines_in_each_grid_with_more_than_zero_points = randi([1, 5], num_grids, 1);
 
-fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,format_one,format_greater,fig_num);
+[grid_indices_with_more_than_one_scan_line, ~] =fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,format_one,format_greater,fig_num);
 
-
+assert(length(grids_greater_than_zero_points)==length(grid_indices_with_more_than_one_scan_line))
 %% TEST 3 - Format Changed - Green and Red Points
 
 num_grids = 100;
@@ -62,7 +64,9 @@ fig_num=3333;
 
 total_scan_lines_in_each_grid_with_more_than_zero_points = randi([1, 5], num_grids, 1);
 
-fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,format_one,format_greater,fig_num);
+[grid_indices_with_more_than_one_scan_line, ~] =fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,format_one,format_greater,fig_num);
+
+assert(length(grids_greater_than_zero_points)==length(grid_indices_with_more_than_one_scan_line))
 
 %% TEST 4 - SPEED MODE
 

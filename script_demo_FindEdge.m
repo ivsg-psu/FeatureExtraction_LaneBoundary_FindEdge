@@ -182,6 +182,11 @@ LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file cont
 flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num),(fig_num2));
 
+% Check sizes
+assert(isequal(length(VehiclePose(:,1)),length(LiDAR_Scan_ENU_Entire_Loop)));
+assert(isequal(length(VehiclePose(1,:)),6)); % XYZRPY (roll pitch yaw)
+assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity scanLine deltaT
+
 %% STEP 2: Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range))
@@ -192,6 +197,8 @@ station_2 = 1450;
 range_of_LiDAR = 10;
 
 [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,station_1,station_2,range_of_LiDAR);  
+
+assert((station1_minus_range_index<station_1) & (station2_plus_range_index>station_2))
 
 %% STEP 3: Extracts vehicle pose ENU, vehicle pose unit orthogonal vectors, LiDAR ENU scans, LiDAR Intensity, LiDAR scan line and Ring IDs of the scan line range
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
@@ -210,6 +217,21 @@ fig_num = 4;
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (ENU_XYZ_fig_num),(fig_num));
 
+% Check that the points are filled to same sizes
+Npoints = length(VehiclePose_ENU(:,1));
+assert(isequal(size(VehiclePose_ENU),[Npoints 3]));
+assert(isequal(size(VehiclePose_UnitOrthoVectors),[Npoints 3]));
+assert(isequal(size(LIDAR_ENU),[Npoints 3]));
+assert(isequal(size(LIDAR_intensity),[Npoints 1]));
+assert(isequal(size(LIDAR_scanLineAndRingID),[Npoints 2]));
+
+% Check key values
+assert(min(LIDAR_scanLineAndRingID(:,1))==scanLineRange(1));
+assert(max(LIDAR_scanLineAndRingID(:,1))==scanLineRange(2));
+assert(min(LIDAR_scanLineAndRingID(:,2))==0);
+assert(max(LIDAR_scanLineAndRingID(:,2))==15);
+
+
 %% STEP 3.1: Find the boundary points of the driven path to create a bounding box for finding the driven path grids 
 % fcn_findEdge_findDrivenPathBoundaryPoints:
 % fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num))
@@ -222,7 +244,12 @@ fig_num2 = 11;
 
 boundary_points_driven_path = fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num), (fig_num2));
 
-
+if (fig_num2>0)
+temp_h = figure(fig_num);
+assert(~isempty(get(temp_h,'Children')))
+temp_h2 = figure(fig_num2);
+assert(~isempty(get(temp_h2,'Children')))
+end
 %% STEP 4: Find the points in the domain from LiDAR ENU scans of the scan line range
 %fcn_findEdge_findPointsInDomain:
 % [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,(fig_num))
@@ -230,6 +257,8 @@ boundary_points_driven_path = fcn_findEdge_findDrivenPathBoundaryPoints(VehicleP
 
 fig_num = 7;
 [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2, LIDAR_intensity,(fig_num));
+
+assert(length(in_domain)==length(VehiclePose_ENU));
 
 %% STEP 4.1:  Find the driven path points in LIDAR scans
 % fcn_findEdge_findDrivableSurface:
@@ -240,7 +269,7 @@ ENU_3D_fig_num = 8;
 fig_num = 9; % figure number
 [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(ENU_3D_fig_num),(fig_num));
 
-
+assert(isequal(length(LIDAR_ENU_under_vehicle(1,:)),3));
 %% STEP 5: Find the grid boundaries and separate the data into grids to find the empty and non-empty grids
 % fcn_findEdge_findMaxMinOfXYZ:
 % [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(N_points,(fig_num))
@@ -274,6 +303,9 @@ grid_size = 1; %0.8;%1;%1.25; %1.26
 
 % Find minimum and maximum values of x,y,z of LiDAR data
 [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(input_points,-1);
+%assertions
+assert(isequal(Min_x,min(input_points(:,1))));
+%
 
 % The grids are plotted only within the boundaries in #D
 % grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
@@ -286,6 +318,12 @@ grid_boundaries = [Min_x Max_x Min_y Max_y];
     grids_greater_than_zero_points, gridCenters_zero_point_density,...
     gridCenters_greater_than_zero_point_density, gridIndices, grid_AABBs] = fcn_findEdge_findGridsWithPoints(input_points,...
     grid_size,grid_boundaries,fig_num);
+
+assert(iscell(gridIndices_cell_array))
+assert(isequal(length(gridCenters(1,:)),2))
+assert(isequal(length(gridIndices(1,:)),1))
+assert(isequal(length(grid_AABBs(1,:)),4))
+
 
 %% STEP 6: Find the driven path grids from the non-empty grids 
 % fcn_findEdge_findDrivenPathGrids:
@@ -306,6 +344,7 @@ current_grids_greater_than_zero_points = 1:length(grids_greater_than_zero_points
     = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
     grids_greater_than_zero_points, current_grids_greater_than_zero_points, total_N_points_in_each_grid, (format), (format1),[],[], (fig_num), (ENU_3D_fig_num));
 
+assert(length(total_points_in_each_grid_with_points_greater_than_zero)==length(grids_greater_than_zero_points))
 
 %% Drivability of Grids Functions
 
@@ -341,6 +380,8 @@ figure(fig_num); clf;
 
 [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,[],[],fig_num);
 
+assert(point_density>0)
+
 % Minimum number of points required 
 point_density = floor(20*((grid_size^2)/(0.3^2)));
 
@@ -349,6 +390,8 @@ fig_num = 70;
 figure(fig_num); clf; 
 
 [grid_indices_with_required_point_density, gridCenters_low_point_density] = fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points,total_N_points_in_each_grid,point_density,gridCenters,[],[],fig_num);
+
+assert(length(grid_indices_with_required_point_density)==length(grids_greater_than_zero_points))
 
 %% STEP 7.2: Grid conditions - Determining number of scan lines in each grid greater than zero points Point density 
 % fcn_findEdge_calcNumberOfGridScanLines:
@@ -360,12 +403,15 @@ figure(fig_num); clf;
     
 [total_scan_lines_in_each_grid_with_more_than_zero_points] = fcn_findEdge_calcNumberOfGridScanLines(gridIndices,LIDAR_scanLines,grids_greater_than_zero_points);
 
+assert(length(total_scan_lines_in_each_grid_with_more_than_zero_points) == length(grids_greater_than_zero_points))
 
 fig_num = 71; 
 figure(fig_num); clf;
 
 % Find the grids that contain more than one scan line
 [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,[],[],fig_num);
+
+assert(length(grids_greater_than_zero_points)==length(grid_indices_with_more_than_one_scan_line))
 
 %% STEP 7.3: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring
 %   fcn_findEdge_determineTransverseSpanThreshold:
@@ -389,6 +435,10 @@ figure(fig_num_3); clf;
     (grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines,...
     gridCenters_greater_than_zero_point_density,fig_num_1,fig_num_2,fig_num_3);
 
+if fig_num_3>0
+    temp_h3 = figure(fig_num_3);
+    assert(~isempty(get(temp_h3,'Children')))
+end
 
 % Threshold of transverse span
 transverse_span_threshold = 0.15; 
@@ -398,6 +448,7 @@ figure(fig_num); clf;
 
 % Find the grids
 [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
+assert(length(grid_indices_with_more_than_transverse_span_threshold)==length(grids_greater_than_zero_points))
 
 %% STEP 8: Qualified and unqualified grids: grids that pass all three conditions above are qualified
 %fcn_findEdge_classifyQualifiedGrids
