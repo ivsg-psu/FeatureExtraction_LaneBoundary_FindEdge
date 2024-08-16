@@ -9,6 +9,8 @@
 % Revision history:
 %       2024_08_12 - Aleksandr Goncharov
 %       -- Wrote the script for the function
+%       2024_08_16 - Aleksandr Goncharov
+%       -- Wrote assertions for the function
 
 %% TO-do
 

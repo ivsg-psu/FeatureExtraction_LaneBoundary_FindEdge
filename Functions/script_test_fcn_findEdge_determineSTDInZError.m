@@ -2,6 +2,8 @@
 % - this is is a script written to test the function:
 % fcn_findEdge_determineSTDInZError.m
 % Revision history:
+% 2024_08_16 - Aleksandr Goncharov
+% -- Wrote the script, generated data does not fully reflect real data
 %% TEST 1 - BASIC GENERATED DATA
 
 fig_1=1;
