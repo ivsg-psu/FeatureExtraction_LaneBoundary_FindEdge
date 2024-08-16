@@ -165,7 +165,7 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 %                                        |_| 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% STEP 1: Load the data
+%% STEP 1: Load the LiDAR and Vehicle Pose data
 % fcn_findEdge_loadLIDARData:
 % [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num), (fig_num2));
 %
@@ -180,7 +180,7 @@ LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file cont
 flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num),(fig_num2));
 
-%% STEP 2 (part 1): Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2 and find LiDAR ENU and LIDAR_scanLineAndRingID
+%% STEP 2: Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range))
 
@@ -191,13 +191,12 @@ range_of_LiDAR = 10;
 
 [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,station_1,station_2,range_of_LiDAR);  
 
-%% STEP 2 (part 2): find LiDAR ENU and LIDAR_scanLineAndRingID in domain
+%% STEP 3: Extracts vehicle pose ENU, vehicle pose unit orthogonal vectors, LiDAR ENU scans, LiDAR Intensity, LiDAR scan line and Ring IDs of the scan line range
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range))
 
 scanLineRange = [station1_minus_range_index station2_plus_range_index]; 
 
-Nscans = length(VehiclePose(:,1));
 % Set defaults for which scans to extract
 % scanLineRange = [1400 1450];
 ringsRange = []; % If leave empty, it loads all rings
@@ -209,7 +208,20 @@ fig_num = 4;
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (ENU_XYZ_fig_num),(fig_num));
 
-%% STEP 2 (part 3): Find the LIDAR_ENU and LIDAR_scanLineAndRingID in domain
+%% STEP 3.1: Find the boundary points of the driven path to create a bounding box for finding the driven path grids 
+% fcn_findEdge_findDrivenPathBoundaryPoints:
+% fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num))
+
+Nscans = length(VehiclePose(:,1));
+shift = 5;
+fig_num = 10;
+figure(fig_num);
+fig_num2 = 11;
+
+boundary_points_driven_path = fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num), (fig_num2));
+
+
+%% STEP 4: Find the points in the domain from LiDAR ENU scans of the scan line range
 %fcn_findEdge_findPointsInDomain:
 % [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,(fig_num))
 
@@ -217,7 +229,7 @@ fig_num = 4;
 fig_num = 7;
 [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2, LIDAR_intensity,(fig_num));
 
-%% Vehicle pose - STEP 1: Load the vehicle pose and the find the driven path.
+%% STEP 4.1:  Find the driven path points in LIDAR scans
 % fcn_findEdge_findDrivableSurface:
 % [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(fig_num),(fig_num2))  
 
@@ -226,17 +238,8 @@ ENU_3D_fig_num = 8;
 fig_num = 9; % figure number
 [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(ENU_3D_fig_num),(fig_num));
 
-%% Vehicle pose - STEP 2: Find the driven path (left and right side points)
-% fcn_findEdge_findDrivenPathBoundaryPoints:
-% fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num))
 
-fig_num = 10;
-figure(fig_num);
-shift = 5;
-fig_num2 = 11;
-boundary_points_driven_path = fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num), (fig_num2));
-
-%% STEP 3: Seperate the data into grids
+%% STEP 5: Find the grid boundaries and separate the data into grids to find the empty and non-empty grids
 % fcn_findEdge_findMaxMinOfXYZ:
 % [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(N_points,(fig_num))
 %
@@ -282,7 +285,7 @@ grid_boundaries = [Min_x Max_x Min_y Max_y];
     gridCenters_greater_than_zero_point_density, gridIndices, grid_AABBs] = fcn_findEdge_findGridsWithPoints(input_points,...
     grid_size,grid_boundaries,fig_num);
 
-%% STEP 4: Find the driven path grids within the grids more than zero points
+%% STEP 6: Find the driven path grids from the non-empty grids 
 % fcn_findEdge_findDrivenPathGrids:
 %
 % [total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
