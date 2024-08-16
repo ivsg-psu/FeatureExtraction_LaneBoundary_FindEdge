@@ -1,6 +1,6 @@
 function [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,varargin)
 %% fcn_findEdge_determineGridPointDensity
-% determines the point density of the grid
+% Determine the suitable "point density" for the analysis by comparing the point densities of driven grids with those of neighboring grids
 % 
 % FORMAT:
 %

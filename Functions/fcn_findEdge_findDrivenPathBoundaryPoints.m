@@ -1,5 +1,6 @@
 function [boundary_points_driven_path] = fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, varargin)
-%% fcn_findEdge_findDrivenPathBoundaryPoints    Find the driven path (left and right side points)
+%% fcn_findEdge_findDrivenPathBoundaryPoints    
+% Find the boundary points of the driven path to create a bounding box for finding the driven path grids 
 %
 % FORMAT: 
 % fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num))

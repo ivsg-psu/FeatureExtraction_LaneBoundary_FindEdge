@@ -213,14 +213,15 @@ etc.
 
 #### fcn_findEdge_pointsAtRangeOfLiDARFromStation
 
-Write description
+This code finds the index of a point that is a certain range before
+station 1 and the index of a point that is a certain range after
+station 2. 
 
-Format 
-<pre align="center">
-  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_pointsAtRangeOfLiDARFromStation picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
-  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
-</pre>
+```MATLAB
+[station1_minus_range_index, station2_plus_range_index]...
+= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,...
+starting_index,ending_index,(range))
+```
 
 <a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
@@ -228,12 +229,22 @@ Format
 
 #### fcn_findEdge_findDrivenPathBoundaryPoints
 
-Write description
+Find the boundary points of the driven path to create a bounding box for finding the driven path grids 
 
-Format 
+```MATLAB
+fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose,...
+ scanLineRange, Nscans, shift, (fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findDrivenPathBoundaryPoints picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findDrivenPathBoundaryPoints_1.jpg" alt="fcn_findEdge_findDrivenPathBoundaryPoints picture" width="500" height="400">
+  <figcaption>Fig.3 - Boundary Points of Driven Path</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_findDrivenPathBoundaryPoints_2.jpg" alt="fcn_findEdge_findDrivenPathBoundaryPoints picture" width="500" height="400">
+  <figcaption>Fig.4 - Left and Right Boundary Lane</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -243,12 +254,24 @@ Format
 
 #### fcn_findEdge_extractScanLines
 
-Write description
+ Extracts vehicle pose ENU, vehicle pose unit orthogonal vectors,
+ LiDAR ENU scans, LiDAR Intensity, LiDAR scan line, and Ring IDs of the scan line range
 
-Format 
+```MATLAB
+     [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
+     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
+     fcn_findEdge_extractScanLines(VehiclePose,
+     LiDAR_Scan_ENU_Entire_Loop, (scanLineRange), (ringsRange), (fig_num), (fig_num2))
+```  
 <pre align="center">
-  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_extractScanLines picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_extractScanLines_1.jpg" alt="fcn_findEdge_extractScanLines picture" width="500" height="400">
+  <figcaption>Fig.5 - LIDAR Data in 3D ENU </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_extractScanLines_2.jpg" alt="fcn_findEdge_extractScanLines picture" width="500" height="400">
+  <figcaption>Fig.6 - Vehicle Trace in LLA </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -258,27 +281,37 @@ Format
 
 #### fcn_findEdge_findDrivableSurface
 
-Write description
+ Find the driven path points in LIDAR scans
 
-Format 
+```MATLAB
+     [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface ...
+     (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(fig_num),(fig_num2))
+```  
 <pre align="center">
-  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findDrivableSurface picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findDrivableSurface_1.jpg" alt="fcn_findEdge_findDrivableSurface picture" width="500" height="400">
+  <figcaption>Fig.7 - LIDAR Data Underneath the Vehicle in ENU</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_findDrivableSurface_2.jpg" alt="fcn_findEdge_findDrivableSurface picture" width="500" height="400">
+  <figcaption>Fig.7 - LIDAR Data Underneath the Vehicle in LLA</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
 <a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
 #### fcn_findEdge_findPointsInDomain
 
-Write description
+Find the points in the domain from LiDAR ENU scans of the scan line range
 
-Format 
+```MATLAB
+     [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,LIDAR_intensity,(fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findPointsInDomain picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findPointsInDomain.jpg" alt="fcn_findEdge_findPointsInDomain picture" width="500" height="400">
+  <figcaption>Fig.8 - LIDAR Points, Vehicle Pose and Boundary Points in LLA</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -288,12 +321,14 @@ Format
 
 #### fcn_findEdge_findMaxMinOfXYZ
 
-Write description
+Find the maximum and minimum numbers of x, y, and z of the given points 
 
-Format 
+```MATLAB
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(N_points,(fig_num))
+```   
 <pre align="center">
-  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findMaxMinOfXYZ picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findMaxMinOfXYZ.jpg" alt="fcn_findEdge_findMaxMinOfXYZ picture" width="500" height="400">
+  <figcaption>Fig.9 - ENU Trace Geometry </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -303,12 +338,17 @@ Format
 
 #### fcn_findEdge_findGridsWithPoints
 
-Write description
+Find the grid boundaries and separate the data into grids to find the empty and non-empty grids
 
-Format 
+```MATLAB
+    [gridIndices_cell_array, total_N_points_in_each_grid, gridCenters, grids_with_zero_point,
+     grids_greater_than_zero_points, gridCenters_zero_point_density,
+     gridCenters_greater_than_zero_point_density] = fcn_findEdge_findGridsWithPoints(input_points,
+     grid_size,grid_boundaries,(fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findGridsWithPoints picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findGridsWithPoints.jpg" alt="fcn_findEdge_findGridsWithPoints picture" width="500" height="400">
+  <figcaption>Fig.10 - Grids of LIDAR Points </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -318,12 +358,21 @@ Format
 
 #### fcn_findEdge_findDrivenPathGrids
 
-Write description
+Find the driven path grids from the non-empty grids 
 
-Format 
+```MATLAB
+    [total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
+    = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,grids_greater_than_zero_points, (fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findDrivenPathGrids picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findDrivenPathGrids_1.jpg" alt="fcn_findEdge_findDrivenPathGrids picture" width="500" height="400">
+  <figcaption>Fig.11 - ENU XY Plot of Vehicle Trajectory </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_findDrivenPathGrids_2.jpg" alt="fcn_findEdge_findDrivenPathGrids picture" width="500" height="400">
+  <figcaption>Fig.12 - Boundary Points in LLA  </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -335,14 +384,19 @@ Format
 
 #### fcn_findEdge_determineGridPointDensity
 
-Write description
+Determine the suitable "point density" for the analysis by comparing the point densities of driven grids with those of neighboring grids
 
-Format 
+```MATLAB
+    [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero ...
+    ,total_points_in_each_grid_in_the_driven_path,grid_size,(N_bins_grid_with_points_greater_than_zero)...
+    (N_bins_grid_in_the_driven_path),(fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineGridPointDensity picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_determineGridPointDensity.jpg" alt="fcn_findEdge_determineGridPointDensity picture" width="500" height="400">
+  <figcaption>Fig.13 - Grids Density</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
+
 
 <a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
@@ -350,12 +404,16 @@ Format
 
 #### fcn_findEdge_classifyGridsBasedOnDensity
 
-Write description
+Determine the suitable "point density" for the analysis by comparing the point densities of driven grids with those of neighboring grids
 
-Format 
+ ```MATLAB
+     [grid_indices_with_required_point_density, gridCenters_low_point_density] =  fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points...
+     ,total_N_points_in_each_grid,point_density, gridCenters, (format_1),(format_2),
+     (fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsBasedOnDensity picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_classifyGridsBasedOnDensity.jpg" alt="fcn_findEdge_classifyGridsBasedOnDensity picture" width="500" height="400">
+  <figcaption>Fig.14 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -365,14 +423,12 @@ Format
 
 #### fcn_findEdge_calcNumberOfGridScanLines
 
-Write description
+Determine the number of LiDAR scan lines in each grid
 
-Format 
-<pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_calcNumberOfGridScanLines picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
-  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
-</pre>
+ ```MATLAB
+     [total_scan_lines_in_each_grid_with_more_than_zero_points] = fcn_findEdge_calcNumberOfGridScanLines(gridIndices,LIDAR_scanLines,grids_greater_than_zero_points)
+```  
+
 
 <a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
@@ -380,12 +436,15 @@ Format
 
 #### fcn_findEdge_classifyGridsBasedOnScanLines
 
-Write description
+Determine the suitable "point density" for the analysis by comparing the point densities of driven grids with those of neighboring grids
 
-Format 
+ ```MATLAB
+       [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points...
+       ,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters, (format_1),(format_2), (fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsBasedOnScanLines picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_classifyGridsBasedOnScanLines.jpg" alt="fcn_findEdge_classifyGridsBasedOnScanLines picture" width="500" height="400">
+  <figcaption>Fig.15 - Grid Center with One Scan Line</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -395,12 +454,28 @@ Format
 
 #### fcn_findEdge_determineTransverseSpanThreshold
 
-Write description
+Find the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring. 
 
-Format 
+ ```MATLAB
+      fcn_findEdge_determineTransverseSpanThreshold:
+      [transverse_span_threshold,transverse_span_each_grid]= 
+      fcn_findEdge_determineTransverseSpanThreshold(grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines, fig_num, fig_num2, fig_num3)
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineTransverseSpanThreshold picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_determineTransverseSpanThreshold_1.jpg" alt="fcn_findEdge_determineTransverseSpanThreshold picture" width="500" height="400">
+  <figcaption>Fig.16 - Gridlines and Points of the Grids Greater than Zero Point Density </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_determineTransverseSpanThreshold_2.jpg" alt="fcn_findEdge_determineTransverseSpanThreshold picture" width="500" height="400">
+  <figcaption>Fig.17 - Grid Lines of the Grids Greater than Zero </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_determineTransverseSpanThreshold_3.jpg" alt="fcn_findEdge_determineTransverseSpanThreshold picture" width="500" height="400">
+  <figcaption>Fig.18 - Grid Lines of the Grids Greater than Zero </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -410,12 +485,15 @@ Format
 
 #### fcn_findEdge_classifyGridsBasedOnTransverseSpan
 
-Write description
+Find the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring. 
 
-Format 
+ ```MATLAB
+      [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] =
+      fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points, gridCenters, (format_1),(format_2),(fig_num))
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsBasedOnTransverseSpan picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_classifyGridsBasedOnTransverseSpan.jpg" alt="fcn_findEdge_classifyGridsBasedOnTransverseSpan picture" width="500" height="400">
+  <figcaption>Fig.19 - Grid with Threshold </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -425,12 +503,16 @@ Format
 
 #### fcn_findEdge_classifyQualifiedGrids
 
-Write description
+If either of the conditions fail, the non-empty grids are classified as UNQUALIFIED. If all the conditions pass, the non-empty grids are classified as QUALIFIED.
 
-Format 
+ ```MATLAB
+      [original_qualified_grids,gridCenters_qualified_grids,gridCenters_unqualified_grids] = ...
+      fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,...
+      grid_indices_with_more_than_transverse_span_threshold, grids_greater_than_zero_points,gridCenters,(format_unqualified),(format_qualified),(fig_num))
+```  
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyQualifiedGrids picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_classifyQualifiedGrids.jpg" alt="fcn_findEdge_classifyQualifiedGrids picture" width="500" height="400">
+  <figcaption>Fig.20 - Unqualified and Qualified Grids </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -440,12 +522,22 @@ Format
 
 #### fcn_findEdge_findDrivenPathGrids
 
-Write description
+Recalculate the driven path grids among qualified grids
 
-Format 
+ ```MATLAB
+      [total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
+     = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
+     grids_greater_than_zero_points, (fig_num))
+```
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findDrivenPathGrids picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findDrivenPathGrids_3.jpg" alt="fcn_findEdge_findDrivenPathGrids picture" width="500" height="400">
+  <figcaption>Fig.21 - New ENU XY Plot of Vehicle Trajectory </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_findDrivenPathGrids_4.jpg" alt="fcn_findEdge_findDrivenPathGrids picture" width="500" height="400">
+  <figcaption>Fig.21 - New Boundary Points in LLA </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -457,12 +549,29 @@ Format
 
 #### fcn_findEdge_determineSTDInZError
 
-Write description
+Find the standard deviations of the z-fit errors for all qualified grids, and compare these standard deviations with those of the grids in the driven path to determine the suitable standard deviation threshold
 
-Format 
+ ```MATLAB
+      [input_points,original_mapped_gridIndices_cell,total_mapped_grids,total_points_in_mapped_grids,standard_deviation_in_z,gridlines_mapped_grids,...
+ driven_path_grid_indices_in_current_mapped_grids,std_in_z_driven_path,std_in_z_other_mapped_grids,mean_std_in_z_driven_path,mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path]...
+              = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
+              current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,(fig_num_gridCenters),(fig_num_gridSTD),(fig_num))
+```
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineSTDInZError picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_determineSTDInZError_1.jpg" alt="fcn_findEdge_determineSTDInZError picture" width="500" height="400">
+  <figcaption>Fig.22 - Grid centers mapped grids in ENU </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_determineSTDInZError_2.jpg" alt="fcn_findEdge_determineSTDInZError picture" width="500" height="400">
+  <figcaption>Fig.23 - Standard deviation of Z of mapped grids </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_determineSTDInZError_3.jpg" alt="fcn_findEdge_determineSTDInZError picture" width="500" height="400">
+  <figcaption>Fig.24 - Qualified grid centers vs standard deviation in Z </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -472,12 +581,14 @@ Format
 
 #### fcn_findEdge_histogramSTDinZError
 
-Write description
+Histogram of standard deviations of the z-fit errors for all qualified grids
 
-Format 
+ ```MATLAB
+      fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num))
+```
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_histogramSTDinZError picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_histogramSTDinZError.jpg" alt="fcn_findEdge_histogramSTDinZError picture" width="500" height="400">
+  <figcaption>Fig.25 - Standard Deviation in Z </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
