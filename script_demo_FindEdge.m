@@ -152,19 +152,18 @@ end
 setenv('MATLABFLAG_FINDEDGE_FLAG_CHECK_INPUTS','1');
 setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 
-%% Basic Functions
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% http://patorjk.com/software/taag/#p=display&f=Big&t=Basic%20Functions
-% ____            _        ______                _   _                 
-% |  _ \          (_)      |  ____|              | | (_)                
-% | |_) | __ _ ___ _  ___  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___ 
-% |  _ < / _` / __| |/ __| |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
-% | |_) | (_| \__ \ | (__  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
-% |____/ \__,_|___/_|\___| |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
-% 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% Data Preparation Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% http://patorjk.com/software/taag/#p=display&f=Big&t=Data%20Preparation%20Functions
+%  _____        _          _____                                _   _               ______                _   _                 
+% |  __ \      | |        |  __ \                              | | (_)             |  ____|              | | (_)                
+% | |  | | __ _| |_ __ _  | |__) | __ ___ _ __   __ _ _ __ __ _| |_ _  ___  _ __   | |__ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+% | |  | |/ _` | __/ _` | |  ___/ '__/ _ \ '_ \ / _` | '__/ _` | __| |/ _ \| '_ \  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+% | |__| | (_| | || (_| | | |   | | |  __/ |_) | (_| | | | (_| | |_| | (_) | | | | | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+% |_____/ \__,_|\__\__,_| |_|   |_|  \___| .__/ \__,_|_|  \__,_|\__|_|\___/|_| |_| |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%                                        | |                                                                                    
+%                                        |_| 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% STEP 1: Load the data
 % fcn_findEdge_loadLIDARData:
@@ -302,6 +301,20 @@ current_grids_greater_than_zero_points = 1:length(grids_greater_than_zero_points
     = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
     grids_greater_than_zero_points, current_grids_greater_than_zero_points, total_N_points_in_each_grid, (format), (format1),[],[], (fig_num), (ENU_3D_fig_num));
 
+
+%% Drivability of Grids Functions
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% http://patorjk.com/software/taag/#p=display&f=Big&t=Drivability%20of%20Grids%20Functions
+%  _____       _            _     _ _ _ _                  __    _____      _     _       ______                _   _                 
+% |  __ \     (_)          | |   (_) (_) |                / _|  / ____|    (_)   | |     |  ____|              | | (_)                
+% | |  | |_ __ ___   ____ _| |__  _| |_| |_ _   _    ___ | |_  | |  __ _ __ _  __| |___  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+% | |  | | '__| \ \ / / _` | '_ \| | | | __| | | |  / _ \|  _| | | |_ | '__| |/ _` / __| |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+% | |__| | |  | |\ V / (_| | |_) | | | | |_| |_| | | (_) | |   | |__| | |  | | (_| \__ \ | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+% |_____/|_|  |_| \_/ \__,_|_.__/|_|_|_|\__|\__, |  \___/|_|    \_____|_|  |_|\__,_|___/ |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%                                            __/ |                                                                                    
+%                                           |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% STEP 5: Grid conditions - Point density (Do not need to run after determining point density)
 % fcn_findEdge_determineGridPointDensity:
@@ -479,7 +492,19 @@ figure(ENU_3D_fig_num);clf
     = fcn_findEdge_findDrivenPathGrids(gridCenters_qualified_grids, boundary_points_driven_path,...
     original_qualified_grids, current_qualified_grids, total_N_points_in_each_grid, (format), (format1),'Qualified grids',[], (fig_num), (ENU_3D_fig_num));
 
+%% Grid Voting Functions
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% http://patorjk.com/software/taag/#p=display&f=Big&t=Grid%20Voting%20Functions
+%   _____      _     _  __      __   _   _               ______                _   _                 
+%  / ____|    (_)   | | \ \    / /  | | (_)             |  ____|              | | (_)                
+% | |  __ _ __ _  __| |  \ \  / /__ | |_ _ _ __   __ _  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+% | | |_ | '__| |/ _` |   \ \/ / _ \| __| | '_ \ / _` | |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+% | |__| | |  | | (_| |    \  / (_) | |_| | | | | (_| | | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  \_____|_|  |_|\__,_|     \/ \___/ \__|_|_| |_|\__, | |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%                                                 __/ |                                              
+%                                                |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% STEP 8: Qualified grid conditions - Standard deviation in Z (Do not need to run after determining a std_threshold)
 %fcn_findEdge_determineSTDInZError
@@ -681,7 +706,19 @@ plot_theta_threshold_failed_gridCenters = [theta_threshold_failed_gridCenters, z
 
 geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_failed_grids(:,2), 'o','MarkerSize',marker_size,'Color',RGB_triplet, 'LineWidth',2, 'DisplayName','Theta threshold failed grids') 
 
+%% Post Processing Functions
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% http://patorjk.com/software/taag/#p=display&f=Big&t=Post%20Processing%20Functions
+%  _____          _     _____                             _               ______                _   _                 
+% |  __ \        | |   |  __ \                           (_)             |  ____|              | | (_)                
+% | |__) |__  ___| |_  | |__) | __ ___   ___ ___  ___ ___ _ _ __   __ _  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+% |  ___/ _ \/ __| __| |  ___/ '__/ _ \ / __/ _ \/ __/ __| | '_ \ / _` | |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+% | |  | (_) \__ \ |_  | |   | | | (_) | (_|  __/\__ \__ \ | | | | (_| | | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+% |_|   \___/|___/\__| |_|   |_|  \___/ \___\___||___/___/_|_| |_|\__, | |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%                                                                  __/ |                                              
+%                                                                 |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% STEP 11: Find all boundary points: When uncertain grids are assumed as drivable
 %fcn_findEdge_prepGridCentersForBoundaryDetection
