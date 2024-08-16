@@ -187,12 +187,23 @@ The following are the top level directories within the repository:
 
 #### fcn_findEdge_loadLIDARData
 
-Write description
+Loads LIDAR data from a specified file. Peforms loading of vehicle pose
+and LIDAR data with many conditional checks to confirm the file is
+present, the variables were not already loaded, the files are up-to-date,
+etc.
 
-Format 
+```MATLAB
+[VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num), (fig_num2));
+```
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_loadLIDARData picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_loadLIDARData_1.jpg" alt="fcn_findEdge_loadLIDARData picture" width="500" height="400">
+  <figcaption>Fig.1 - Vehicle Trajectory</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_loadLIDARData_2.jpg" alt="fcn_findEdge_loadLIDARData picture" width="500" height="400">
+  <figcaption>Fig.2 - Vehicle Trajectory in 2D</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
