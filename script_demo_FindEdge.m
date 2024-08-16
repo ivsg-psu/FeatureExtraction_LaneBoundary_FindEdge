@@ -712,7 +712,7 @@ y_limits = [];
 % Calculate boundary points
 figure(fig_num_qualified_unqualified);
 clf;
-boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
+boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -757,7 +757,7 @@ boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_lim
 
 fig_num_bd_pts_ENU = 1000; 
 
-[members, id_x] = ismember(boundary_points,boundary_points_mapped_unmapped,'rows'); 
+[members, id_x] = ismember(boundary_points,boundary_points_qualified_unqualified,'rows'); 
 
 not_boundary_points = boundary_points(members,:);
 
@@ -874,7 +874,7 @@ y_limits = [];
 % Calculate boundary points
 figure(fig_num_qualified_unqualified);
 clf;
-boundary_points_mapped_unmapped = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
+boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -917,7 +917,7 @@ boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_lim
 
 fig_num_bd_pts_ENU = 1000; 
 
-[members, id_x] = ismember(boundary_points,boundary_points_mapped_unmapped,'rows'); 
+[members, id_x] = ismember(boundary_points,boundary_points_qualified_unqualified,'rows'); 
 
 not_boundary_points = boundary_points(members,:);
 
