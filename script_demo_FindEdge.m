@@ -734,7 +734,8 @@ geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_fai
 %                                                                 |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% STEP 12: Find all boundary points: When uncertain grids are assumed as drivable
+%% Find all boundary points: When uncertain grids are assumed as drivable
+%% STEP 12.1: Prepare the grid centers of qualified and unqualified for boundary detection
 %fcn_findEdge_prepGridCentersForBoundaryDetection
 %
 % [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection(gridCenters_qualified_grids, gridCenters_unqualified_grids, varargin)
@@ -758,6 +759,8 @@ fig_num_qualified_unqualified = 767787;
 % x_limits = [min(x_range) max(x_range)];  
 % y_limits = [min(y_range) max(y_range)]; 
 
+%% STEP 13.1: Find the boundary points of qualified and unqualified grids
+
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
@@ -777,11 +780,14 @@ boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,gr
 
 % Part 2 - Find boundary points of drivable and non-drivable grids
 
+%% STEP 12.2: Prepare the grid centers of drivable and non-drivable for boundary detection
+
 fig_num_drivable_non_drivable = 98898;
 
 [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_drivable_grids, gridCenters_uncertain_grids);
 
+%% STEP 13.2: Find the boundary points of drivable and non-drivable grids
 % x_limits = [min(x_range) max(x_range)];  
 % y_limits = [min(y_range) max(y_range)]; 
 
@@ -805,6 +811,8 @@ boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_lim
 
 % Part 3 - Find true boundary points by eliminating the boundary points of
 % mapped and unmapped from drivable and non-drivable boubndary points. 
+
+%% STEP 14: Find the true boundary points by removing the boundary points of qualified and unqualified from drivable and non-drivable boundary points
 
 fig_num_bd_pts_ENU = 1000; 
 
@@ -1054,7 +1062,7 @@ marker_type = [];
 plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
-%% STEP 12: Find the nearest boundary points
+%% STEP 15:Find the nearest boundary points to the driven path 
 %fcn_findEdge_findNearestBoundaryPoints
 %
 % [true_borders] = fcn_findEdge_findNearestBoundaryPoints(boundaryPointsXY,
@@ -1097,7 +1105,7 @@ nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(len
 
 [~] = fcn_findEdge_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
-%% STEP 13: Seperate the right and left boundaries from the nearest boundaries 
+%% STEP 16: Seperate the right and left boundaries from the nearest boundaries 
 %fcn_findEdge_seperateLeftRightBoundaries
 %[boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries(VehiclePose,station_1,station_2,nearest_boundary_points, grid_size,transverse_shift, (fig_num)).
 
@@ -1107,7 +1115,7 @@ fig_num = 7876;
 [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
     (VehiclePose,station_1,station_2,nearest_boundary_points, grid_size, transverse_shift, fig_num);
 
-%% Plot right boundary points
+%% PLOTTING: Plot right boundary points
 %fcn_findEdge_plotPointsinLLA
 %
 % [LLA_data] =

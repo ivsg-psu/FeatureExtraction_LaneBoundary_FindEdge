@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2024-08-16T13:15:01.745Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.6 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="dZxJ8d3_KP5gCsFrzdSS" version="24.4.6" type="device">
+<mxfile host="Electron" modified="2024-08-16T13:16:51.792Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.6 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="Nk5LMxDLpWm7TB6xgeQV" version="24.4.6" type="device">
   <diagram name="Page-1" id="1t3EqyHOZMW7sC0uhStz">
     <mxGraphModel dx="1266" dy="681" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -932,6 +932,12 @@
         </mxCell>
         <mxCell id="MPG5JlO9KalOghpc2j8w-5" value="Find the true boundary points by removing the boundary points of qualified and unqualified from drivable and non-drivable boundary points" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="srokErgthjkjzXlaEye1-362">
           <mxGeometry x="1020" y="550" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="MPG5JlO9KalOghpc2j8w-9" value="Find the nearest boundary points to the driven path&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="srokErgthjkjzXlaEye1-362">
+          <mxGeometry x="1480" y="540" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="MPG5JlO9KalOghpc2j8w-10" value="Separate the nearest boundary points into left and right boundaries" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="srokErgthjkjzXlaEye1-362">
+          <mxGeometry x="1940" y="540" width="190" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
