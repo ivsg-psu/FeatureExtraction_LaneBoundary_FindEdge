@@ -1,5 +1,5 @@
 
-# FeatureExtraction_DataClean_BreakDataIntoLaps
+# FeatureExtraction_LaneBoundary_FindEdge
 
 <!--
 The following template is based on:
@@ -13,7 +13,7 @@ Search for this, and you will find!
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-  <h2 align="center"> FeatureExtraction_DataClean_BreakDataIntoLaps
+  <h2 align="center"> FeatureExtraction_LaneBoundary_FindEdge
   </h2>
 
   <pre align="center">
@@ -23,7 +23,7 @@ Search for this, and you will find!
 </pre>
 
   <p align="center">
-    The purpose of this code is to break data into "laps", e.g. segments of data that are defined by a clear start condition and end condition. The code finds when a given path meets the "start" condition, then meets the "end" condition, and returns every portion of the path that is inside both conditions. Advanced features of the code include the ability to return the row indices defining each lap's data, as well as the path portions prior and after the lap area in case the "run in" or "run out" areas are needed. Yay! (I think)
+    This library finds the road edge from LIDAR data and XYZ trajectory data of a mapping vehicle. The road edge is the location where the pavement stops being a drivable surface, usually the edge of the pavement and the vegetation next to the road.
     <br />
     <!-- a href="https://github.com/ivsg-psu/FeatureExtraction_Association_PointToPointAssociation"><strong>Explore the docs »</strong></a>
     <br />
@@ -57,20 +57,44 @@ Search for this, and you will find!
     </li>
     <li><a href="#functions">Functions</li>
       <ul>
-        <li><a href="#basic-support-functions">Basic Support Functions</li>
+        <li><a href="#data-preparation-functions">Data Preparation Functions</li>
         <ul>
-          <li><a href="#fcn_laps_plotlapsxy">fcn_Laps_plotLapsXY - Plotting utility for lap outputs</li>
-          <li><a href="#fcn_laps_fillsamplelaps">fcn_Laps_fillSampleLaps - Creates test datasets</li>
-          <li><a href="#fcn_laps_plotzonedefinition">fcn_Laps_plotZoneDefinition - Plots zone definitions</li>
-          <li><a href="#fcn_laps_fillsamplelaps">fcn_Laps_fillSampleLaps - Creates test datasets</li>
+          <li><a href="#fcn_findedge_loadlidardata">fcn_findEdge_loadLIDARData - Loads LiDAR and vehicle pose data</li>
+          <li><a href="#fcn_findedge_pointsatrangeoflidarfromstation">fcn_findEdge_pointsAtRangeOfLiDARFromStation - Finds the scan lines located "range of LiDAR" meters from station 1 and station 2. </li>
+          <li><a href="#fcn_findedge_finddrivenpathboundarypoints">fcn_findEdge_findDrivenPathBoundaryPoints - Find the boundary points of the driven path to create a bounding box for identifying the driven path grids.</li>
+          <li><a href="#fcn_findedge_extractscanlines">fcn_findEdge_extractScanLines - Extracts vehicle pose ENU, vehicle pose unit orthogonal vectors, LiDAR ENU scans, LiDAR Intensity, LiDAR scan line, and Ring IDs of the scan line range</li>
+          <li><a href="#fcn_findedge_finddrivablesurface">fcn_findEdge_findDrivableSurface - Finds the driven path points in LIDAR scans</li>
+          <li><a href="#fcn_findedge_findpointsindomain">fcn_findEdge_findPointsInDomain - Finds the points in the domain from LiDAR ENU scans of the scan line range</li>
+          <li><a href="#fcn_findedge_findmaxminofxyz">fcn_findEdge_findMaxMinOfXYZ - Finds the grid boundaries</li>
+          <li><a href="#fcn_findedge_findgridswithpoints">fcn_findEdge_findGridsWithPoints - Separates the data into grids to find the empty and non-empty grids</li>
+          <li><a href="#fcn_findedge_finddrivenpathgrids">fcn_findEdge_findDrivenPathGrids - Finds the driven path grids from the non-empty grids </li>
         </ul>
-        <li><a href="#core-functions">Core Functions</li>
+         <li><a href="#drivability-of-grids-functions">Drivability of Grids Functions</li>
         <ul>
-          <li><a href="#fcn_laps_breakdataintolaps">fcn_Laps_breakDataIntoLaps - Core function of the repo, breaks data into laps</li>
-          <li><a href="#fcn_laps_checkzonetype">fcn_Laps_checkZoneType - Checks inputs to determine if zone is a point or line segment type</li>
-          <li><a href="#fcn_laps_breakdataintolapindices">fcn_Laps_breakDataIntoLapIndices - A more advanced version of fcn_Laps_breakDataIntoLaps, where the outputs are the indices that apply to each lap.</li>
-          <li><a href="#fcn_laps_findsegmentzonestartstop">fcn_Laps_findSegmentZoneStartStop - Supporting function that finds the portions of a path that meet a segment zone criteria</li>
-          <li><a href="#fcn_laps_findpointzonestartstopandminimum">fcn_Laps_findPointZoneStartStopAndMinimum - Supporting function that finds the portions of a path that meet a point zone criteria</li>
+          <li><a href="#fcn_findedge_determinegridpointdensity">fcn_findEdge_determineGridPointDensity - Determines the suitable "point density" for the analysis by comparing the point densities of driven grids with those of neighboring grids</li>
+          <li><a href="#fcn_findedge_classifygridsbasedondensity">fcn_findEdge_classifyGridsBasedOnDensity - Classifies the grids based on the chosen point density</li>
+          <li><a href="#fcn_findedge_calcnumberofgridscanlines">fcn_findEdge_calcNumberOfGridScanLines - Determines the number of LiDAR scan lines in each grid</li>
+          <li><a href="#fcn_findedge_classifygridsbasedonscanlines">fcn_findEdge_classifyGridsBasedOnScanLines - Classifies the grids based on number of scan lines in each grid</li>
+          <li><a href="#fcn_findedge_determinetransversespanthreshold">fcn_findEdge_determineTransverseSpanThreshold - Finds the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring. </li>
+          <li><a href="#fcn_findedge_classifygridsbasedontransversespan">fcn_findEdge_classifyGridsBasedOnTransverseSpan - Classifies the grids based on chosen transverse span</li>
+          <li><a href="#fcn_findedge_classifyqualifiedgrids">fcn_findEdge_classifyQualifiedGrids - Classifies the grids as qualified and unqualified</li>
+          <li><a href="#fcn_findedge_finddrivenpathgrids">fcn_findEdge_findDrivenPathGrids - Finds the driven paths in the qualified grids</li>
+        </ul>
+        <li><a href="#grid-voting-functions">Grid Voting Functions</li>
+        <ul>
+          <li><a href="#fcn_findedge_determinestdinzerror">fcn_findEdge_determineSTDInZError - Finds the standard deviations of the z-fit errors for all qualified grids</li>
+          <li><a href="#fcn_findedge_histogramstdinzerror">fcn_findEdge_histogramSTDinZError - Plots the histogram of standard deviations of qualified grids and driven path grids</li>
+          <li><a href="#fcn_findedge_determineangledeviation">fcn_findEdge_determineAngleDeviation - Finds the angles between the unit normal vectors of the fitted planes and vertical ([0 0 1]) for all qualified grids</li>
+          <li><a href="#fcn_findedge_histogramangledeviation">fcn_findEdge_histogramAngleDeviation - Plots the histogram of angle deviations of qualified grids and driven path grids</li>
+          <li><a href="#fcn_findedge_classifygridsasdrivable">fcn_findEdge_classifyGridsAsDrivable - Classifies the qualified grids as drivable, non-drivable and uncertain</li>
+        </ul>
+        <li><a href="#post-processing-functions">Post Processing Functions</li>
+        <ul>
+          <li><a href="#fcn_findedge_prepgridcentersforboundarydetection">fcn_findEdge_prepGridCentersForBoundaryDetection - Prepares the grid centers for boundary detection</li>
+          <li><a href="#fcn_findedge_findboundarypoints">fcn_findEdge_findBoundaryPoints - Find the boundary points of the grids based on the given grid centers</li>
+          <li><a href="#fcn_findedge_findtrueboundarypoints">fcn_findEdge_findTrueBoundaryPoints - Finds the true boundary points by removing the boundary points of qualified and unqualified from drivable and non-drivable boundary points</li>
+          <li><a href="#fcn_findedge_findnearestboundarypoints">fcn_findEdge_findNearestBoundaryPoints - Finds the nearest boundary points to the driven path </li>
+          <li><a href="#fcn_findedge_seperateleftrightboundaries">fcn_findEdge_seperateLeftRightBoundaries - Separates the left and right boundaries from the nearest boundaries</li>
         </ul>
       </ul>
     <li><a href="#usage">Usage</a></li>
@@ -159,134 +183,419 @@ The following are the top level directories within the repository:
 <!-- FUNCTION DEFINITIONS -->
 ## Functions
 
-### Basic Support Functions
+### Data Preparation Functions
 
-#### fcn_Laps_plotLapsXY
+#### fcn_findEdge_loadLIDARData
 
-The function fcn_Laps_plotLapsXY plots the laps. For example, the function was used to make the plot below of the last Sample laps.
+Write description
+
+Format 
 <pre align="center">
-  <img src=".\Images\fcn_Laps_plotLapsXY.png" alt="fcn_Laps_plotLapsXY picture" width="400" height="300">
-  <figcaption>Fig.1 - The function fcn_Laps_plotLapsXY plots the lap outputs.</figcaption>
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_loadLIDARData picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
-#### fcn_Laps_fillSampleLaps
+#### fcn_findEdge_pointsAtRangeOfLiDARFromStation
 
-The function fcn_Laps_fillSampleLaps creates dummy data to test lap functions. The test laps are in general difficult situations, including scenarios where laps loop back onto themself and/or with separate looping structures. These challenges show that the library can work on varying and complicated data sets. NOTE: within this function, commented out typically, there is code to allow users to draw their own lap test cases.
+Write description
 
+Format 
 <pre align="center">
-  <img src=".\Images\fcn_Laps_fillSampleLaps.png" alt="fcn_Laps_fillSampleLaps picture" width="400" height="300">
-  <figcaption>Fig.2 - The function fcn_Laps_fillSampleLaps creates test data sets for exercising lap functions.</figcaption>
+  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_pointsAtRangeOfLiDARFromStation picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
-#### fcn_Laps_plotZoneDefinition
+#### fcn_findEdge_findDrivenPathBoundaryPoints
 
-The function fcn_Laps_plotZoneDefinition plots any type of zone, allowing user-defined colors. For example, the figure below shows a radial zone for the start, and a line segment for the end. For the line segment, an arrow is given that indicates which direction the segment must be crossed in order for the condition to be counted.
+Write description
 
+Format 
 <pre align="center">
-  <img src=".\Images\fcn_Laps_plotZoneDefinition.png" alt="fcn_Laps_plotZoneDefinition picture" width="400" height="300">
-  <figcaption>Fig.3 - The function fcn_Laps_plotZoneDefinition plots the zone definitions.</figcaption>
+  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findDrivenPathBoundaryPoints picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
-#### fcn_Laps_plotSegmentZoneDefinition
+#### fcn_findEdge_extractScanLines
 
-The function fcn_Laps_plotSegmentZoneDefinition plots a segment zone, allowing user-defined colors. This function is mostly used to support fcn_Laps_plotZoneDefinition.m.
+Write description
 
-<!--pre align="center">
-  <img src=".\Images\fcn_Laps_plotZoneDefinition.png" alt="fcn_Laps_plotZoneDefinition picture" width="400" height="300">
-  <figcaption>Fig.3 - The function fcn_Laps_plotZoneDefinition plots the zone definitions.</figcaption>
-  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font>
-</pre -->
-
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
-
-***
-
-### Core Functions
-
-#### fcn_Laps_breakDataIntoLaps
-
-The function fcn_Laps_breakDataIntoLaps is the core function for this repo that breaks data into laps. Note: the example shown below uses radial zone definitions, and the results illustrate how a lap, when it is within a start zone, starts at the FIRST point within a start zone. Similarly, each lap ends at the LAST point before exiting the end zone definition. The input data is a traversal type for this particular function.
-
+Format 
 <pre align="center">
-  <img src=".\Images\fcn_Laps_breakDataIntoLaps.png" alt="fcn_Laps_breakDataIntoLaps picture" width="400" height="300">
-  <figcaption>Fig.4 - The function fcn_Laps_breakDataIntoLaps is the core function in the repo, and breaks data into laps.</figcaption>
+  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_extractScanLines picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
-#### fcn_Laps_checkZoneType
+#### fcn_findEdge_findDrivableSurface
 
-The function fcn_Laps_checkZoneType supports fcn_Laps_breakDataIntoLaps by checking if the zone definition inputs are either a point or line segment zone specification.
+Write description
 
-<!--pre align="center">
-  <img src=".\Images\fcn_Laps_breakDataIntoLaps.png" alt="fcn_Laps_breakDataIntoLaps picture" width="400" height="300">
-  <figcaption>Fig.5 - The function fcn_Laps_checkZoneType checks inputs to determine if zones are point or line segment type.</figcaption>
-  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font>
-</pre-->
-
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
-
-***
-
-#### fcn_Laps_breakDataIntoLapIndices
-
-The function fcn_Laps_breakDataIntoLapIndices is a more advanced version of fcn_Laps_breakDataIntoLaps, where the outputs are the indices that apply to each lap. The input type is also easier to use, a "path" type which is just an array of [X Y]. The example here shows the use of a segment type zone for the start zone, a point-radius type zone for the end zone. The results of this function are the row indices of the data. The plot below illustrates that the function returns 3 laps in this example, and as well returns the pre-lap and post-lap data. One can observe that it is common that the prelap data for one lap (Lap 2) consists of the post-lap data for the prior lap (Lap 1).
-
+Format 
 <pre align="center">
-  <img src=".\Images\fcn_Laps_breakDataIntoLapIndices.png" alt="fcn_Laps_breakDataIntoLapIndices picture" width="600" height="300">
-  <figcaption>Fig.5 - The function fcn_Laps_breakDataIntoLapIndices is a more advanced version of fcn_Laps_breakDataIntoLaps, where the outputs are the indices that apply to each lap.</figcaption>
+  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findDrivableSurface picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
-#### fcn_Laps_findSegmentZoneStartStop
+#### fcn_findEdge_findPointsInDomain
 
-The function fcn_Laps_findSegmentZoneStartStop is a supporting function that finds the portions of a path that meet a segment zone criteria, returning the starting/ending indices for every crossing of a segment zone. The crossing must cross in the correct direction, and a segment is considered crossed if either the start or end of segment lie on the segment line. This is illustrated in the challenging example shown below, where the input path (thin blue) starts at the top, and then zig-zags repeatedly over a segment definition (green). For each time the blue line crosses the line segment, that portion of the path is saved as a separate possible crossing and thus, for this example, there are 5 possible crossings.
+Write description
 
+Format 
 <pre align="center">
-  <img src=".\Images\fcn_Laps_findSegmentZoneStartStop.png" alt="fcn_Laps_findSegmentZoneStartStop picture" width="400" height="300">
-  <figcaption>Fig.5 - The function fcn_Laps_findSegmentZoneStartStop is a supporting function that finds the portions of a path that meet a segment zone criteria, returning the starting/ending indices for every crossing of a segment zone.</figcaption>
+  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findPointsInDomain picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
-#### fcn_Laps_findPointZoneStartStopAndMinimum
+#### fcn_findEdge_findMaxMinOfXYZ
 
-The function fcn_Laps_findPointZoneStartStopAndMinimum is a supporting function that finds the portions of a path that meet a point zone criteria, returning the starting/ending indices for every crossing of a point zone. Note that a minimum number of points must be within the zone for it to be considered activated, which is useful for real-world data (such as GPS recordings) where noise may randomly push one point of a path randomly into a zone, and then jump out. This number of points threshold can be user-defined. In the example below, the threshold is 4 points and one can see that, for a path that crosses over the zone three times, that two of the crossings are found to meet the 4-point criteria.
+Write description
 
+Format 
 <pre align="center">
-  <img src=".\Images\fcn_Laps_findPointZoneStartStopAndMinimum.png" alt="fcn_Laps_findPointZoneStartStopAndMinimum picture" width="400" height="300">
-  <figcaption>Fig.6 - The function fcn_Laps_findPointZoneStartStopAndMinimum is a supporting function that finds the portions of a path that meet a point zone criteria, returning the starting/ending indices for every crossing of a point zone.</figcaption>
+  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findMaxMinOfXYZ picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
+
+#### fcn_findEdge_findGridsWithPoints
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findGridsWithPoints picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_findDrivenPathGrids
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.jpg" alt="fcn_findEdge_findDrivenPathGrids picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+### Drivability of Grids Functions
+
+#### fcn_findEdge_determineGridPointDensity
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineGridPointDensity picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_classifyGridsBasedOnDensity
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsBasedOnDensity picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_calcNumberOfGridScanLines
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_calcNumberOfGridScanLines picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_classifyGridsBasedOnScanLines
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsBasedOnScanLines picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_determineTransverseSpanThreshold
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineTransverseSpanThreshold picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_classifyGridsBasedOnTransverseSpan
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsBasedOnTransverseSpan picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_classifyQualifiedGrids
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyQualifiedGrids picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_findDrivenPathGrids
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findDrivenPathGrids picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+### Grid Voting Functions
+
+#### fcn_findEdge_determineSTDInZError
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineSTDInZError picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_histogramSTDinZError
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_histogramSTDinZError picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_determineAngleDeviation
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineAngleDeviation picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_histogramAngleDeviation
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_histogramAngleDeviation picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_classifyGridsAsDrivable
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsAsDrivable picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+### Post Processing Functions
+
+#### fcn_findEdge_prepGridCentersForBoundaryDetection
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_prepGridCentersForBoundaryDetection picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_findBoundaryPoints
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findBoundaryPoints picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_findTrueBoundaryPoints
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findTrueBoundaryPoints picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_findNearestBoundaryPoints
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findNearestBoundaryPoints picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
+#### fcn_findEdge_seperateLeftRightBoundaries
+
+Write description
+
+Format 
+<pre align="center">
+  <img src=".\Images\pic_file.png" alt="fcn_findEdge_seperateLeftRightBoundaries picture" width="400" height="300">
+  <figcaption>Fig.1 - </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
+
+***
+
 
 <!-- USAGE EXAMPLES -->
 ## Usage
