@@ -169,6 +169,18 @@ dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2);
 % determine how close the normal vector is to vertical direction.
 angle_btw_unit_normals_and_vertical = acos(dot_product);
 
+% Find driven path indices in current mapped grids
+driven_path_grid_indices_in_current_mapped_grids = ismember(current_qualified_grids,current_grid_numbers_of_driven_path);
+
+% Standard deviation in Z of driven path grids
+angle_btw_unit_normals_and_vertical_driven_path = angle_btw_unit_normals_and_vertical(driven_path_grid_indices_in_current_mapped_grids);
+
+% Standard deviation in Z of other mapped grids
+angle_btw_unit_normals_and_vertical_other_mapped_grids = angle_btw_unit_normals_and_vertical(~driven_path_grid_indices_in_current_mapped_grids); 
+
+% Find mean std in z of driven path
+mean_angle_btw_unit_normals_and_vertical_driven_path = mean(angle_btw_unit_normals_and_vertical_driven_path); 
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -181,7 +193,7 @@ angle_btw_unit_normals_and_vertical = acos(dot_product);
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-figure(fig_num);clf
+figure(fig_num);
 
 hold on
 axis on
@@ -279,14 +291,6 @@ for ith_text = 1:length(gridCenters_qualified_grids(:,1))
     text(gridCenters_qualified_grids(ith_text,1), gridCenters_qualified_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 10, 'FontWeight','bold','FontSmoothing','on');
 end
 
-% Find driven path indices in current mapped grids
-driven_path_grid_indices_in_current_mapped_grids = ismember(current_qualified_grids,current_grid_numbers_of_driven_path);
-
-% Standard deviation in Z of driven path grids
-angle_btw_unit_normals_and_vertical_driven_path = angle_btw_unit_normals_and_vertical(driven_path_grid_indices_in_current_mapped_grids);
-
-% Standard deviation in Z of other mapped grids
-angle_btw_unit_normals_and_vertical_other_mapped_grids = angle_btw_unit_normals_and_vertical(~driven_path_grid_indices_in_current_mapped_grids); 
 
 
 % Plot grid lines and standard deviation
@@ -306,8 +310,6 @@ plot(current_qualified_grids(~driven_path_grid_indices_in_current_mapped_grids),
 
 
 
-% Find mean std in z of driven path
-mean_angle_btw_unit_normals_and_vertical_driven_path = mean(angle_btw_unit_normals_and_vertical_driven_path); 
 
 % Find mean std in z of not driven path
 % max_angle_btw_unit_normals_and_vertical_not_driven_path = max(angle_btw_unit_normals_and_vertical_other_mapped_grids); 
