@@ -230,7 +230,7 @@ if flag_do_plots
         scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),300, 'y'); % max z
         colormap('jet'); % You can use 'viridis' if you have it, or other colormaps
         colorbar; % Add a color bar to show the color mapping
-        view(2)
+        view(3)
         hold off
     end
     hold off

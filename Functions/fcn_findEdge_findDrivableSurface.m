@@ -1,6 +1,6 @@
 function [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,varargin)
 %% fcn_findEdge_findDrivableSurface
-% Find drivable points of mapping vehicle in XYZ coordinates
+%  Find the driven path points in LIDAR scans
 % 
 % FORMAT:
 %

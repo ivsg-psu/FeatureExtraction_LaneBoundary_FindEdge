@@ -1,7 +1,10 @@
 function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
     LIDAR_ENU, LIDAR_intensity, LIDAR_scanLineAndRingID] = ...
     fcn_findEdge_extractScanLines(VehiclePose, LiDAR_Scan_ENU_Entire_Loop, varargin)
-% fcn_findEdge_extractScanLines   extract LIDAR scan lines associated with a vehicle pose location.
+% fcn_findEdge_extractScanLines  
+%
+%  Extracts vehicle pose ENU, vehicle pose unit orthogonal vectors,
+%  LiDAR ENU scans, LiDAR Intensity, LiDAR scan line, and Ring IDs of the scan line range
 % 
 % FORMAT:
 %
