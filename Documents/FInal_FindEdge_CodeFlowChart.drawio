@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2024-08-16T12:01:26.625Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.6 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="GJOcuTvViLd_wrcvGqIi" version="24.4.6" type="device">
+<mxfile host="Electron" modified="2024-08-16T12:10:59.018Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.6 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="_L9dBPx9IYMmd38C8SY9" version="24.4.6" type="device">
   <diagram name="Page-1" id="1t3EqyHOZMW7sC0uhStz">
     <mxGraphModel dx="1266" dy="681" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -743,6 +743,9 @@
         <mxCell id="srokErgthjkjzXlaEye1-297" value="Learned" style="rounded=0;whiteSpace=wrap;html=1;" parent="srokErgthjkjzXlaEye1-295" vertex="1">
           <mxGeometry x="680" y="120" width="160" height="80" as="geometry" />
         </mxCell>
+        <mxCell id="p3tx2DxGydBzGOoEZHH4-3" value="If all conditions pass, DRIVABLE&lt;div&gt;If all conditions fail, NON_DRIVABLE&lt;/div&gt;&lt;div&gt;If only a few fail, UNCERTAIN&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="srokErgthjkjzXlaEye1-295">
+          <mxGeometry x="590" y="550" width="210" height="30" as="geometry" />
+        </mxCell>
         <mxCell id="srokErgthjkjzXlaEye1-299" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="srokErgthjkjzXlaEye1-297" target="srokErgthjkjzXlaEye1-242" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
@@ -816,7 +819,7 @@
           <mxGeometry x="4640" y="640" width="80" height="30" as="geometry" />
         </mxCell>
         <mxCell id="srokErgthjkjzXlaEye1-319" value="Grid centers of non-drivable grids" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="4650" y="690" width="90" height="30" as="geometry" />
+          <mxGeometry x="4640" y="690" width="90" height="30" as="geometry" />
         </mxCell>
         <mxCell id="srokErgthjkjzXlaEye1-323" value="Boundary points of qualified and unqualified grids" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="5680" y="400" width="130" height="30" as="geometry" />

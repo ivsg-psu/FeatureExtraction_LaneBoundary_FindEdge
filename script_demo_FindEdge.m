@@ -69,6 +69,8 @@
 % -- Added Step 6 functions into the main demo.
 % 2024_08_15 - Aneesh Batchu
 % -- Recalculate driven grid path grids is functionalized
+% 2024_08_16 - Aneesh Batchu
+% -- Added headings to the sections 
 
 
 
@@ -319,7 +321,7 @@ current_grids_greater_than_zero_points = 1:length(grids_greater_than_zero_points
 %                                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% STEP 5: Grid conditions - Point density (Do not need to run after determining point density)
+%% STEP 7.1: Grid conditions - Point density (Do not need to run after determining point density)
 % fcn_findEdge_determineGridPointDensity:
 %
 % [point_density] = 
@@ -348,7 +350,7 @@ figure(fig_num); clf;
 
 [grid_indices_with_required_point_density, gridCenters_low_point_density] = fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points,total_N_points_in_each_grid,point_density,gridCenters,[],[],fig_num);
 
-%% STEP 5: Grid conditions - Determining number of scan lines in each grid greater than zero points Point density 
+%% STEP 7.2: Grid conditions - Determining number of scan lines in each grid greater than zero points Point density 
 % fcn_findEdge_calcNumberOfGridScanLines:
 %   [total_scan_lines_in_each_grid_with_more_than_zero_points] = fcn_findEdge_calcNumberOfGridScanLines(gridIndices,LIDAR_scanLines,grids_greater_than_zero_points)
 %
@@ -365,7 +367,7 @@ figure(fig_num); clf;
 % Find the grids that contain more than one scan line
 [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points,total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,[],[],fig_num);
 
-%% STEP 5: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring
+%% STEP 7.3: Grid conditions - Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring
 %   fcn_findEdge_determineTransverseSpanThreshold:
 % [transverse_span_threshold,transverse_span_each_grid]= 
 %       fcn_findEdge_determineTransverseSpanThreshold(grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines, fig_num, fig_num2, fig_num3)
@@ -397,7 +399,7 @@ figure(fig_num); clf;
 % Find the grids
 [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 
-%% STEP 6: Qualified and unqualified grids: grids that pass all three conditions above are qualified
+%% STEP 8: Qualified and unqualified grids: grids that pass all three conditions above are qualified
 %fcn_findEdge_classifyQualifiedGrids
 %
 % [original_qualified_grids,gridCenters_qualified_grids,gridCenters_unqualified_grids] = ...
@@ -411,7 +413,7 @@ figure(fig_num); clf;
     fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,grid_indices_with_more_than_transverse_span_threshold,...
     grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 
-%% STEP 6: Plot circles corresponding to each fail condition
+%% PLOTTING: Plot circles corresponding to each fail condition
 % fcn_findEdge_plotPointsinLLA
 %
 % [LLA_data] =
@@ -478,7 +480,7 @@ marker_type = 'o';
 plot_gridCenters_with_less_than_transverse_span_threshold = [gridCenters_with_less_than_transverse_span_threshold, zeros(length(gridCenters_with_less_than_transverse_span_threshold(:,1)),1)]; 
 [~] = fcn_findEdge_plotPointsinLLA(plot_gridCenters_with_less_than_transverse_span_threshold,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
-%% STEP 7: Recalculate the driven path grids among qualified grids
+%% STEP 9: Recalculate the driven path grids among qualified grids
 %fcn_findEdge_findDrivenPathGrids
 %
 % [total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
@@ -509,7 +511,11 @@ figure(ENU_3D_fig_num);clf
 %                                                |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% STEP 8: Qualified grid conditions - Standard deviation in Z (Do not need to run after determining a std_threshold)
+%% STEP 10.1: Qualified grid conditions - Standard deviation in Z (Do not need to run after determining a std_threshold)
+% Find the standard deviations of the z-fit errors for all qualified grids,
+% and compare these standard deviations with those of the grids in the
+% driven path to determine the suitable standard deviation threshold
+%
 %fcn_findEdge_determineSTDInZError
 %
 % FORMAT: 
@@ -517,6 +523,10 @@ figure(ENU_3D_fig_num);clf
 %  driven_path_grid_indices_in_current_mapped_grids,std_in_z_driven_path,std_in_z_other_mapped_grids,mean_std_in_z_driven_path,mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path]...
 %               = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
 %               current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,(fig_num_gridCenters),(fig_num_gridSTD),(fig_num))
+%
+%fcn_findEdge_histogramSTDinZError
+%
+% fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num))
 
 
 fig_num_1 = 81;
@@ -535,12 +545,8 @@ figure(fig_num_3); clf;
   mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path] = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
                                                                                 current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,fig_num_1,fig_num_2,fig_num_3);
 
+% Histogram of standard deviation - (Do not need to run after determining a std_threshold)
 
-
-%% STEP 9: Histogram of standard deviation - (Do not need to run after determining a std_threshold)
-%fcn_findEdge_histogramSTDinZError
-%
-%   fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num))
 fig_num = 123;
 figure(fig_num); clf;
 N_bins_stdz=100;
@@ -551,7 +557,12 @@ fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_d
 % Determined std_threshold
 std_threshold = 0.1; 
 
-%% STEP 8: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
+%% STEP 10.2: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
+% Find the angles between the unit normal vectors of the fitted planes and
+% vertical ([0 0 1]) for all qualified grids, and compare these angles with
+% those of the grids in the driven path to determine the suitable theta
+% threshold
+%
 %fcn_findEdge_determineAngleDeviation
 %
 % [angle_btw_unit_normals_and_vertical, mean_angle_btw_unit_normals_and_vertical_driven_path] = ...
@@ -574,7 +585,7 @@ figure(fig_num_3); clf;
     gridCenters_qualified_grids,current_qualified_grids,gridCenters_driven_path, ...
     grid_AABBs, grid_size, gridIndices, current_grid_numbers_of_driven_path, fig_num_1,fig_num_2,fig_num_3);
 
-%% STEP 9: Histogram of angle deviation - (Do not need to run after determining a theta_threshold)
+% Histogram of angle deviation - (Do not need to run after determining a theta_threshold)
 %fcn_findEdge_histogramAngleDeviation
 %
 %[theta_threshold] = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical,angle_btw_unit_normals_and_vertical_driven_path,mean_angle_btw_unit_normals_and_vertical_driven_path, varargin)
@@ -586,14 +597,14 @@ theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_an
     angle_btw_unit_normals_and_vertical_driven_path, ...
     mean_angle_btw_unit_normals_and_vertical_driven_path, fig_num);
 
-%% STEP 10: Voting - Drivable, Non-drivable and Uncertain
+theta_threshold = 0.1745; % (9.98/180)*pi
+
+%% STEP 11: Voting - Drivable, Non-drivable and Uncertain
 %fcn_findEdge_classifyGridsAsDrivable
 %
 %[standard_deviation_in_z, angle_btw_unit_normals_and_vertical, original_drivable_grids, original_non_drivable_grids,current_drivable_grid_numbers_in_mapped_grids, ...
 % current_non_drivable_grid_numbers_in_mapped_grids,gridCenters_drivable_grids,gridCenters_non_drivable_grids]=...
 %           fcn_findEdge_classifyGridsAsDrivable(original_grids_with_required_point_density,input_points,std_threshold, theta_threshold, gridCenters, (fig_num))
-
-
 
 
 input_points = LiDAR_allPoints(:,1:3); 
@@ -627,7 +638,7 @@ figure(fig_num);clf
     concatenate_gridCenters_drivable_non_drivable_grids] = ...
     fcn_findEdge_classifyGridsAsDrivable(gridIndices_cell_array, original_qualified_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
-%% STEP 10: Plot the drivable, non-drivable and uncertain grid centers 
+%% PLOTTING: Plot the drivable, non-drivable and uncertain grid centers 
 %fcn_findEdge_plotPointsinLLA
 %
 % [LLA_data] =
@@ -723,7 +734,7 @@ geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_fai
 %                                                                 |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% STEP 11: Find all boundary points: When uncertain grids are assumed as drivable
+%% STEP 12: Find all boundary points: When uncertain grids are assumed as drivable
 %fcn_findEdge_prepGridCentersForBoundaryDetection
 %
 % [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection(gridCenters_qualified_grids, gridCenters_unqualified_grids, varargin)
