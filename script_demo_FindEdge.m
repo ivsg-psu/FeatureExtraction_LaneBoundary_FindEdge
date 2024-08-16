@@ -552,10 +552,10 @@ figure(fig_num); clf;
 N_bins_stdz=100;
 N_bins_std_drivenpath=5;
 
-fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num));
-
 % Determined std_threshold
 std_threshold = 0.1; 
+
+fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num));
 
 %% STEP 10.2: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
 % Find the angles between the unit normal vectors of the fitted planes and
@@ -808,18 +808,8 @@ boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_lim
 
 fig_num_bd_pts_ENU = 1000; 
 
-[members, id_x] = ismember(boundary_points,boundary_points_qualified_unqualified,'rows'); 
+[true_boundary_points] = fcn_findEdge_findTrueBoundaryPoints(boundary_points,boundary_points_qualified_unqualified,fig_num_bd_pts_ENU);
 
-not_boundary_points = boundary_points(members,:);
-
-true_boundary_points = boundary_points(members==0,:);
-
-figure(fig_num_bd_pts_ENU)
-clf;
-% figure(10001)
-hold on
-plot(true_boundary_points(:,1), true_boundary_points(:,2), 'c.', 'MarkerSize',40)
-plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30)
 
 fig_num = 452;
 figure(fig_num); clf; 
