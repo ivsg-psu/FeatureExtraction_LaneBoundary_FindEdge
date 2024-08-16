@@ -500,12 +500,14 @@ figure(fig_num_2); clf;
 fig_num_3 = 83;
 figure(fig_num_3); clf;
 
-[~,original_mapped_gridIndices_cell,total_mapped_grids,total_points_in_mapped_grids,standard_deviation_in_z,gridlines_mapped_grids,...
-    driven_path_grid_indices_in_current_mapped_grids,std_in_z_driven_path,std_in_z_other_mapped_grids,mean_std_in_z_driven_path,mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path] = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
-    current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,fig_num_1,fig_num_2,fig_num_3);
+[~,original_mapped_gridIndices_cell,total_mapped_grids, ...
+  total_points_in_mapped_grids,standard_deviation_in_z,gridlines_mapped_grids, ...
+  driven_path_grid_indices_in_current_mapped_grids,std_in_z_driven_path, ...
+  std_in_z_other_mapped_grids,mean_std_in_z_driven_path, ...
+  mean_std_in_z_not_driven_path,max_std_in_z_not_driven_path] = fcn_findEdge_determineSTDInZError(LiDAR_allPoints,gridIndices_cell_array,original_qualified_grids,gridCenters_qualified_grids,gridCenters_driven_path,...
+                                                                                current_qualified_grids,grid_AABBs,grid_size,gridIndices,current_grid_numbers_of_driven_path,fig_num_1,fig_num_2,fig_num_3);
 
-% Determined std_threshold
-std_threshold = 0.1; 
+
 
 %% STEP 9: Histogram of standard deviation - (Do not need to run after determining a std_threshold)
 %fcn_findEdge_histogramSTDinZError
@@ -517,6 +519,9 @@ N_bins_stdz=100;
 N_bins_std_drivenpath=5;
 
 fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num));
+
+% Determined std_threshold
+std_threshold = 0.1; 
 
 %% STEP 8: Qualified grid conditions - angle deviation (Do not need to run after determining a theta_threshold)
 %fcn_findEdge_determineAngleDeviation
