@@ -598,12 +598,28 @@ Histogram of standard deviations of the z-fit errors for all qualified grids
 
 #### fcn_findEdge_determineAngleDeviation
 
-Write description
+Find the angles between the unit normal vectors of the fitted planes and vertical ([0 0 1]) for all qualified grids, and compare these angles with those of the grids in the driven path to determine the suitable theta threshold
 
-Format 
+ ```MATLAB
+      [angle_btw_unit_normals_and_vertical, mean_angle_btw_unit_normals_and_vertical_driven_path] = ...
+      fcn_findEdge_determineAngleDeviation(LiDAR_allPoints, gridIndices_cell_array, original_qualified_grids,...
+      gridCenters_qualified_grids,current_qualified_grids,gridCenters_driven_path,(fig_num),(fig_num2),(fig_num3) )
+```
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_determineAngleDeviation picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_determineAngleDeviation_1.jpg" alt="fcn_findEdge_determineAngleDeviation picture" width="500" height="400">
+  <figcaption>Fig.26 - Grid Centers Mapped Grids in ENU </figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_determineAngleDeviation_2.jpg" alt="fcn_findEdge_determineAngleDeviation picture" width="500" height="400">
+  <figcaption>Fig.27 - Angle Deviation of Mapped Grids</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\fcn_findEdge_determineAngleDeviation_3.jpg" alt="fcn_findEdge_determineAngleDeviation picture" width="500" height="400">
+  <figcaption>Fig.28 - Mapped Grid Centers vs Standard Deviation in Z</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -613,12 +629,16 @@ Format
 
 #### fcn_findEdge_histogramAngleDeviation
 
-Write description
+Find the angles between the unit normal vectors of the fitted planes and vertical ([0 0 1]) for all qualified grids, and compare these angles with those of the grids in the driven path to determine the suitable theta threshold
 
-Format 
+ ```MATLAB
+      theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical, ...
+    angle_btw_unit_normals_and_vertical_driven_path, ...
+    mean_angle_btw_unit_normals_and_vertical_driven_path, fig_num);
+``` 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_histogramAngleDeviation picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_histogramAngleDeviation.jpg" alt="fcn_findEdge_histogramAngleDeviation picture" width="500" height="400">
+  <figcaption>Fig.29 - Histogram of angle deviation </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -628,12 +648,18 @@ Format
 
 #### fcn_findEdge_classifyGridsAsDrivable
 
-Write description
+If all conditions pass, DRIVABLE
+If all conditions fail, NON_DRIVABLE
+If only a few fail, UNCERTAIN
 
-Format 
+ ```MATLAB
+      [grid_indices_with_required_point_density, gridCenters_low_point_density] =  fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points...
+     ,total_N_points_in_each_grid,point_density, gridCenters, (format_1),(format_2),
+     (fig_num))
+```  
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_classifyGridsAsDrivable picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_classifyGridsAsDrivable.jpg" alt="fcn_findEdge_classifyGridsAsDrivable picture" width="500" height="400">
+  <figcaption>Fig.30 - Points Density</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -645,14 +671,12 @@ Format
 
 #### fcn_findEdge_prepGridCentersForBoundaryDetection
 
-Write description
+Prepare the grid centers of qualified and unqualified for boundary detection
 
-Format 
-<pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_prepGridCentersForBoundaryDetection picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
-  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
-</pre>
+ ```MATLAB
+      [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+    (gridCenters_qualified_grids, gridCenters_unqualified_grids);
+``` 
 
 <a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
@@ -660,12 +684,14 @@ Format
 
 #### fcn_findEdge_findBoundaryPoints
 
-Write description
+Find the boundary points of qualified and unqualified grids
 
-Format 
+```MATLAB
+      boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);;
+```  
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findBoundaryPoints picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findBoundaryPoints.jpg" alt="fcn_findEdge_findBoundaryPoints picture" width="500" height="400">
+  <figcaption>Fig.31 - Boundary Points </figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -675,12 +701,14 @@ Format
 
 #### fcn_findEdge_findTrueBoundaryPoints
 
-Write description
+Find the true boundary points by removing the boundary points of qualified and unqualified from drivable and non-drivable boundary points
 
-Format 
+```MATLAB
+      [true_boundary_points] = fcn_findEdge_findTrueBoundaryPoints(boundary_points,boundary_points_qualified_unqualified,fig_num_bd_pts_ENU);
+```  
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findTrueBoundaryPoints picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findTrueBoundaryPoints.jpg" alt="fcn_findEdge_findTrueBoundaryPoints picture" width="500" height="400">
+  <figcaption>Fig.32 - Computed Boundary Points</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -690,12 +718,15 @@ Format
 
 #### fcn_findEdge_findNearestBoundaryPoints
 
-Write description
+Find the nearest boundary points to the driven path 
 
-Format 
+```MATLAB
+    [true_borders] = fcn_findEdge_findNearestBoundaryPoints(boundaryPointsXY,
+     gridCenters_non_drivable_grids, gridCenters_driven_path, (fig _num))
+```   
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_findNearestBoundaryPoints picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_findNearestBoundaryPoints.jpg" alt="fcn_findEdge_findNearestBoundaryPoints picture" width="500" height="400">
+  <figcaption>Fig.33 - Nearest Boundary Points</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -705,12 +736,17 @@ Format
 
 #### fcn_findEdge_seperateLeftRightBoundaries
 
-Write description
+Separate the left and right boundaries from the nearest boundaries
 
-Format 
+```MATLAB
+  [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
+   (VehiclePose,station_1,station_2,nearest_boundary_points, grid_size,
+   transverse_shift, (fig_num)).
+``` 
+ 
 <pre align="center">
-  <img src=".\Images\pic_file.png" alt="fcn_findEdge_seperateLeftRightBoundaries picture" width="400" height="300">
-  <figcaption>Fig.1 - </figcaption>
+  <img src=".\Images\fcn_findEdge_seperateLeftRightBoundaries.jpg" alt="fcn_findEdge_seperateLeftRightBoundaries picture" width="500" height="400">
+  <figcaption>Fig.34 - Left and Right Boundary</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 

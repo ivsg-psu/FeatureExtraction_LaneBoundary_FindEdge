@@ -1,7 +1,7 @@
 function [X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_qualified_grids, gridCenters_unqualified_grids)
 %% fcn_findEdge_prepGridCentersForBoundaryDetection
-% Find the maximum and minimum numbers of x, y, and z of the given points 
+% Prepare the grid centers of qualified and unqualified for boundary detection
 % 
 % FORMAT:
 %
