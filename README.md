@@ -49,7 +49,7 @@ Search for this, and you will find!
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="structure">Repo Structure</a>
+    <li><a href="#repo-structure">Repo Structure</a>
       <ul>
         <li><a href="#directories">Top-Level Directories</li>
         <li><a href="#dependencies">Dependencies</li>
@@ -115,18 +115,8 @@ Search for this, and you will find!
 
 <!--[![Product Name Screen Shot][product-screenshot]](https://example.com)-->
 
-The most common location of our testing is the Larson Test Track, and we regularly use “laps around the track” as replicates, hence the name of the library. And when not on the test track and on public roads, data often needs to be segmented from one keypoint to another. For example, it is a common task to seek a subset of path data that resides only from one intersection to the next. While one could segment this data during data collection by simply stopping the vehicle recordings at each segment, it is impractical and dangerous to stop data collection at each and every possible intersection or feature point. Rather, vehicle or robot data is often collected by repeated driving of an area over/over without stopping. So, the final data set may contain many replicates of the area of interest.
 
-This "Laps" code assists in breaking recorded path data into paths by defining specific start and end locations, for example from intersection "A" to stop sign "B". Specifically, the purpose of this code is to break data into "laps", e.g. segments of data that are defined by a clear start condition and end condition. The code finds when a given path meets the "start" condition, then meets the "end" condition, and returns every portion of the path that is inside both conditions. There are many advanced features as well including the ability to define excursion points, the number of points that must be within a condition for it to activate, and the ability to extract the portions of the paths before and after each lap, in addition to the data for each lap.
-
-* Inputs:
-  * either a "traversals" type, as explained in the Path library, or a path of XY points in N x 2 format
-  * the start, end, and optional excursions can be entered as either a line segment or a point and radius.  
-* Outputs
-  * Separate arrays of XY points, or of indices for the lap, with one array for each lap
-  * The function also can return the points that were not used for laps, e.g. the points before the first start and after the last end
-
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
@@ -142,17 +132,20 @@ To get a local copy up and running follow these simple steps.
 2. Clone the repo
 
    ```sh
-   git clone https://github.com/ivsg-psu/FeatureExtraction_DataClean_BreakDataIntoLaps
+   git clone https://github.com/ivsg-psu/FeatureExtraction_LaneBoundary_FindEdge.git
    ```
 
-3. Run the main code in the root of the folder (script_demo_Laps.m), this will download the required utilities for this code, unzip the zip files into a Utilities folder (.\Utilities), and update the MATLAB path to include the Utility locations. This install process will only occur the first time. Note: to force the install to occur again, delete the Utilities directory and clear all global variables in MATLAB (type: "clear global *").
-4. Confirm it works! Run script_demo_Laps. If the code works, the script should run without errors. This script produces numerous example images such as those in this README file.
+3. Run the main code in the root of the folder (script_demo_findEdge.m), this will download the required utilities for this code, unzip the zip files into a Utilities folder (.\Utilities), and update the MATLAB path to include the Utility locations. This install process will only occur the first time. Note: to force the install to occur again, delete the Utilities directory and clear all global variables in MATLAB (type: "clear global *").
+4. Confirm it works! Run script_demo_findEdge. If the code works, the script should run without errors. This script produces numerous example images such as those in this README file.
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
 <!-- STRUCTURE OF THE REPO -->
+
+## Repo Structure
+
 ### Directories
 
 The following are the top level directories within the repository:
@@ -162,7 +155,7 @@ The following are the top level directories within the repository:
  <li>/Utilities folder: Dependencies that are utilized but not implemented in this repository are placed in the Utilities directory. These can be single files but are most often folders containing other cloned repositories.</li>
 </ul>
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
@@ -176,7 +169,7 @@ The following are the top level directories within the repository:
 
     For ease of getting started, the zip files of the directories used - without the .git repo information, to keep them small - are included in this repo.
 
-<a href="#featureextraction_dataclean_breakdataintolaps">Back to top</a>
+<a href="#featureextraction_laneboundary_findedge">Back to top</a>
 
 ***
 
