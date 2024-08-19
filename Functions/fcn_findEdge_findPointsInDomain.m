@@ -205,7 +205,8 @@ concatenate_LiDAR_XYZ_points_new = LIDAR_ENU(in_domain,:);
 if flag_do_plots
     % plot vehicle trajectory in LLA
     reference_LLA = [];
-    zoom_in_location = [40.865718697633348 -77.830965127435817];
+    % zoom_in_location = [40.865718697633348 -77.830965127435817];
+    zoom_in_location = [];
     zoomLevel = 20.5;
     [~] = fcn_findEdge_plotVehicleLLA(VehiclePose(:,1:3), (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
