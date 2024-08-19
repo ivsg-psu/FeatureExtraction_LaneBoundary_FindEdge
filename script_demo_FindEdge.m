@@ -71,6 +71,9 @@
 % -- Recalculate driven grid path grids is functionalized
 % 2024_08_16 - Aneesh Batchu
 % -- Added headings to the sections 
+% 2024-08_19 - Aneesh Batchu
+% -- All the functions are modified to fit in a page. Internal functions
+% are created to make the functions compact. 
 
 
 
