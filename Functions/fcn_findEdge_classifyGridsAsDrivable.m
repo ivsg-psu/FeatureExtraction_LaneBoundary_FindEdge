@@ -4,8 +4,8 @@ function [standard_deviation_in_z, ...
     original_non_drivable_grids, ...
     current_drivable_grid_numbers_in_mapped_grids, ...
     current_non_drivable_grid_numbers_in_mapped_grids, ...
-    current_failed_grid_numbers_in_mapped_grids, ...
-    current_uncertain_grid_numbers_in_mapped_grids, ...
+    current_failed_grid_numbers_in_qualified_grids, ...
+    current_uncertain_grid_numbers_in_qualified_grids, ...
     gridCenters_failed_grids, ... 
     gridCenters_uncertain_grids, ...
     gridCenters_drivable_grids, ...
@@ -90,6 +90,8 @@ function [standard_deviation_in_z, ...
 % "original_mapped_grids"
 % 2024_07_31 - Aneesh Batchu
 % -- Added voting option: drivable, non-drivable and uncertain
+% 2024_08_19 - Aneesh Batchu
+% -- Added internal functions to organize the code better. 
 
 % To-do
 % 2024_08_12 - Aneesh Batchu
@@ -195,7 +197,6 @@ standard_deviation_in_z = zeros(total_qualified_grids,1);
 % Unit normal vectors of the plane fits of each mapped grid
 unit_normal_vectors = zeros(total_qualified_grids,3); 
 
-
 % z_height of all the points 
 % mean_z_of_mapped_grids = zeros(total_mapped_grids,1); 
 
@@ -215,115 +216,26 @@ end
 % standard_deviation_in_z = round(standard_deviation_in_z,4); 
 if ~isempty(std_threshold) && isempty(theta_threshold)
 
-    % STEP 1: Standard deviation of the orthogonal (perpendicular) distances of
-    % the points to the plane (after fit)
-    % Find the grids that are within standard deviation limit
-    % This is not enough (delta Y) is also important
-    % mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
-    qualified_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
-    
-    % Grids that satisy the conditions of (STEP 1). The grids that
-    % are within the std threshold
-    qualified_grids_within_all_thresholds = (qualified_grids_within_std_threshold == 1);
-
-    % The angle between unit vertical and the unit_normal_vector is computed to
-    % determine how close the normal vector is to vertical direction. In
-    % this case, the angle between unit normals and vertical is empty. 
-    angle_btw_unit_normals_and_vertical = [];
+    [qualified_grids_within_all_thresholds, angle_btw_unit_normals_and_vertical] = fcn_INTERNAL_thetaThresholdIsEmpty(standard_deviation_in_z,std_threshold); 
 
 elseif isempty(std_threshold) && ~isempty(theta_threshold)
 
-    % STEP 2
-    % Comparing normal vector with vertical direction
-    unit_vector_vertical_direction = [0 0 1];
-
-    % The dot product is computed to find the angle between the vectors
-    dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2);
-  
-    % The angle between unit vertical and the unit_normal_vector is computed to
-    % determine how close the normal vector is to vertical direction.
-    angle_btw_unit_normals_and_vertical = acos(dot_product);
-
-    % Find the grids (with a fitted plane) that are within the vertical
-    % threshold (change to a different name: vertical threshold)
-    qualified_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
-
-    % Grids that satisy the conditions (STEP 2). The grids that
-    % are within the vertical threshold
-    qualified_grids_within_all_thresholds = (qualified_grids_within_vertical_threshold == 1);
+    [qualified_grids_within_all_thresholds, angle_btw_unit_normals_and_vertical] = fcn_INTERNAL_STDThresholdIsEmpty(unit_normal_vectors,theta_threshold);
 
 else
 
-    % STEP 1: Standard deviation of the orthogonal (perpendicular) distances of
-    % the points to the plane (after fit)
-    % Find the grids that are within standard deviation limit
-    % This is not enough (delta Y) is also important
-    % mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
-    qualified_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
-
-    % STEP 2
-    % Comparing normal vector with verticle direction
-    unit_vector_vertical_direction = [0 0 1];
-
-    % The dot product is computed to find the angle between the vectors
-    dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2);
-
-    % The angle between unit vertical and the unit_normal_vector is computed to
-    % determine how close the normal vector is to vertical direction.
-    angle_btw_unit_normals_and_vertical = acos(dot_product);
-
-    % Find the grids (with a fitted plane) that are within the vertical
-    % threshold (change to a different name: vertical threshold)
-    qualified_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
-
-    % Grids that satisy the conditions of (STEP 1 & STEP 2). The grids that
-    % are within the standar deviation and vertical threshold
-    qualified_grids_within_vertical_and_std_thresholds = (qualified_grids_within_vertical_threshold == 1) & (qualified_grids_within_std_threshold == 1);
-    
-    % mapped grids within all the thresholds 
-    qualified_grids_within_all_thresholds = qualified_grids_within_vertical_and_std_thresholds;
-
-    % Grids that failed to satisfy both the conditions (STEP 1 and STEP 2)
-    qualified_grids_failed_vertical_and_std_thresholds = (qualified_grids_within_vertical_threshold == 0) & (qualified_grids_within_std_threshold == 0);
-
-    % Grids that failed to satisfy STEP 1 but not STEP 2
-    qualified_grids_failed_std_threshold = find((qualified_grids_within_vertical_threshold == 0) & (qualified_grids_within_std_threshold == 1));
-
-     % Grids that failed to satisfy STEP 2 but not STEP 1
-    qualified_grids_failed_vertical_threshold = find((qualified_grids_within_vertical_threshold == 1) & (qualified_grids_within_std_threshold == 0));
-
-    % Uncertain mapped grids
-    uncertain_grid_indices = [qualified_grids_failed_std_threshold;qualified_grids_failed_vertical_threshold]; 
-
-    % Sort the uncertain grid indices
-    sorted_uncertain_grid_indices = sort(uncertain_grid_indices); 
-
-    % Get the unique grid indices
-    uncertain_grid_indices = unique(sorted_uncertain_grid_indices);
-
-    % % Find the drivable grids (original)
-    % original_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds);
-
-    % Failed grids
-    original_failed_grids = original_qualified_grids(qualified_grids_failed_vertical_and_std_thresholds);
-
-    % Uncertain grids
-    original_uncertain_grids = original_qualified_grids(uncertain_grid_indices);
-
-    % % Find the non-drivable grids (original)
-    % original_non_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds == 0);
-
-    % Final failed grid numbers of the mapped grids
-    current_failed_grid_numbers_in_mapped_grids = find(ismember(original_qualified_grids, original_failed_grids));
-
-    % Final failed grid numbers of the mapped grids
-    current_uncertain_grid_numbers_in_mapped_grids = find(ismember(original_qualified_grids, original_uncertain_grids));
-
-    % Grid centers of failed grids
-    gridCenters_failed_grids = [gridCenters(original_failed_grids,1), gridCenters(original_failed_grids,2)];
-
-    % Grid centers of failed grids
-    gridCenters_uncertain_grids = [gridCenters(original_uncertain_grids,1), gridCenters(original_uncertain_grids,2)];
+    [qualified_grids_within_all_thresholds, ...
+    angle_btw_unit_normals_and_vertical, ...
+    qualified_grids_failed_vertical_and_std_thresholds, ...
+    qualified_grids_failed_std_threshold, ...
+    qualified_grids_failed_vertical_threshold, ...
+    uncertain_grid_indices, ...
+    original_failed_grids, ...
+    original_uncertain_grids, ...
+    current_failed_grid_numbers_in_qualified_grids, ...
+    current_uncertain_grid_numbers_in_qualified_grids, ...
+    gridCenters_failed_grids, ...
+    gridCenters_uncertain_grids] = fcn_INTERNAL_allThresholdsGiven(original_qualified_grids, gridCenters, standard_deviation_in_z, std_threshold, unit_normal_vectors, theta_threshold);
 
 end
 
@@ -392,3 +304,127 @@ end
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+function [qualified_grids_within_all_thresholds, angle_btw_unit_normals_and_vertical] = fcn_INTERNAL_thetaThresholdIsEmpty(standard_deviation_in_z,std_threshold)
+% STEP 1: Standard deviation of the orthogonal (perpendicular) distances of
+% the points to the plane (after fit)
+% Find the grids that are within standard deviation limit
+% This is not enough (delta Y) is also important
+% mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
+qualified_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
+
+% Grids that satisy the conditions of (STEP 1). The grids that
+% are within the std threshold
+qualified_grids_within_all_thresholds = (qualified_grids_within_std_threshold == 1);
+
+% The angle between unit vertical and the unit_normal_vector is computed to
+% determine how close the normal vector is to vertical direction. In
+% this case, the angle between unit normals and vertical is empty.
+angle_btw_unit_normals_and_vertical = [];
+end
+
+function [qualified_grids_within_all_thresholds, angle_btw_unit_normals_and_vertical] = fcn_INTERNAL_STDThresholdIsEmpty(unit_normal_vectors,theta_threshold)
+% STEP 2
+% Comparing normal vector with vertical direction
+unit_vector_vertical_direction = [0 0 1];
+
+% The dot product is computed to find the angle between the vectors
+dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2);
+
+% The angle between unit vertical and the unit_normal_vector is computed to
+% determine how close the normal vector is to vertical direction.
+angle_btw_unit_normals_and_vertical = acos(dot_product);
+
+% Find the grids (with a fitted plane) that are within the vertical
+% threshold (change to a different name: vertical threshold)
+qualified_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
+
+% Grids that satisy the conditions (STEP 2). The grids that
+% are within the vertical threshold
+qualified_grids_within_all_thresholds = (qualified_grids_within_vertical_threshold == 1);
+end
+
+function [qualified_grids_within_all_thresholds, ...
+    angle_btw_unit_normals_and_vertical, ...
+    qualified_grids_failed_vertical_and_std_thresholds, ...
+    qualified_grids_failed_std_threshold, ...
+    qualified_grids_failed_vertical_threshold, ...
+    uncertain_grid_indices, ...
+    original_failed_grids, ...
+    original_uncertain_grids, ...
+    current_failed_grid_numbers_in_qualified_grids, ...
+    current_uncertain_grid_numbers_in_qualified_grids, ...
+    gridCenters_failed_grids, ...
+    gridCenters_uncertain_grids] = fcn_INTERNAL_allThresholdsGiven(original_qualified_grids, gridCenters, standard_deviation_in_z, std_threshold, unit_normal_vectors, theta_threshold)
+% STEP 1: Standard deviation of the orthogonal (perpendicular) distances of
+% the points to the plane (after fit)
+% Find the grids that are within standard deviation limit
+% This is not enough (delta Y) is also important
+% mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
+qualified_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
+
+% STEP 2
+% Comparing normal vector with verticle direction
+unit_vector_vertical_direction = [0 0 1];
+
+% The dot product is computed to find the angle between the vectors
+dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2);
+
+% The angle between unit vertical and the unit_normal_vector is computed to
+% determine how close the normal vector is to vertical direction.
+angle_btw_unit_normals_and_vertical = acos(dot_product);
+
+% Find the grids (with a fitted plane) that are within the vertical
+% threshold (change to a different name: vertical threshold)
+qualified_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
+
+% Grids that satisy the conditions of (STEP 1 & STEP 2). The grids that
+% are within the standar deviation and vertical threshold
+qualified_grids_within_vertical_and_std_thresholds = (qualified_grids_within_vertical_threshold == 1) & (qualified_grids_within_std_threshold == 1);
+
+% mapped grids within all the thresholds
+qualified_grids_within_all_thresholds = qualified_grids_within_vertical_and_std_thresholds;
+
+% Grids that failed to satisfy both the conditions (STEP 1 and STEP 2)
+qualified_grids_failed_vertical_and_std_thresholds = (qualified_grids_within_vertical_threshold == 0) & (qualified_grids_within_std_threshold == 0);
+
+% Grids that failed to satisfy STEP 1 but not STEP 2
+qualified_grids_failed_std_threshold = find((qualified_grids_within_vertical_threshold == 0) & (qualified_grids_within_std_threshold == 1));
+
+% Grids that failed to satisfy STEP 2 but not STEP 1
+qualified_grids_failed_vertical_threshold = find((qualified_grids_within_vertical_threshold == 1) & (qualified_grids_within_std_threshold == 0));
+
+% Uncertain mapped grids
+uncertain_grid_indices = [qualified_grids_failed_std_threshold;qualified_grids_failed_vertical_threshold];
+
+% Sort the uncertain grid indices
+sorted_uncertain_grid_indices = sort(uncertain_grid_indices);
+
+% Get the unique grid indices
+uncertain_grid_indices = unique(sorted_uncertain_grid_indices);
+
+% % Find the drivable grids (original)
+% original_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds);
+
+% Failed grids
+original_failed_grids = original_qualified_grids(qualified_grids_failed_vertical_and_std_thresholds);
+
+% Uncertain grids
+original_uncertain_grids = original_qualified_grids(uncertain_grid_indices);
+
+% % Find the non-drivable grids (original)
+% original_non_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds == 0);
+
+% Final failed grid numbers of the mapped grids
+current_failed_grid_numbers_in_qualified_grids = find(ismember(original_qualified_grids, original_failed_grids));
+
+% Final failed grid numbers of the mapped grids
+current_uncertain_grid_numbers_in_qualified_grids = find(ismember(original_qualified_grids, original_uncertain_grids));
+
+% Grid centers of failed grids
+gridCenters_failed_grids = [gridCenters(original_failed_grids,1), gridCenters(original_failed_grids,2)];
+
+% Grid centers of failed grids
+gridCenters_uncertain_grids = [gridCenters(original_uncertain_grids,1), gridCenters(original_uncertain_grids,2)];
+
+end
