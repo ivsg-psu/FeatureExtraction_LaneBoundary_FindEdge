@@ -1,4 +1,4 @@
-function boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,varargin)
+function boundary_points = fcn_findEdge_findBoundaryPoints(Xcoord_gridCenters, Ycoord_gridCenters, Zcoord_gridCenters, grid_size,varargin)
 %% fcn_findEdge_findMaxMinOfXYZ
 %
 % Finds the boundary points of a matrix Z wherein the boundary points are
@@ -68,6 +68,8 @@ function boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,varar
 % -- fixed some missing comments in the header
 % 2024_08_07 - Jiabao Zhao
 % -- pull this code from geometry class and rename it
+% 2024_08_19 - Aneesh Batchu
+% -- Renamed input variables
 
 %% Debugging and Input checks
 
@@ -179,11 +181,12 @@ end
 x_interval = grid_size;
 y_interval = grid_size; 
 
-[boundary_points_falling_y, boundary_points_rising_y] = fcn_INTERNAL_findBoundaryPointsX(X, Y, Z, y_interval);
-[boundary_points_falling_x_transpose, boundary_points_rising_x_transpose] = fcn_INTERNAL_findBoundaryPointsX(Y', X', Z', x_interval);
+[boundary_points_falling_y, boundary_points_rising_y] = fcn_INTERNAL_findBoundaryPointsX(Xcoord_gridCenters, Ycoord_gridCenters, Zcoord_gridCenters, y_interval);
+[boundary_points_falling_x_transpose, boundary_points_rising_x_transpose] = fcn_INTERNAL_findBoundaryPointsX(Ycoord_gridCenters', Xcoord_gridCenters', Zcoord_gridCenters', x_interval);
 boundary_points_falling_x = fliplr(boundary_points_falling_x_transpose);
 boundary_points_rising_x = fliplr(boundary_points_rising_x_transpose);
 
+% Final boundary points
 boundary_points = [boundary_points_falling_y; boundary_points_rising_y; boundary_points_falling_x; boundary_points_rising_x];
 
 
@@ -214,8 +217,8 @@ if flag_do_plots
     ylabel('Y [m]')
 
     % Plot the results
-    flag_larger_than = Z>0.5;
-    plot(X(flag_larger_than),Y(flag_larger_than),'k.','Markersize',50);
+    flag_larger_than = Zcoord_gridCenters>0.5;
+    plot(Xcoord_gridCenters(flag_larger_than),Ycoord_gridCenters(flag_larger_than),'k.','Markersize',50);
 
     if ~isempty(x_limits) &&  ~isempty(y_limits)
         xlim([min(x_limits) max(x_limits)]);

@@ -454,7 +454,7 @@ figure(fig_num_2); clf;
 fig_num_3 = 206;
 figure(fig_num_3); clf; 
 
-[transverse_span_threshold,transverse_span_each_grid] = fcn_findEdge_determineTransverseSpanThreshold...
+transverse_span_each_grid = fcn_findEdge_determineTransverseSpanThreshold...
     (grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines,...
     gridCenters_greater_than_zero_point_density,fig_num_1,fig_num_2,fig_num_3);
 
@@ -462,6 +462,8 @@ if fig_num_3>0
     temp_h3 = figure(fig_num_3);
     assert(~isempty(get(temp_h3,'Children')))
 end
+
+% assert(transverse_span_threshold>0)
 
 % Threshold of transverse span
 transverse_span_threshold = 0.15; 
@@ -472,7 +474,7 @@ figure(fig_num); clf;
 % Find the grids
 [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
 assert(length(grid_indices_with_more_than_transverse_span_threshold)==length(grids_greater_than_zero_points))
-
+assert(transverse_span_threshold>0)
 %% STEP 8: Qualified and unqualified grids: grids that pass all three conditions above are qualified
 %fcn_findEdge_classifyQualifiedGrids
 %
@@ -907,11 +909,11 @@ geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_fai
 
 fig_num_qualified_unqualified = 401; 
 
-[X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+[Xcoord_gridCenters, Ycoord_gridCenters, Zcoord_gridCenters] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_qualified_grids, gridCenters_unqualified_grids);
 
-assert(isequal(size(X), size(Y)))
-assert(isequal(size(X), size(Z)))
+assert(isequal(size(Xcoord_gridCenters), size(Ycoord_gridCenters)))
+assert(isequal(size(Xcoord_gridCenters), size(Zcoord_gridCenters)))
 
 %%%%%%%%%%%%%%---------------------------------------------------------------------------
 % x_limits = [min(x_range) max(x_range)];  
@@ -924,7 +926,7 @@ y_limits = [];
 % Calculate boundary points
 figure(fig_num_qualified_unqualified);
 clf;
-boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
+boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(Xcoord_gridCenters,Ycoord_gridCenters,Zcoord_gridCenters,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
 
@@ -944,11 +946,11 @@ assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundar
 
 fig_num_drivable_non_drivable = 402;
 
-[X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+[Xcoord_gridCenters, Ycoord_gridCenters, Zcoord_gridCenters] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_drivable_grids, gridCenters_uncertain_grids);
 
-assert(isequal(size(X), size(Y)))
-assert(isequal(size(X), size(Z)))
+assert(isequal(size(Xcoord_gridCenters), size(Ycoord_gridCenters)))
+assert(isequal(size(Xcoord_gridCenters), size(Zcoord_gridCenters)))
 
 %% STEP 13.2: Find the boundary points of drivable and non-drivable grids
 % x_limits = [min(x_range) max(x_range)];  
@@ -960,7 +962,7 @@ y_limits = [];
 
 figure(fig_num_drivable_non_drivable)
 clf;
-boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
+boundary_points = fcn_findEdge_findBoundaryPoints(Xcoord_gridCenters,Ycoord_gridCenters,Zcoord_gridCenters,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
 
 assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
 
@@ -1104,11 +1106,11 @@ end
 
 fig_num_qualified_unqualified = 767787; 
 
-[X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+[Xcoord_gridCenters, Ycoord_gridCenters, Zcoord_gridCenters] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_qualified_grids, gridCenters_unqualified_grids);
 
-assert(isequal(size(X), size(Y)))
-assert(isequal(size(X), size(Z)))
+assert(isequal(size(Xcoord_gridCenters), size(Ycoord_gridCenters)))
+assert(isequal(size(Xcoord_gridCenters), size(Zcoord_gridCenters)))
 
 %%%%%%%%%%%%%%---------------------------------------------------------------------------
 % x_limits = [min(x_range) max(x_range)];  
@@ -1119,7 +1121,7 @@ y_limits = [];
 % Calculate boundary points
 figure(fig_num_qualified_unqualified);
 clf;
-boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
+boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(Xcoord_gridCenters,Ycoord_gridCenters,Zcoord_gridCenters,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
 
@@ -1138,11 +1140,11 @@ assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundar
 fig_num_drivable_non_drivable = 98898;
 
 
-[X, Y, Z] = fcn_findEdge_prepGridCentersForBoundaryDetection...
+[Xcoord_gridCenters, Ycoord_gridCenters, Zcoord_gridCenters] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters(original_drivable_grids,1:2), gridCenters(original_non_drivable_grids,1:2));
 
-assert(isequal(size(X), size(Y)))
-assert(isequal(size(X), size(Z)))
+assert(isequal(size(Xcoord_gridCenters), size(Ycoord_gridCenters)))
+assert(isequal(size(Xcoord_gridCenters), size(Zcoord_gridCenters)))
 
 x_limits = [];  
 y_limits = []; 
@@ -1150,7 +1152,7 @@ y_limits = [];
 
 figure(fig_num_drivable_non_drivable)
 clf;
-boundary_points = fcn_findEdge_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
+boundary_points = fcn_findEdge_findBoundaryPoints(Xcoord_gridCenters,Ycoord_gridCenters,Zcoord_gridCenters,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
 
 assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 
@@ -1362,7 +1364,7 @@ fig_num = 407;
 transverse_shift = 6*3.6576; 
 
 [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
-    (VehiclePose,scanLineStart,scanLineEnd,nearest_boundary_points, grid_size, transverse_shift, fig_num);
+    (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, grid_size, transverse_shift, fig_num);
 
 assert(isequal(length(boundary_points_left(1,:)),2))
 assert(isequal(length(boundary_points_right(1,:)),2))

@@ -1,4 +1,4 @@
-function  [transverse_span_threshold,transverse_span_each_grid]= fcn_findEdge_determineTransverseSpanThreshold...
+function  transverse_span_each_grid = fcn_findEdge_determineTransverseSpanThreshold...
     (grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines, gridCenters_greater_than_zero_point_density,varargin)
 %% fcn_findEdge_classifyGridsBasedOnTransverseSpan  Finding the orthogonal distances of points in the remaining rings by projecting orthogonally from one ring 
 %
@@ -157,116 +157,41 @@ for ith_grid = 1:length(grids_greater_than_zero_points)
  
     % Scan lines and rings
     scanLines_and_rings = LIDAR_scanLines(rows_in_domain,:);
-
-    % % Find number of LiDAR scan lines in each grid
-    % scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
     
     % Combine points_in_domain and ScanLines and rings
     gridPoints_scanLines_rings_to_add = [ith_grid*(ones(length(points_in_domain(:,1)),1)),points_in_domain,scanLines_and_rings];
-
-    % Sort gridPoints_scanLines_rings_to_add based on scan line
-    [~,sorted_gridPoints_scanLines_rings] = sort(gridPoints_scanLines_rings_to_add(:,4));
-
-    % Sorted gridPoints_scanLines_rings_to_add matrix
-    gridPoints_scanLines_rings_to_add = gridPoints_scanLines_rings_to_add(sorted_gridPoints_scanLines_rings,:);
-
-    % Count occurrences of each unique number in scan lines
-    [uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_rings_to_add(:,4));
-    counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
-
-    % Create the new array with the counts
-    count_array = counts;
-
-    % Index of the scan line with more than one occurence
-    index_of_scanLines = find(count_array>1, 1);
     
+    % Find the index of scan line with more than one occurence 
+    index_of_scanLines = fcn_INTERNAL_findIndexOfScanLineWithMoreThanOneOccurence(gridPoints_scanLines_rings_to_add);
+
     if ~isempty(index_of_scanLines)
-        % Indices first scan line of the matrix as a seperate matrix
-        indices_gridPoints_scanLines_first_scan = find(gridPoints_scanLines_rings_to_add(:,4) == gridPoints_scanLines_rings_to_add(index_of_scanLines,4));
-
-        % Seperate the scan line with more than one occurence of the matrix as a seperate matrix
-        gridPoints_scanLines_first_scan = gridPoints_scanLines_rings_to_add(indices_gridPoints_scanLines_first_scan,:);
-
-        % Count occurrences of each unique number in rings
-        [uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_first_scan(:,5));
-        counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
-
-        % Create the new array with the counts
-        count_array = counts;
-
-        % Index of the scan line with more than one occurence
-        index_of_rings = find(count_array>1, 1);
-
-        % if length(gridPoints_scanLines_first_scan(:,1)) == 1
-        %
-        %     indices_gridPoints_scanLines_first_scan
+        
+        % Find index of ring with more than one occurence
+        [indices_gridPoints_scanLines_first_scan, gridPoints_scanLines_first_scan, index_of_rings] = fcn_INTERNAL_findIndexOfRingWithMoreThanOneOccurence(gridPoints_scanLines_rings_to_add, index_of_scanLines);
 
         if length(gridPoints_scanLines_first_scan(:,1)) > 1 & (gridPoints_scanLines_first_scan(index_of_rings,5) == gridPoints_scanLines_first_scan(index_of_rings+1,5))
-            change_in_vector = gridPoints_scanLines_first_scan(2,2:3) - gridPoints_scanLines_first_scan(1,2:3);
-            unit_change_in_vector = fcn_INTERNAL_calcUnitVector(change_in_vector);
-            orth_unit_change_in_vector = unit_change_in_vector*[0 1; -1 0];
+            
+            % Find maximum span distance of each grid
+            maximum_span_distance = fcn_INTERNAL_findMaximumSpanDistance(gridPoints_scanLines_first_scan, indices_gridPoints_scanLines_first_scan, gridPoints_scanLines_rings_to_add);
 
-            % The remaining number of grids
-            remaining_grids = length(indices_gridPoints_scanLines_first_scan)+1:length(gridPoints_scanLines_rings_to_add(:,1));
-
-            %
-            vector_from_base_point_first_scan_to_points_in_otherScans_rings = gridPoints_scanLines_rings_to_add(remaining_grids,2:3) - ...
-                gridPoints_scanLines_first_scan(1,2:3).*(ones(length(remaining_grids),2));
-
-            % Unit orthogonal vector
-            repeated_orth_unit_change_in_vector = orth_unit_change_in_vector.*(ones(length(remaining_grids),2));
-
-            % Calculate the transverse distance
-            transverse_dist_grid_points_other_scanLines = sum(vector_from_base_point_first_scan_to_points_in_otherScans_rings.*repeated_orth_unit_change_in_vector,2);
-
-            % Positive transverse distances
-            positive_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines>=0);
-
-            % Negative transverse distances
-            negative_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines<0);
-
-            % maximum span distance
-            if ~isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
-
-                maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines) + max(abs(negative_transverse_dist_grid_points_other_scanLines));
-
-            elseif ~isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
-
-                maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines);
-
-            elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
-
-                maximum_span_distance = max(abs(negative_transverse_dist_grid_points_other_scanLines));
-
-            elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
-
-                maximum_span_distance = 0;
-                    
-            end
             % Conatenate maximum transverse span
             transverse_span_each_grid = [transverse_span_each_grid; maximum_span_distance]; %#ok<AGROW>
 
             % Mean of absolute values of transverse distances
-            mean_dist = mean(abs(transverse_dist_grid_points_other_scanLines));
- 
+            % mean_dist = mean(abs(transverse_dist_grid_points_other_scanLines));
         else
 
             % Conatenate maximum transverse span
             transverse_span_each_grid = [transverse_span_each_grid; 0]; %#ok<AGROW>
-
         end
 
     else
-
-
-
         % Conatenate maximum transverse span
         transverse_span_each_grid = [transverse_span_each_grid; 0]; %#ok<AGROW>
-
     end
 end
 % Threshold of transverse span
-transverse_span_threshold = 0.15;
+% transverse_span_threshold = 0.15;
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -376,6 +301,7 @@ for ith_grid = 1:length(grids_greater_than_zero_points)
         %     indices_gridPoints_scanLines_first_scan
 
         if length(gridPoints_scanLines_first_scan(:,1)) > 1 & (gridPoints_scanLines_first_scan(index_of_rings,5) == gridPoints_scanLines_first_scan(index_of_rings+1,5))
+            
             change_in_vector = gridPoints_scanLines_first_scan(2,2:3) - gridPoints_scanLines_first_scan(1,2:3);
             unit_change_in_vector = fcn_INTERNAL_calcUnitVector(change_in_vector);
             orth_unit_change_in_vector = unit_change_in_vector*[0 1; -1 0];
@@ -590,3 +516,88 @@ vector_length = sum(input_vectors.^2,2).^0.5;
 unit_vectors = input_vectors./vector_length;
 end
 
+function index_of_scanLines = fcn_INTERNAL_findIndexOfScanLineWithMoreThanOneOccurence(gridPoints_scanLines_rings_to_add)
+
+% Sort gridPoints_scanLines_rings_to_add based on scan line
+[~,sorted_gridPoints_scanLines_rings] = sort(gridPoints_scanLines_rings_to_add(:,4));
+
+% Sorted gridPoints_scanLines_rings_to_add matrix
+gridPoints_scanLines_rings_to_add = gridPoints_scanLines_rings_to_add(sorted_gridPoints_scanLines_rings,:);
+
+% Count occurrences of each unique number in scan lines
+[uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_rings_to_add(:,4));
+counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
+
+% Create the new array with the counts
+count_array = counts;
+
+% Index of the scan line with more than one occurence
+index_of_scanLines = find(count_array>1, 1);
+
+end
+
+function [indices_gridPoints_scanLines_first_scan, gridPoints_scanLines_first_scan, index_of_rings] = fcn_INTERNAL_findIndexOfRingWithMoreThanOneOccurence(gridPoints_scanLines_rings_to_add, index_of_scanLines)
+
+% Indices first scan line of the matrix as a seperate matrix
+indices_gridPoints_scanLines_first_scan = find(gridPoints_scanLines_rings_to_add(:,4) == gridPoints_scanLines_rings_to_add(index_of_scanLines,4));
+
+% Seperate the scan line with more than one occurence of the matrix as a seperate matrix
+gridPoints_scanLines_first_scan = gridPoints_scanLines_rings_to_add(indices_gridPoints_scanLines_first_scan,:);
+
+% Count occurrences of each unique number in rings
+[uniqueNumbers, ~, uniqueNum_idx] = unique(gridPoints_scanLines_first_scan(:,5));
+counts = histc(uniqueNum_idx, 1:numel(uniqueNumbers));
+
+% Create the new array with the counts
+count_array = counts;
+
+% Index of the ring with more than one occurence
+index_of_rings = find(count_array>1, 1);
+
+end
+
+function maximum_span_distance = fcn_INTERNAL_findMaximumSpanDistance(gridPoints_scanLines_first_scan, indices_gridPoints_scanLines_first_scan, gridPoints_scanLines_rings_to_add)
+
+change_in_vector = gridPoints_scanLines_first_scan(2,2:3) - gridPoints_scanLines_first_scan(1,2:3);
+unit_change_in_vector = fcn_INTERNAL_calcUnitVector(change_in_vector);
+orth_unit_change_in_vector = unit_change_in_vector*[0 1; -1 0];
+
+% The remaining number of grids
+remaining_grids = length(indices_gridPoints_scanLines_first_scan)+1:length(gridPoints_scanLines_rings_to_add(:,1));
+
+% The vectors from the base point to all the remaining points in the grid
+vector_from_base_point_first_scan_to_points_in_otherScans_rings = gridPoints_scanLines_rings_to_add(remaining_grids,2:3) - ...
+    gridPoints_scanLines_first_scan(1,2:3).*(ones(length(remaining_grids),2));
+
+% Unit orthogonal vector
+repeated_orth_unit_change_in_vector = orth_unit_change_in_vector.*(ones(length(remaining_grids),2));
+
+% Calculate the transverse distance
+transverse_dist_grid_points_other_scanLines = sum(vector_from_base_point_first_scan_to_points_in_otherScans_rings.*repeated_orth_unit_change_in_vector,2);
+
+% Positive transverse distances
+positive_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines>=0);
+
+% Negative transverse distances
+negative_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines<0);
+
+% maximum span distance
+if ~isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+    maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines) + max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+elseif ~isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+    maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines);
+
+elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+    maximum_span_distance = max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+elseif isempty(positive_transverse_dist_grid_points_other_scanLines) && isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+    maximum_span_distance = 0;
+
+end
+
+end

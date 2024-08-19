@@ -1,5 +1,5 @@
 function [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
-    (VehiclePose,station_1,station_2,nearest_boundary_points, grid_size, transverse_shift, varargin)
+    (VehiclePose,scanLineNumber_start,scanLineNumber_end,nearest_boundary_points, grid_size, transverse_shift, varargin)
 %% fcn_findEdge_seperateLeftRightBoundaries    Seperate the right and left boundaries from the nearest boundaries
 % 
 % FORMAT:
@@ -133,7 +133,8 @@ end
 % boundaryLineNumber_end = scanLineNumber_end;%scanLineNumber_end - 6; 
 % scanLineNumber_start = 1400; 
 % scanLineNumber_end = 1450; 
-VehiclePose_current = VehiclePose(station_1:station_2,1:2);
+
+VehiclePose_current = VehiclePose(scanLineNumber_start:scanLineNumber_start,1:2);
 
 % Get the number of rows 
 rows_nearest_boundary_points = size(nearest_boundary_points, 1);
@@ -189,50 +190,65 @@ else
 
 end
 
+[unit_ortho_vehicle_vectors_XY, shifted_vehiclePose] = fcn_INTERNAL_findOrthAndShiftedVehiclePose(updated_VehiclePose_current); 
 
-vehicle_change_in_pose_XY = diff(updated_VehiclePose_current(:,1:2));
+% Find the boundary points on the right
+[right_transverse_points, boundary_points_right] = fcn_INTERNAL_findRightBoundaryPoints(nearest_boundary_points, updated_VehiclePose_current, shifted_vehiclePose, unit_ortho_vehicle_vectors_XY, transverse_shift);
 
-% Repeat the last value again, since diff removes one row. We want the same
-% number of vectors as the number of points, and diff removed one point.
-vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_XY(end,:)];
-
-% Convert these to unit vectors
-unit_vehicle_change_in_pose_XY = fcn_INTERNAL_calcUnitVector(vehicle_change_in_pose_XY);
+% Find the boundary points on the left
+[left_transverse_points, boundary_points_left] = fcn_INTERNAL_findLeftBoundaryPoints(nearest_boundary_points, updated_VehiclePose_current,shifted_vehiclePose, unit_ortho_vehicle_vectors_XY, transverse_shift); 
 
 
-% Find orthogonal vetors by rotating by 90 degrees in the CCW direction
-unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
+% % Find the difference of updated vehicle pose
+% vehicle_change_in_pose_XY = diff(updated_VehiclePose_current(:,1:2));
+% 
+% % Repeat the last value again, since diff removes one row. We want the same
+% % number of vectors as the number of points, and diff removed one point.
+% vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_XY(end,:)];
+% 
+% % Convert these to unit vectors
+% unit_vehicle_change_in_pose_XY = fcn_INTERNAL_calcUnitVector(vehicle_change_in_pose_XY);
+% 
+% % Find orthogonal vetors by rotating by 90 degrees in the CCW direction
+% unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
+% 
+% shift = 5; 
+% % Shift
+% shift_distance = unit_vehicle_change_in_pose_XY*shift; 
+% 
+% % Shift the updated vehicle pose
+% shifted_vehiclePose = updated_VehiclePose_current - shift_distance;
+% 
+% % right transverse shifted points
+% right_transverse_points = updated_VehiclePose_current - transverse_shift*unit_ortho_vehicle_vectors_XY; 
+% 
+% % Find right nearest boundary points
+% right_boundary_points_nearest = [shifted_vehiclePose;
+%     flipud(right_transverse_points);
+%     shifted_vehiclePose(1,:)]; 
+% 
+% % Use inpolygon to find the indices of the right nearest boundary points
+% [boundary_points_right_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),right_boundary_points_nearest(:,1),right_boundary_points_nearest(:,2));
+% 
+% % nearest boundary points on the right
+% boundary_points_right = nearest_boundary_points(boundary_points_right_indices,1:2); 
 
 
-% right transverse shifted points
-right_transverse_points = updated_VehiclePose_current - transverse_shift*unit_ortho_vehicle_vectors_XY; 
 
-% Find right nearest boundary points
-right_boundary_points_nearest = [updated_VehiclePose_current;
-    flipud(right_transverse_points);
-    updated_VehiclePose_current(1,:)]; 
+% % transverse shifted points
+% left_transverse_points = updated_VehiclePose_current + transverse_shift*unit_ortho_vehicle_vectors_XY; 
+% 
+% % Find left nearest boundary points
+% left_boundary_points_nearest = [shifted_vehiclePose;
+%     flipud(left_transverse_points);
+%     shifted_vehiclePose(1,:)]; 
+% 
+% % Use inpolygon to find the indices of the left nearest boundary points
+% [boundary_points_left_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),left_boundary_points_nearest(:,1),left_boundary_points_nearest(:,2));
+% 
+% % nearest boundary points on the left
+% boundary_points_left = nearest_boundary_points(boundary_points_left_indices,1:2); 
 
-% Use inpolygon to find the indices of the right nearest boundary points
-[boundary_points_right_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),right_boundary_points_nearest(:,1),right_boundary_points_nearest(:,2));
-
-% nearest boundary points on the right
-boundary_points_right = nearest_boundary_points(boundary_points_right_indices,1:2); 
-
-
-% transverse shifted points
-left_transverse_points = updated_VehiclePose_current + transverse_shift*unit_ortho_vehicle_vectors_XY; 
-
-
-% Find left nearest boundary points
-left_boundary_points_nearest = [updated_VehiclePose_current;
-    flipud(left_transverse_points);
-    updated_VehiclePose_current(1,:)]; 
-
-% Use inpolygon to find the indices of the left nearest boundary points
-[boundary_points_left_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),left_boundary_points_nearest(:,1),left_boundary_points_nearest(:,2));
-
-% nearest boundary points on the left
-boundary_points_left = nearest_boundary_points(boundary_points_left_indices,1:2); 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -254,8 +270,9 @@ xlabel('X[m]')
 ylabel('Y[m]')
 title('Right Points')
 
-% plot(VehiclePose_current_shifted(:,1), VehiclePose_current_shifted(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
-plot(updated_VehiclePose_current(:,1), updated_VehiclePose_current(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
+% plot(updated_VehiclePose_current(:,1), updated_VehiclePose_current(:,2),'.','Color',[0 0 0],'MarkerSize',30)
+plot(shifted_vehiclePose(:,1), shifted_vehiclePose(:,2),'.','Color',[0 0 0],'MarkerSize',30)
+
 
 % plot(VehiclePose_current_shifted(:,1), VehiclePose_current_shifted(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
 plot(VehiclePose_current(:,1), VehiclePose_current(:,2),'.','Color',[0.5 0.5 0.5],'MarkerSize',10) 
@@ -275,8 +292,12 @@ plot(nearest_boundary_points(:,1), nearest_boundary_points(:,2), 'b.', 'MarkerSi
 %     vector_from_vehicle_pose_to_boundary_points(:,1),vector_from_vehicle_pose_to_boundary_points(:,2),'-','LineWidth',3,'Color',[0 1 0]);
 
 
+% quiver(...
+%     updated_VehiclePose_current(:,1),updated_VehiclePose_current(:,2),...
+%     unit_ortho_vehicle_vectors_XY(:,1),unit_ortho_vehicle_vectors_XY(:,2),'-','LineWidth',3,'Color',[0 0 1]);
+
 quiver(...
-    updated_VehiclePose_current(:,1),updated_VehiclePose_current(:,2),...
+    shifted_vehiclePose(:,1),shifted_vehiclePose(:,2),...
     unit_ortho_vehicle_vectors_XY(:,1),unit_ortho_vehicle_vectors_XY(:,2),'-','LineWidth',3,'Color',[0 0 1]);
 
 % plot the left shifted points
@@ -313,4 +334,61 @@ end
 function unit_vectors = fcn_INTERNAL_calcUnitVector(input_vectors)
 vector_length = sum(input_vectors.^2,2).^0.5;
 unit_vectors = input_vectors./vector_length;
+end
+
+function [unit_ortho_vehicle_vectors_XY, shifted_vehiclePose] = fcn_INTERNAL_findOrthAndShiftedVehiclePose(updated_VehiclePose_current)
+% Find the difference of updated vehicle pose
+vehicle_change_in_pose_XY = diff(updated_VehiclePose_current(:,1:2));
+
+% Repeat the last value again, since diff removes one row. We want the same
+% number of vectors as the number of points, and diff removed one point.
+vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_XY(end,:)];
+
+% Convert these to unit vectors
+unit_vehicle_change_in_pose_XY = fcn_INTERNAL_calcUnitVector(vehicle_change_in_pose_XY);
+
+% Find orthogonal vetors by rotating by 90 degrees in the CCW direction
+unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
+
+shift = 5; 
+% Shift
+shift_distance = unit_vehicle_change_in_pose_XY*shift; 
+
+% Shift the updated vehicle pose
+shifted_vehiclePose = updated_VehiclePose_current - shift_distance; 
+end
+
+function [right_transverse_points, boundary_points_right] = fcn_INTERNAL_findRightBoundaryPoints(nearest_boundary_points, updated_VehiclePose_current, shifted_vehiclePose, unit_ortho_vehicle_vectors_XY, transverse_shift)
+
+% right transverse shifted points
+right_transverse_points = updated_VehiclePose_current - transverse_shift*unit_ortho_vehicle_vectors_XY; 
+
+% Find right nearest boundary points
+right_boundary_points_nearest = [shifted_vehiclePose;
+    flipud(right_transverse_points);
+    shifted_vehiclePose(1,:)]; 
+
+% Use inpolygon to find the indices of the right nearest boundary points
+[boundary_points_right_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),right_boundary_points_nearest(:,1),right_boundary_points_nearest(:,2));
+
+% nearest boundary points on the right
+boundary_points_right = nearest_boundary_points(boundary_points_right_indices,1:2); 
+
+end
+
+function [left_transverse_points, boundary_points_left] = fcn_INTERNAL_findLeftBoundaryPoints(nearest_boundary_points, updated_VehiclePose_current,shifted_vehiclePose, unit_ortho_vehicle_vectors_XY, transverse_shift)
+% transverse shifted points
+left_transverse_points = updated_VehiclePose_current + transverse_shift*unit_ortho_vehicle_vectors_XY;
+
+
+% Find left nearest boundary points
+left_boundary_points_nearest = [shifted_vehiclePose;
+    flipud(left_transverse_points);
+    shifted_vehiclePose(1,:)];
+
+% Use inpolygon to find the indices of the left nearest boundary points
+[boundary_points_left_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),left_boundary_points_nearest(:,1),left_boundary_points_nearest(:,2));
+
+% nearest boundary points on the left
+boundary_points_left = nearest_boundary_points(boundary_points_left_indices,1:2);
 end

@@ -105,10 +105,14 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Finding the same boundary points that are in boundary points of qualified
+% and unqualified grids
 [members, ~] = ismember(boundary_points,boundary_points_qualified_unqualified,'rows'); 
 
 % not_boundary_points = boundary_points(members,:);
 
+% Save the boundary points that are not present in the boundary points of
+% qualified and unqualified grids
 true_boundary_points = boundary_points(members==0,:);
 
 
