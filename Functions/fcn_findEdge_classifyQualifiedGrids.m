@@ -1,5 +1,9 @@
-function [current_qualified_grids,current_unqualified_grids,original_qualified_grids,gridCenters_qualified_grids,gridCenters_unqualified_grids] = ...
-    fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,grid_indices_with_more_than_transverse_span_threshold,...
+function [current_qualified_grids, ...
+    current_unqualified_grids, ...
+    original_qualified_grids, ...
+    original_unqualified_grids, ...
+    gridCenters_qualified_grids, ... 
+    gridCenters_unqualified_grids] = fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,grid_indices_with_more_than_transverse_span_threshold,...
     grids_greater_than_zero_points,gridCenters,varargin)
 %% fcn_findEdge_classifyQualifiedGrids
 %
@@ -172,12 +176,6 @@ gridCenters_qualified_grids = gridCenters(original_qualified_grids,1:2);
 % Grid centers of unqualified grids
 gridCenters_unqualified_grids = gridCenters(original_unqualified_grids,1:2); 
 
-%
-
-plot_gridCenters_unqualified_grids = [gridCenters_unqualified_grids, zeros(length(gridCenters_unqualified_grids(:,1)),1)]; 
-
-plot_gridCenters_qualified_grids = [gridCenters_qualified_grids, zeros(length(gridCenters_qualified_grids(:,1)),1)]; 
-
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -191,7 +189,10 @@ plot_gridCenters_qualified_grids = [gridCenters_qualified_grids, zeros(length(gr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-   
+
+    plot_gridCenters_unqualified_grids = [gridCenters_unqualified_grids, zeros(length(gridCenters_unqualified_grids(:,1)),1)];
+
+    plot_gridCenters_qualified_grids = [gridCenters_qualified_grids, zeros(length(gridCenters_qualified_grids(:,1)),1)];
 
     fcn_findEdge_plotLIDARLLA(plot_gridCenters_unqualified_grids,[],[],[],[],[],format_unqualified,fig_num);
 

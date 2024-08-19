@@ -1,4 +1,4 @@
-function fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,varargin)
+function std_threshold = fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,chosen_std_threshold,varargin)
 %% fcn_findEdge_histogramSTDinZError
 %
 % FORMAT:
@@ -37,6 +37,9 @@ function fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,s
 % -- Wrote the code originally
 % 2024_08_13 - Aleksandr Goncharov
 % -- Functionalized code from the FindEdge Demo 
+% 2024_08_19 - Aneesh Batchu
+% -- Replaced std_threshold (input) to chosen_std_threshold
+% -- std_threshold is calculated here when chosen_std_threshold is empty
 
 %% Debugging and Input checks
 
@@ -111,9 +114,11 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-x_coord = mean_std_in_z_driven_path + 100*std(std_in_z_driven_path); 
+std_threshold = mean_std_in_z_driven_path + 6*std(std_in_z_driven_path); 
 
-current_text = sprintf('std threshold = %.4f',std_threshold);
+if ~isempty(chosen_std_threshold)
+    std_threshold = chosen_std_threshold;
+end
 
 
 %% Plot the results (for debugging)?
@@ -145,6 +150,9 @@ if flag_do_plots
     disp('chosen std_threshold')
     disp(std_threshold)
 
+    current_text = sprintf('std threshold = %.4f',std_threshold);
+    x_coord = mean_std_in_z_driven_path + 100*std(std_in_z_driven_path); 
+    
     % std_threshold = 0.05;
     plot(std_threshold,0, 'k.', 'MarkerSize',18)
     text(x_coord, 80,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');

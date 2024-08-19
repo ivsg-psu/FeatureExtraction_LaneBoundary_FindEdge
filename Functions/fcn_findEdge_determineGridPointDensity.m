@@ -149,13 +149,11 @@ x_location = floor(mean(total_points_in_each_grid_in_the_driven_path) - 1.5*(std
 
 % Find a ratio
 % point_density = sum(binEdges(index_max_counts2:(index_max_counts2+1)))/2; 
-% point_density = floor(mean(total_points_in_each_grid_in_the_driven_path) - 7.5*(std(total_points_in_each_grid_in_the_driven_path)));
+point_density = floor(mean(total_points_in_each_grid_in_the_driven_path) - 5*(std(total_points_in_each_grid_in_the_driven_path)));
 % point_density = floor(mean(total_points_in_each_grid_in_the_driven_path));
 
 % Minimum number of points required 
-point_density = floor(20*((grid_size^2)/(0.3^2)));
-
-
+% point_density = floor(20*((grid_size^2)/(0.3^2)));
 
 
 %% Plot the results (for debugging)?

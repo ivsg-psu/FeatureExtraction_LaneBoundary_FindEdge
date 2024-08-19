@@ -1,4 +1,8 @@
-function [grid_indices_with_required_point_density, gridCenters_low_point_density] = fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points,total_N_points_in_each_grid,point_density,gridCenters, varargin)
+function [grid_indices_with_required_point_density, ...
+    current_grids_with_low_point_density, ...
+    current_grids_with_required_point_density, ...
+    gridCenters_low_point_density, ...
+    gridCenters_required_point_density] = fcn_findEdge_classifyGridsBasedOnDensity(grids_greater_than_zero_points,total_N_points_in_each_grid,point_density,gridCenters, varargin)
 %% fcn_findEdge_classifyGridsBasedOnDensity
 %Grids with required point density and low point density
 %
@@ -27,9 +31,16 @@ function [grid_indices_with_required_point_density, gridCenters_low_point_densit
 %
 % OUTPUTS: 
 %
+%
 %      grid_indices_with_required_point_density
+% 
+%      current_grids_with_low_point_density
+%      
+%      current_grids_with_required_point_density
 %
 %      gridCenters_low_point_density
+%      
+%      gridCenters_required_point_density
 %
 %
 % DEPENDENCIES:
@@ -152,29 +163,19 @@ grid_indices_with_required_point_density = (total_N_points_in_each_grid(grids_gr
 
 % Current grid numbers of the grids with low point density
 % These are the grid numbers of the grids with respect to grids_greater_than_zero_points
-% The numbering starts with "1"
-
-%????
+% The numbering starts with "1" for the grids greater than zero points
 
 % These are the grid numbers of low point density
 current_grids_with_low_point_density = find((total_N_points_in_each_grid(grids_greater_than_zero_points,1) > 0) & (total_N_points_in_each_grid(grids_greater_than_zero_points,1) < point_density)); 
 
 % These are the current grid numbers of required point density
-current_grids_with_required_point_density = find(total_N_points_in_each_grid(grids_greater_than_zero_points,1) >= point_density); 
-
-
-%%%%%%
+current_grids_with_required_point_density = find(total_N_points_in_each_grid(grids_greater_than_zero_points,1) >= point_density);
 
 % Grid Centers of the grids with low point density (Unmapped grid centers)
-gridCenters_low_point_density = gridCenters(original_grids_with_low_point_density,1:2);  
+gridCenters_low_point_density = gridCenters(original_grids_with_low_point_density,1:2);
 
-% Grid Centers of the grids with required point density 
+% Grid Centers of the grids with required point density
 gridCenters_required_point_density = gridCenters(original_grids_with_required_point_density,1:2);
-
-
-plot_gridCenters_low_point_density = [gridCenters_low_point_density, zeros(length(gridCenters_low_point_density(:,1)),1)];
-plot_gridCenters_required_point_density = [gridCenters_required_point_density, zeros(length(gridCenters_required_point_density(:,1)),1)]; 
-
 
 
 %% Plot the results (for debugging)?
@@ -191,6 +192,10 @@ plot_gridCenters_required_point_density = [gridCenters_required_point_density, z
 
 if flag_do_plots
     figure(fig_num)
+
+    plot_gridCenters_low_point_density = [gridCenters_low_point_density, zeros(length(gridCenters_low_point_density(:,1)),1)];
+    plot_gridCenters_required_point_density = [gridCenters_required_point_density, zeros(length(gridCenters_required_point_density(:,1)),1)];
+
 
 
     %low point density

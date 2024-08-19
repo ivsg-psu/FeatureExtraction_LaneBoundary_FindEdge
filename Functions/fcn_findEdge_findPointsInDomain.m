@@ -207,7 +207,7 @@ if flag_do_plots
     reference_LLA = [];
     % zoom_in_location = [40.865718697633348 -77.830965127435817];
     zoom_in_location = [];
-    zoomLevel = 20.5;
+    zoomLevel = [];
     [~] = fcn_findEdge_plotVehicleLLA(VehiclePose(:,1:3), (reference_LLA), (zoom_in_location), (zoomLevel), (fig_num));
 
     % plot LLA of LIDAR points

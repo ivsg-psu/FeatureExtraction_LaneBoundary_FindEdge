@@ -146,31 +146,8 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 transverse_span_each_grid = [];
+
 for ith_grid = 1:length(grids_greater_than_zero_points)
-    % Get current color
-    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
-    current_color = [0.2 0.2 0.2];
-
-    % Plot current AABB
-    current_AABB = grid_AABBs(grids_greater_than_zero_points(ith_grid),1:4);
-
-    % Nudge the current AABB inward
-    current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
-
-    % Calculate the gridlines
-    gridlines = [...
-        current_AABB(1,1) current_AABB(1,3); ...
-        current_AABB(1,1) current_AABB(1,4); ...
-        nan nan;
-        current_AABB(1,2) current_AABB(1,3); ...
-        current_AABB(1,2) current_AABB(1,4); ...
-        nan nan;
-        current_AABB(1,1) current_AABB(1,3); ...
-        current_AABB(1,2) current_AABB(1,3); ...
-        nan nan;
-        current_AABB(1,1) current_AABB(1,4); ...
-        current_AABB(1,2) current_AABB(1,4); ...
-        ];
 
     % Get all points in this domain and plot them
     rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
@@ -181,8 +158,8 @@ for ith_grid = 1:length(grids_greater_than_zero_points)
     % Scan lines and rings
     scanLines_and_rings = LIDAR_scanLines(rows_in_domain,:);
 
-    % Find number of LiDAR scan lines in each grid
-    scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
+    % % Find number of LiDAR scan lines in each grid
+    % scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
     
     % Combine points_in_domain and ScanLines and rings
     gridPoints_scanLines_rings_to_add = [ith_grid*(ones(length(points_in_domain(:,1)),1)),points_in_domain,scanLines_and_rings];
@@ -271,11 +248,8 @@ for ith_grid = 1:length(grids_greater_than_zero_points)
 
             % Mean of absolute values of transverse distances
             mean_dist = mean(abs(transverse_dist_grid_points_other_scanLines));
-
  
         else
-
-
 
             % Conatenate maximum transverse span
             transverse_span_each_grid = [transverse_span_each_grid; 0]; %#ok<AGROW>

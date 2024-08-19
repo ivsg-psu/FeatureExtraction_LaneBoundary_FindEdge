@@ -1,4 +1,4 @@
-function [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,varargin)
+function [scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,varargin)
 %% fcn_findEdge_pointsAtRangeOfLiDARFromStation
 % This code finds the index of a point that is a certain range before
 % station 1 and the index of a point that is a certain range after
@@ -105,12 +105,12 @@ station2_distance = cumulative_distances(station_2);
 
 % Find the index of the point before station 1 whose distance is
 % approximately equal to the range of the LiDAR.
-station1_minus_range_index = find(cumulative_distances <= station1_distance - range_of_LiDAR, 1, 'last');
+scanLineStart_minus_range_index = find(cumulative_distances <= station1_distance - range_of_LiDAR, 1, 'last');
 %station1_minus_range_point = vehicle_positionsXY(station1_minus_range_index, :);
 
 % Find the index of the point after station 2 whose distance is
 % approximately equal to the range of the LiDAR.
-station2_plus_range_index = find(cumulative_distances >= station2_distance + range_of_LiDAR, 1, 'first');
+scanLineEnd_plus_range_index = find(cumulative_distances >= station2_distance + range_of_LiDAR, 1, 'first');
 %station2_plus_range_point = vehicle_positionsXY(station2_plus_range_index, :);
 
 

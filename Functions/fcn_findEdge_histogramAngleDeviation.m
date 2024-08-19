@@ -1,6 +1,4 @@
-function theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical, ...
-    angle_btw_unit_normals_and_vertical_driven_path, ...
-    mean_angle_btw_unit_normals_and_vertical_driven_path, varargin)
+function theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical, angle_btw_unit_normals_and_vertical_driven_path,mean_angle_btw_unit_normals_and_vertical_driven_path, chosen_theta_threshold, varargin)
 %% fcn_findEdge_histogramAngleDeviation   Histogram of angle deviation
 % 
 % FORMAT:
@@ -41,8 +39,16 @@ function theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_n
 %
 % This function was written on 2024_08_13 by Jiabao Zhao
 % Questions or comments? jpz5469@psu.edu
-%
-%%% Revision history
+
+% Revision history: 
+% 2024_07_20 - Aneesh Batchu
+% -- Wrote the code originally
+% 2024_08_13 - Jiabao Zhao
+% -- Functionalized code from the FindEdge Demo 
+% 2024_08_19 - Aneesh Batchu
+% -- Replaced std_threshold (input) to chosen_std_threshold
+% -- std_threshold is calculated here when chosen_std_threshold is empty
+
 
 %% Debugging and Input checks
 
@@ -50,7 +56,7 @@ function theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_n
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -92,13 +98,13 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,4);
+        narginchk(4,5);
     end
 end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (3<=nargin)
+if (0==flag_max_speed) &&  (5<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -117,7 +123,14 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % just plot
-theta_threshold = 0.1745;
+% theta_threshold = 0.1745;
+
+theta_threshold = mean_angle_btw_unit_normals_and_vertical_driven_path + 3*std(angle_btw_unit_normals_and_vertical_driven_path);
+
+if ~isempty(chosen_theta_threshold)
+    theta_threshold = chosen_theta_threshold;
+end
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 

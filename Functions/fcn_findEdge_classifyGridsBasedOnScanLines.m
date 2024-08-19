@@ -1,4 +1,8 @@
-function [grid_indices_with_more_than_one_scan_line, gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points, total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,varargin)
+function [grid_indices_with_more_than_one_scan_line, ...
+    current_grids_with_more_than_one_scan_line, ...
+    current_grids_with_one_scan_line, ...
+    gridCenters_with_more_than_one_scan_line, ...
+    gridCenters_with_one_scan_line] = fcn_findEdge_classifyGridsBasedOnScanLines(grids_greater_than_zero_points, total_scan_lines_in_each_grid_with_more_than_zero_points,gridCenters,varargin)
 %% fcn_findEdge_classifyGridsBasedOnScanLines
 %Grids with required point density and low point density
 %
@@ -147,18 +151,19 @@ original_grids_with_one_scan_line = grids_greater_than_zero_points(~grid_indices
 
 % Current grid numbers of the grids with more than one scan line
 % These are the grid numbers of the grids with respect to grids_greater_than_zero_points
-% The numbering starts with "1"
+% The numbering starts with "1" for the grids greater than zero points
+
+% Current grid numbers of the grids with more than one scan line
+current_grids_with_more_than_one_scan_line = find(grid_indices_with_more_than_one_scan_line);
+
+% Current grid numbers of the grids with one scan line
+current_grids_with_one_scan_line = find(~grid_indices_with_more_than_one_scan_line);
 
 % Grid centers of the grids with more than zero points and more than one scan line
 gridCenters_with_more_than_one_scan_line = gridCenters(original_grids_with_more_than_one_scan_line,1:2);
 
 % Grid centers of the grids with one scan line
 gridCenters_with_one_scan_line = gridCenters(original_grids_with_one_scan_line,1:2);
-
-plot_gridCenters_with_one_scan_line = [gridCenters_with_one_scan_line, zeros(length(gridCenters_with_one_scan_line(:,1)),1)]; 
-
-plot_gridCenters_with_more_than_one_scan_line = [gridCenters_with_more_than_one_scan_line, zeros(length(gridCenters_with_more_than_one_scan_line(:,1)),1)]; 
-
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -173,6 +178,10 @@ plot_gridCenters_with_more_than_one_scan_line = [gridCenters_with_more_than_one_
 
 if flag_do_plots
     figure(fig_num)
+
+    plot_gridCenters_with_one_scan_line = [gridCenters_with_one_scan_line, zeros(length(gridCenters_with_one_scan_line(:,1)),1)];
+
+    plot_gridCenters_with_more_than_one_scan_line = [gridCenters_with_more_than_one_scan_line, zeros(length(gridCenters_with_more_than_one_scan_line(:,1)),1)];
 
     %plot_gridCenters_with_one_scan_line
 
