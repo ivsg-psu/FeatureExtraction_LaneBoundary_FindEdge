@@ -100,8 +100,7 @@
 %
 % script_test for fcn_findEdge_plotLIDARLLA_Aneesh and fcn_findEdge_findPointsInDomain
 % script_test for fcn_findEdgefindGridsWithPoints
-%
-% Write Assertions for all the sections/steps
+
 
 %% Prep the workspace
 close all
@@ -947,7 +946,6 @@ assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundar
 
 %% STEP 12.2: Prepare the grid centers of drivable and non-drivable for boundary detection
 
-fig_num_drivable_non_drivable = 402;
 
 [Xcoord_gridCenters, Ycoord_gridCenters, Zcoord_gridCenters] = fcn_findEdge_prepGridCentersForBoundaryDetection...
     (gridCenters_drivable_grids, gridCenters_uncertain_grids);
@@ -962,6 +960,7 @@ assert(isequal(size(Xcoord_gridCenters), size(Zcoord_gridCenters)))
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
+fig_num_drivable_non_drivable = 402;
 
 figure(fig_num_drivable_non_drivable)
 clf;
