@@ -78,19 +78,13 @@
 
 
 %% To-do items
-% 2024_08_05 - created by S. Brennan
-% -- Aleks and Jiabao - finish funtionalizing starting at step 1 below and
-% document each change in the revision history above when done. Update the
-% flow chart with functions
-% -- Add a LargeData file in the main directory? EVERYONE?\
-% -- Should leave this function in the geometry libriary: fcn_geometry_fitPlaneLinearRegression
 %
 % FOR JIABAO ONLY
 % ADD SIMPLE TEST SCRIPT FOR THE FOLLOWING FUNCTIONS: 
 % fcn_findEdge_findGridsWithPoints
 % fcn_findEdge_plotVehicleLLA
 % fcn_findEdge_GridsIntoMappedUnmapped
-% fcn_findEdge_findGridsWithPoints\
+% fcn_findEdge_findGridsWithPoints
 % fcn_findEdge_plotVehicleLLA (This one needs a new script)
 % fcn_geometry_classifyGridsAsDrivable
 %
@@ -191,17 +185,19 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 
 %% STEP 2: Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
-% [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range))
+% [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range), (fig_num))
 
-scanLineStart = 1400; 
-scanLineEnd = 1450;
+fig_num = []; 
 
-% station_1 = 960; 
-% station_2 = 970;
+% scanLineStart = 1400; 
+% scanLineEnd = 1450;
+
+scanLineStart = 1000; 
+scanLineEnd = 1500;
 
 range_of_LiDAR = 10;
 
-[scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,scanLineStart,scanLineEnd,range_of_LiDAR);  
+[scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,scanLineStart,scanLineEnd,range_of_LiDAR,fig_num);  
 
 assert((scanLineStart_minus_range_index<scanLineStart) & (scanLineEnd_plus_range_index>scanLineEnd))
 
@@ -265,10 +261,10 @@ end
 %fcn_findEdge_findPointsInDomain:
 % [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,(fig_num))
 
-
-fig_num = 107;
-figure(fig_num); clf; 
-
+% print scan line numbers in the command window
+% fig_num = 107;
+% figure(fig_num); clf; 
+fig_num = -1; 
 [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, scanLineStart, scanLineEnd, LIDAR_intensity,(fig_num));
 
 assert(length(in_domain)==length(VehiclePose_ENU));
@@ -278,8 +274,10 @@ assert(length(in_domain)==length(VehiclePose_ENU));
 % [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(fig_num),(fig_num2))  
 
 
-ENU_3D_fig_num = 108;
-figure(ENU_3D_fig_num); clf;
+% ENU_3D_fig_num = 108;
+% figure(ENU_3D_fig_num); clf;
+
+ENU_3D_fig_num = -1;
 
 fig_num = 108; % figure number
 figure(fig_num); clf; 
@@ -395,9 +393,9 @@ assert(length(total_points_in_each_grid_with_points_greater_than_zero)==length(g
 fig_num = 201; 
 figure(fig_num); clf; 
 
-[point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,[],[],fig_num);
-
-assert(point_density>0)
+% [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,[],[],fig_num);
+% 
+% assert(point_density>0)
 
 % Minimum number of points required 
 point_density = floor(20*((grid_size^2)/(0.3^2)));
@@ -426,8 +424,11 @@ assert(length(grid_indices_with_required_point_density)==length(grids_greater_th
 
 assert(length(total_scan_lines_in_each_grid_with_more_than_zero_points) == length(grids_greater_than_zero_points))
 
-fig_num = 203; 
-figure(fig_num); clf;
+% fig_num = 203; 
+% figure(fig_num); clf;
+
+fig_num = -1; 
+% figure(fig_num); clf;
 
 % Find the grids that contain more than one scan line
 [grid_indices_with_more_than_one_scan_line, ...
@@ -447,14 +448,20 @@ assert(length(grids_greater_than_zero_points)==length(grid_indices_with_more_tha
 % [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] =
 %       fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points, gridCenters, (format_1),(format_2),(fig_num))
 
-fig_num_1 = 204; 
-figure(fig_num_1); clf; 
+% fig_num_1 = 204; 
+% figure(fig_num_1); clf; 
+% 
+% fig_num_2 = 205; 
+% figure(fig_num_2); clf; 
+% 
+% fig_num_3 = 206;
+% figure(fig_num_3); clf; 
 
-fig_num_2 = 205; 
-figure(fig_num_2); clf; 
+fig_num_1 = -1;  
 
-fig_num_3 = 206;
-figure(fig_num_3); clf; 
+fig_num_2 = -1; 
+
+fig_num_3 = -1;
 
 transverse_span_each_grid = fcn_findEdge_determineTransverseSpanThreshold...
     (grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines,...
@@ -631,14 +638,20 @@ assert(length(current_grid_numbers_of_driven_path)==length(gridCenters_driven_pa
 % fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num))
 
 
-fig_num_1 = 301;
-figure(fig_num_1); clf;
+% fig_num_1 = 301;
+% figure(fig_num_1); clf;
+% 
+% fig_num_2 = 302;
+% figure(fig_num_2); clf;
+% 
+% fig_num_3 = 303;
+% figure(fig_num_3); clf;
 
-fig_num_2 = 302;
-figure(fig_num_2); clf;
+fig_num_1 = -1;
 
-fig_num_3 = 303;
-figure(fig_num_3); clf;
+fig_num_2 = -1;
+
+fig_num_3 = -1;
 
 [original_mapped_gridIndices_cell, ...
     total_mapped_grids, ...
@@ -656,8 +669,9 @@ figure(fig_num_3); clf;
 assert(length(total_points_in_mapped_grids)==length(original_mapped_gridIndices_cell) & length(standard_deviation_in_z)==length(driven_path_grid_indices_in_current_mapped_grids))
 % Histogram of standard deviation - (Do not need to run after determining a std_threshold)
 
-fig_num = 304;
-figure(fig_num); clf;
+% fig_num = 304;
+% figure(fig_num); clf;
+fig_num = -1; 
 N_bins_stdz=100;
 N_bins_std_drivenpath=5;
 
@@ -684,14 +698,20 @@ end
 %       fcn_findEdge_determineAngleDeviation(LiDAR_allPoints, gridIndices_cell_array, original_qualified_grids,...
 %       gridCenters_qualified_grids,current_qualified_grids,gridCenters_driven_path,(fig_num),(fig_num2),(fig_num3) )
 
-fig_num_1 = 305;
-figure(fig_num_1); clf;
+% fig_num_1 = 305;
+% figure(fig_num_1); clf;
+% 
+% fig_num_2 = 306;
+% figure(fig_num_2); clf;
+% 
+% fig_num_3 = 307;
+% figure(fig_num_3); clf;
 
-fig_num_2 = 306;
-figure(fig_num_2); clf;
+fig_num_1 = -1;
 
-fig_num_3 = 307;
-figure(fig_num_3); clf;
+fig_num_2 = -1;
+
+fig_num_3 = -1;
 
 [angle_btw_unit_normals_and_vertical, ...
     mean_angle_btw_unit_normals_and_vertical_driven_path,...
@@ -709,8 +729,10 @@ end
 %
 %[theta_threshold] = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical,angle_btw_unit_normals_and_vertical_driven_path,mean_angle_btw_unit_normals_and_vertical_driven_path, varargin)
 
-fig_num = 308;
-figure(fig_num); clf;
+% fig_num = 308;
+% figure(fig_num); clf;
+
+fig_num = -1;
 
 chosen_theta_threshold = 0.1745; % (9.98/180)*pi
 

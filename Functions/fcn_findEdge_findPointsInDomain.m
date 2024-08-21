@@ -1,4 +1,4 @@
-function [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2, LIDAR_intensity, varargin)
+function [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, scanLineStart, scanLineEnd, LIDAR_intensity, varargin)
 %% fcn_findEdge_findPointsInDomain
 % Find the LIDAR_ENU and LIDAR_scanLineAndRingID in domain
 % 
@@ -8,15 +8,15 @@ function [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain
 %
 % INPUTS:     
 %       
-%      VehiclePose: the position of the mapping vehicle during mapping
+%      VehiclePose: the position and orientation of the mapping vehicle during mapping
 %
-%      LIDAR_ENU: LiDAR data points corresponding to the intensity
+%      LIDAR_ENU: LiDAR data points
 %
-%      station_1: the starting scan line of the LIDAR data
+%      scanLineStart: the starting scan line of the LIDAR data
 %
-%      station_2: the ending scan line of the LIDAR data
+%      scanLineEnd: the ending scan line of the LIDAR data
 %
-%      LIDAR_intensity
+%      LIDAR_intensity: 
 %      
 %      (OPTIONAL INPUTS)
 %
@@ -49,8 +49,14 @@ function [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain
 % This function was written on 2024_08_12 by Jiabao Zhao
 % Questions or comments? jpz5469@psu.edu
 %
-%%% Revision history
-%
+% Revision History:
+% 2024_08_02 - Aneesh Batchu
+% -- wrote the code originally
+% 2024_08_12 - Aleksandr Goncharov
+% -- functionalized the code
+% 2024_08_20 - Aneesh Batchu
+% -- Modified instructions
+% -- Renamed some inputs
 
 %% Debugging and Input checks
 
@@ -181,9 +187,9 @@ left_boundary_points = VehiclePose(:,1:3) + left_transverse_distance_of_boundary
 right_boundary_points = VehiclePose(:,1:3) - right_transverse_distance_of_boundary_points - longitudinal_shift_distance; 
 
 % Find the boundary points
-boundary_points_of_domain = [right_boundary_points(station_1:station_2,1:3);
-    flipud(left_boundary_points(station_1:station_2,1:3));
-    right_boundary_points(station_1,1:3)];
+boundary_points_of_domain = [right_boundary_points(scanLineStart:scanLineEnd,1:3);
+    flipud(left_boundary_points(scanLineStart:scanLineEnd,1:3));
+    right_boundary_points(scanLineStart,1:3)];
 
 % "inpolygon" is used to find the concatenated points within the boundary
 [in_domain,~] = inpolygon(LIDAR_ENU(:,1),LIDAR_ENU(:,2),boundary_points_of_domain(:,1),boundary_points_of_domain(:,2));
@@ -219,7 +225,7 @@ if flag_do_plots
     % Plot the vehicle pose
     format = sprintf('''.'',''Color'',[1 1 0],''MarkerSize'',10');
     LIDAR_intensity1 = [];
-    fcn_findEdge_plotLIDARLLA(VehiclePose(station_1:station_2,1:3),(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
+    fcn_findEdge_plotLIDARLLA(VehiclePose(scanLineStart:scanLineEnd,1:3),(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
 
 
     % Plot the boundary points
@@ -227,5 +233,22 @@ if flag_do_plots
     LIDAR_intensity1 = [];
     fcn_findEdge_plotLIDARLLA(boundary_points_of_domain,(LIDAR_intensity1),(scaling),(color_map),(marker_size),(reference_LLA),(format),(fig_num))
 end
-% no plot
-%%
+
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
+end
+
+end % Ends main function
+
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+

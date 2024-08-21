@@ -113,6 +113,42 @@ Search for this, and you will find!
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+This library finds the road edge from LIDAR data and XYZ trajectory data of a mapping vehicle. The road edge is the location where the pavement stops being a drivable surface, usually the edge of the pavement and the vegetation next to the road.
+
+This library is divided into four sections: 
+
+1. Grid Preparation:  In the initial phase, the LiDAR point cloud data is processed to make it usable for boundary analysis. The process begins by segmenting the LiDAR data based on the given trajectory of the mapping vehicle, which helps in identifying the region of interest. Later, the point cloud data is divided into grids, where each grid cell represents a specific region on the ground. These grids serve as the foundational structure for further analysis.
+
+2. Drivability of Grids: In this section, several important calculations are made to classify the grids into qualified and unqualified categories. Along with calculating the point density in each grid, the number of LiDAR scan lines per grid is also determined, which helps in assessing the quality of the data within the grid. Additionally, the transverse span of each grid is calculated to measure the horizontal extent covered by the points. Based on these metrics, the grids are finally classified as either qualified or unqualified, depending on whether they contain sufficient data for further analysis, thus helping in identifying potential drivable surfaces.
+
+3. Grid Voting: In this section, the qualified grids undergo further analysis to refine their classification. Each grid is fitted with a plane using linear plane regression, and the standard deviations of the z fit error are calculated for all grids. These standard deviations are used to determine a threshold for identifying inconsistencies in the grid's surface. Additionally, the angle deviation of each grid is calculated, defined as the angle between the unit normal vector of the fitted plane and the [0 0 1] vertical axis. An angle deviation (theta) threshold is also computed to further guide the classification. Based on these metrics, the grids participate in a voting process where their final classification is determined. This process categorizes the qualified grids into three groups: drivable, non-drivable, and uncertain, thus aiding in the detection of road edges.
+
+4. The final section involves refining the identified road edges and preparing the data for output. Grids classified as part of the road are further processed to remove any remaining inconsistencies and to ensure a smooth and continuous edge detection result.
+
+<pre align="center">
+  <img src=".\Images\flowChart_GridPreparation.jpg" alt="Flow chart picture" width="600" height="400">
+  <figcaption> Grid Prepartion</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\flowChart_DrivabilityOfGrids.jpg" alt="Flow chart picture" width="600" height="400">
+  <figcaption> Drivability of Grids</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\flowChart_GridVoting.jpg" alt="Flow chart picture" width="600" height="400">
+  <figcaption> Grid Voting</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
+<pre align="center">
+  <img src=".\Images\flowChart_PostProcessing.jpg" alt="Flow chart picture" width="600" height="400">
+  <figcaption> Post Processing</figcaption>
+  <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
+</pre>
+
 <!--[![Product Name Screen Shot][product-screenshot]](https://example.com)-->
 
 
