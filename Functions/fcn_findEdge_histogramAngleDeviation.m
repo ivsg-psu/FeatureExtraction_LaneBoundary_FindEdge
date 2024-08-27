@@ -148,7 +148,7 @@ if flag_do_plots
     grid on
     xlabel('Angle deviation in z error after plane fit')
     ylabel('Frequency')
-    title('Statistic 3: Determining suitable angle deviation')
+    title('Determining suitable angle deviation')
     % histogram(standard_deviation_in_z)
     histogram(angle_btw_unit_normals_and_vertical,100)
     histogram(angle_btw_unit_normals_and_vertical_driven_path,5)

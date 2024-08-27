@@ -131,7 +131,7 @@ end
 %%% FORMERLY script_test_geometry_boundaryPointsDrivenPath
 % This script is written to find the boundary points of driven path
 
-%%%% Calculate the vehicle orientation
+% Calculate the vehicle orientation
 vehicle_change_in_pose_XY = diff(VehiclePose(:,1:2));
 
 % Repeat the last value again, since diff removes one row. We want the same
@@ -152,8 +152,8 @@ lane_half_width = (3.6576/2) * 0.40;
 % path from vehicle center 
 transverse_distance_of_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
 
-
-% Shift
+% Calculate the shift distance to shift the boundary points of the vehicle
+% path in longitudinal direction (along the path of the vehicle)
 shift_distance = [unit_vehicle_change_in_pose_XY*shift, zeros(length(unit_vehicle_change_in_pose_XY),1)]; 
 
 % Left boundary points of the driven path
@@ -168,13 +168,13 @@ right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_poi
 % % Left boundary points of the driven path
 % right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points; 
 
-
 scanLineNumber_start = scanLineRange(1);
 scanLineNumber_end   = scanLineRange(2);
 
 boundaryLineNumber_start = max(scanLineNumber_start-1,1); 
 boundaryLineNumber_end   = min(scanLineNumber_end+1, Nscans);
 
+% These boundary points create the bounding box
 boundary_points_driven_path = [right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1:3);
     flipud(left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1:3));
     right_boundary_points(boundaryLineNumber_start,1:3)];

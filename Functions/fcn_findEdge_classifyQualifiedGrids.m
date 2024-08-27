@@ -200,6 +200,8 @@ if flag_do_plots
 
     fcn_findEdge_plotLIDARLLA(plot_gridCenters_qualified_grids,[],[],[],[],[],format_qualified,fig_num);
 
+    title('Grid centers in LLA')
+
 end
 
 end

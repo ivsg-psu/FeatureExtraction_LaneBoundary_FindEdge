@@ -105,7 +105,7 @@ if flag_max_speed == 0
 end 
 
 %Does user want to enter format_1?
-format_1=sprintf(' ''.'',''Color'',[0.8, 0.8, 0.8],''MarkerSize'', 25,''DisplayName'', "Grids lesser than minimum transverse span threshold" ');
+format_1=sprintf(' ''.'',''Color'',[0.8, 0.8, 0.8],''MarkerSize'', 25,''DisplayName'', "Grids lesser than transverse span threshold" ');
 if (5<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
@@ -114,7 +114,7 @@ if (5<=nargin)
 end
 
 %Does user want to enter format_2?
-format_2=sprintf(' ''.'',''Color'',[0.2, 0.2, 0.2],''MarkerSize'', 25,''DisplayName'', "Grids greater than minimum transverse span threshold" ');
+format_2=sprintf(' ''.'',''Color'',[0.2, 0.2, 0.2],''MarkerSize'', 25,''DisplayName'', "Grids greater than transverse span threshold" ');
 if (6<=nargin)
     temp = varargin{2};
     if ~isempty(temp)
@@ -198,7 +198,7 @@ if flag_do_plots
 
     %plot_gridCenters_with_one_scan_line
     fcn_findEdge_plotLIDARLLA(plot_gridCenters_with_more_than_transverse_span_threshold,[],[],[],[],[],format_2,fig_num)
-
+    title('Grid centers in LLA')
     legend()
 end
 

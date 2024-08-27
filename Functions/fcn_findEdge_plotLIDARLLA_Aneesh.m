@@ -140,7 +140,7 @@ end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (6<=nargin)
+if (0==flag_max_speed) &&  (9<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;

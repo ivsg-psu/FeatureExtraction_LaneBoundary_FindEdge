@@ -162,8 +162,8 @@ original_grids_with_required_point_density = grids_greater_than_zero_points(tota
 grid_indices_with_required_point_density = (total_N_points_in_each_grid(grids_greater_than_zero_points,1) >= point_density);
 
 % Current grid numbers of the grids with low point density
-% These are the grid numbers of the grids with respect to grids_greater_than_zero_points
-% The numbering starts with "1" for the grids greater than zero points
+% These are the grid numbers of the grids with respect to non-empty grids
+% The numbering starts with "1" for the grids greater than zero points (non-empty grids)
 
 % These are the grid numbers of low point density
 current_grids_with_low_point_density = find((total_N_points_in_each_grid(grids_greater_than_zero_points,1) > 0) & (total_N_points_in_each_grid(grids_greater_than_zero_points,1) < point_density)); 
@@ -192,10 +192,9 @@ gridCenters_required_point_density = gridCenters(original_grids_with_required_po
 
 if flag_do_plots
     figure(fig_num)
-
+    
     plot_gridCenters_low_point_density = [gridCenters_low_point_density, zeros(length(gridCenters_low_point_density(:,1)),1)];
     plot_gridCenters_required_point_density = [gridCenters_required_point_density, zeros(length(gridCenters_required_point_density(:,1)),1)];
-
 
 
     %low point density
@@ -203,7 +202,7 @@ if flag_do_plots
     hold on
     %required point density
     fcn_findEdge_plotLIDARLLA(plot_gridCenters_required_point_density,[],[],[],[],[],format_2,fig_num)
-
+    title('Grid Centers in LLA')
     legend()
 end
 

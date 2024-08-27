@@ -123,8 +123,6 @@ if 0==flag_max_speed
     end
 end
 
-
-
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if (0==flag_max_speed) &&  (5<=nargin)
@@ -147,7 +145,7 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+% Difference of vehicle pose in X and Y
 vehicle_change_in_pose_XY = diff(VehiclePose(:,1:2));
 
 % Repeat the last value again, since diff removes one row. We want the same
@@ -163,27 +161,28 @@ unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
 % Define lane width limits. Take 40 percent of the lane width. Numbers
 % obtained by converting 12 ft (standard lane) to meters
 % lane_half_width = (3.6576/2) * 0.40; 
-% Right transverse shift 
+% Right transverse shift (6 x lane width)
 right_transverse_shift = 6*3.6576;  
 
 % Transverse distance of the right boundary points from vehicle center 
 right_transverse_distance_of_boundary_points = [right_transverse_shift*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
 
-% Left transverse shift 
+% Left transverse shift (6 x lane width) 
 left_transverse_shift = 6*3.6576;  
 
 % Transverse distance of the right boundary points from vehicle center 
 left_transverse_distance_of_boundary_points = [left_transverse_shift*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
 
-
+% Longitudinal shift (m) (along the length of the object)
 longitudinal_shift = 5; 
-% Shift
+
+% The distances to shift the each longitudinal unit vector
 longitudinal_shift_distance = [unit_vehicle_change_in_pose_XY*longitudinal_shift, zeros(length(unit_vehicle_change_in_pose_XY),1)]; 
 
 % Left boundary points of the driven path
 left_boundary_points = VehiclePose(:,1:3) + left_transverse_distance_of_boundary_points - longitudinal_shift_distance; 
 
-% right boundary points of the driven path
+% Right boundary points of the driven path
 right_boundary_points = VehiclePose(:,1:3) - right_transverse_distance_of_boundary_points - longitudinal_shift_distance; 
 
 % Find the boundary points

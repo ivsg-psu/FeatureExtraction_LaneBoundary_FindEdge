@@ -139,7 +139,7 @@ if flag_do_plots
     grid on
     xlabel('Standard deviation in z error after plane fit')
     ylabel('Frequency')
-    title('Statistic 3: Determining suitable standard deviation in z')
+    title('Determining suitable standard deviation in z')
     % histogram(standard_deviation_in_z)
     histogram(standard_deviation_in_z,N_bins_stdz)
     histogram(std_in_z_driven_path,N_bins_std_drivenpath)

@@ -164,6 +164,7 @@ gridCenters_with_more_than_one_scan_line = gridCenters(original_grids_with_more_
 
 % Grid centers of the grids with one scan line
 gridCenters_with_one_scan_line = gridCenters(original_grids_with_one_scan_line,1:2);
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -190,7 +191,8 @@ if flag_do_plots
 
     %plot_gridCenters_with_one_scan_line
     fcn_findEdge_plotLIDARLLA(plot_gridCenters_with_more_than_one_scan_line,[],[],[],[],[],format_2,fig_num)
-
+    
+    title('Grid centers in LLA')
     legend()
 end
 

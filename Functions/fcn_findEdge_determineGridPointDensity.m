@@ -1,4 +1,4 @@
-function [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,varargin)
+function [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero, total_points_in_each_grid_in_the_driven_path, grid_size, chosen_point_density, varargin)
 %% fcn_findEdge_determineGridPointDensity
 % Determine the suitable "point density" for the analysis by comparing the point densities of driven grids with those of neighboring grids
 % 
@@ -51,7 +51,7 @@ function [point_density] = fcn_findEdge_determineGridPointDensity(total_points_i
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==6 && isequal(varargin{end},-1))
+if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -93,7 +93,7 @@ end
 if flag_max_speed == 0
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,6);
+        narginchk(4,7);
     end
 end 
 
@@ -136,10 +136,10 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[counts1,binEdges] = histcounts(total_points_in_each_grid_with_points_greater_than_zero,N_bins_grid_with_points_greater_than_zero);
-[counts2, ~] = histcounts(total_points_in_each_grid_in_the_driven_path,N_bins_grid_in_the_driven_path);
+% [counts1,binEdges] = histcounts(total_points_in_each_grid_with_points_greater_than_zero,N_bins_grid_with_points_greater_than_zero);
+% [counts2, ~] = histcounts(total_points_in_each_grid_in_the_driven_path,N_bins_grid_in_the_driven_path);
 
-[~,index_max_counts2] = max(counts1);
+% [~,index_max_counts2] = max(counts1);
 
 % point_density = floor(mean(total_points_in_each_grid_in_the_driven_path) - 7.5*(std(total_points_in_each_grid_in_the_driven_path)));
 x_location = floor(mean(total_points_in_each_grid_in_the_driven_path) - 1.5*(std(total_points_in_each_grid_in_the_driven_path)));
@@ -152,8 +152,13 @@ x_location = floor(mean(total_points_in_each_grid_in_the_driven_path) - 1.5*(std
 point_density = floor(mean(total_points_in_each_grid_in_the_driven_path) - 5*(std(total_points_in_each_grid_in_the_driven_path)));
 % point_density = floor(mean(total_points_in_each_grid_in_the_driven_path));
 
-% Minimum number of points required 
+% % Minimum number of points required 
 % point_density = floor(20*((grid_size^2)/(0.3^2)));
+
+if ~isempty(chosen_point_density)
+    % Minimum number of points required
+    point_density = chosen_point_density; 
+end
 
 
 %% Plot the results (for debugging)?
@@ -178,7 +183,7 @@ if flag_do_plots
     grid on
     xlabel('Points per grid');
     ylabel('Frequency');
-    title('Statistic 1: Determining suitable point density');
+    title('Determining suitable point density');
 
     histogram(total_points_in_each_grid_with_points_greater_than_zero,N_bins_grid_with_points_greater_than_zero,'Visible','on');
     histogram(total_points_in_each_grid_in_the_driven_path,N_bins_grid_in_the_driven_path,'Visible','on');
@@ -187,7 +192,7 @@ if flag_do_plots
     disp(point_density)
 
     plot(point_density,0, 'k.', 'MarkerSize',20)
-    current_text = sprintf('point density = %.2d',point_density);
+    current_text = sprintf('chosen point density = %.2d',point_density);
     text(x_location, 200,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
 
 end

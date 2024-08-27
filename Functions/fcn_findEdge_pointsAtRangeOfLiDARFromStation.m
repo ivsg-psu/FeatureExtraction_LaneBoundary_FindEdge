@@ -128,8 +128,8 @@ end
 vehicle_positionsXY = VehiclePose(:,1:2); 
 
 %define the start/end points
-station_1 = starting_index; 
-station_2 = ending_index;
+scanLineStart = starting_index; 
+scanLineEnd = ending_index;
 
 % Calculate the differences between consecutive points
 differences = diff(vehicle_positionsXY);
@@ -140,20 +140,19 @@ distances = sqrt(sum(differences.^2, 2));
 % Compute the cumulative sum of the distances
 cumulative_distances = [0; cumsum(distances)];
 
-% Find the cumulative distance of station 1 and station 2
-station1_distance = cumulative_distances(station_1);
-station2_distance = cumulative_distances(station_2);
+% Find the cumulative distance of the start scan line and the end scan line
+scanLineStart_cumulative_distance = cumulative_distances(scanLineStart);
+scanLineEnd_cumulative_distance = cumulative_distances(scanLineEnd);
 
 % Find the index of the point before station 1 whose distance is
 % approximately equal to the range of the LiDAR.
-scanLineStart_minus_range_index = find(cumulative_distances <= station1_distance - range_of_LiDAR, 1, 'last');
+scanLineStart_minus_range_index = find(cumulative_distances <= scanLineStart_cumulative_distance - range_of_LiDAR, 1, 'last');
 %station1_minus_range_point = vehicle_positionsXY(station1_minus_range_index, :);
 
 % Find the index of the point after station 2 whose distance is
 % approximately equal to the range of the LiDAR.
-scanLineEnd_plus_range_index = find(cumulative_distances >= station2_distance + range_of_LiDAR, 1, 'first');
+scanLineEnd_plus_range_index = find(cumulative_distances >= scanLineEnd_cumulative_distance + range_of_LiDAR, 1, 'first');
 %station2_plus_range_point = vehicle_positionsXY(station2_plus_range_index, :);
-
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

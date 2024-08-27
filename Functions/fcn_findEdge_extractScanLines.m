@@ -157,7 +157,7 @@ end
 
 % Does user want to specify scanLineRange?
 scanLineRange = []; 
-if (1<=nargin)
+if (3<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
         scanLineRange = temp;
@@ -166,7 +166,7 @@ end
 
 % Does user want to specify rings_to_analyze?
 ringsRange = []; 
-if (2<=nargin)
+if (4<=nargin)
     temp = varargin{2};
     if ~isempty(temp)
         ringsRange = temp;
@@ -176,7 +176,7 @@ end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if (0==flag_max_speed) &&  (2<=nargin)
+if (0==flag_max_speed) &&  (5<=nargin)
     temp = varargin{3};
     if ~isempty(temp)
         fig_num = temp;
@@ -185,7 +185,7 @@ if (0==flag_max_speed) &&  (2<=nargin)
 end
 
 % Does user want to specify another fig_num?
-if (0==flag_max_speed) &&  (3<=nargin)
+if (0==flag_max_speed) &&  (6<=nargin)
     temp = varargin{4};
     if ~isempty(temp)
         fig_num2 = temp;

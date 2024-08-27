@@ -216,7 +216,7 @@ if flag_create_legend == 1
 
 end
 
-title('Boundary Points in LLA ')
+title('Grid centers in LLA ')
 geobasemap satellite
 geotickformat -dd
 
