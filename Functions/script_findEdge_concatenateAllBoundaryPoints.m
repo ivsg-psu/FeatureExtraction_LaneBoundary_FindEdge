@@ -1,5 +1,5 @@
 
-% script_findEdge_concatenateAllBoundartPoints
+% script_findEdge_concatenateAllBoundaryPoints
 %
 % This script finds the boundary points by dividing the scan lines into
 % small segments and concatenates all the boundary points at the end
