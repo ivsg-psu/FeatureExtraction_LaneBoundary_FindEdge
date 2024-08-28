@@ -169,7 +169,9 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 % and date of file creation for the Vehicle Pose data file
 
 fig_num = 101; 
-fig_num2 = 102; 
+% fig_num2 = 102; 
+
+fig_num2 = -1; 
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
@@ -187,13 +189,13 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 tic
 fig_num = []; 
 
-% scanLineStart = 1400; 
-% scanLineEnd = 1450;
+scanLineStart = 1400; 
+scanLineEnd = 1450;
 
-scanLineStart = 1000; 
-scanLineEnd = 1500;
+% scanLineStart = 1000; 
+% scanLineEnd = 1500;
 
-range_of_LiDAR = 100;
+range_of_LiDAR = 0;
 
 [scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,scanLineStart,scanLineEnd,range_of_LiDAR,fig_num);  
 
@@ -301,24 +303,24 @@ fig_num = -1;
 
 assert(length(in_domain)==length(VehiclePose_ENU));
 
-%% STEP 4.1:  Find the driven path points in LIDAR scans
-% fcn_findEdge_findDrivableSurface:
-% [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(fig_num),(fig_num2))  
-
-
-% ENU_3D_fig_num = 108;
-% figure(ENU_3D_fig_num); clf;
-
-% fig_num = 108; % figure number
-% figure(fig_num); clf; 
-
-ENU_3D_fig_num = -1;
-
-fig_num = -1; 
-
-[LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(ENU_3D_fig_num),(fig_num));
-
-assert(isequal(length(LIDAR_ENU_under_vehicle(1,:)),3));
+% %% STEP 4.1:  Find the driven path points in LIDAR scans
+% % fcn_findEdge_findDrivableSurface:
+% % [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(fig_num),(fig_num2))  
+% 
+% 
+% % ENU_3D_fig_num = 108;
+% % figure(ENU_3D_fig_num); clf;
+% 
+% % fig_num = 108; % figure number
+% % figure(fig_num); clf; 
+% 
+% ENU_3D_fig_num = -1;
+% 
+% fig_num = -1; 
+% 
+% [LIDAR_ENU_under_vehicle] = fcn_findEdge_findDrivableSurface (LIDAR_ENU, VehiclePose_ENU, VehiclePose_UnitOrthoVectors,(ENU_3D_fig_num),(fig_num));
+% 
+% assert(isequal(length(LIDAR_ENU_under_vehicle(1,:)),3));
 %% STEP 5: Find the grid boundaries and separate the data into grids to find the empty and non-empty grids
 % fcn_findEdge_findMaxMinOfXYZ:
 % [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(N_points,(fig_num))
@@ -930,7 +932,7 @@ end
 
 % fcn_geometry_plotPointsinLLA(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 
-geoplot(LLA_data_std_threshold_failed_grids(:,1), LLA_data_std_threshold_failed_grids(:,2), 'o','MarkerSize',10,'Color',RGB_triplet, 'LineWidth',2, 'DisplayName','Std threshold failed grids') 
+% geoplot(LLA_data_std_threshold_failed_grids(:,1), LLA_data_std_threshold_failed_grids(:,2), 'o','MarkerSize',10,'Color',RGB_triplet, 'LineWidth',2, 'DisplayName','Std threshold failed grids') 
 
 
 if ~isempty(theta_threshold)
@@ -956,7 +958,7 @@ temp_h = figure(fig_num);
 assert(~isempty(get(temp_h,'Children')))
 end
 
-geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_failed_grids(:,2), 'o','MarkerSize',marker_size,'Color',RGB_triplet, 'LineWidth',2, 'DisplayName','Theta threshold failed grids') 
+% geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_failed_grids(:,2), 'o','MarkerSize',marker_size,'Color',RGB_triplet, 'LineWidth',2, 'DisplayName','Theta threshold failed grids') 
 
 %% Post Processing Functions
 
