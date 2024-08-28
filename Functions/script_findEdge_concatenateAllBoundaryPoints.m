@@ -26,11 +26,12 @@ assert(isequal(length(VehiclePose(1,:)),6)); % XYZRPY (roll pitch yaw)
 assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity scanLine deltaT
 
 %% Find the scan line ranges 
+
+% Intialize: Empty matrix
 boundary_points_test_track = []; 
-plot_boundary_pts_of_segments = 0; 
 
 start_scan_line = 1;
-end_scan_line = 2463; %length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
+end_scan_line = length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
 scanLine_segment_length = 200; % Divide the scan lines based on this interval
 
 % Create the start points
@@ -271,6 +272,8 @@ transverse_shift = 6*3.6576;
     (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, grid_size, transverse_shift, fig_num);
 
 boundary_points_test_track = [boundary_points_test_track; boundary_points_right]; %#ok<AGROW>
+
+plot_boundary_pts_of_segments = 0; 
 
 if(plot_boundary_pts_of_segments == 1)
     fig_num = figure(scanLineRange_id);
