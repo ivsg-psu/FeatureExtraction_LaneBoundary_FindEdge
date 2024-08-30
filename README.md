@@ -17,7 +17,7 @@ Search for this, and you will find!
   </h2>
 
   <pre align="center">
-    <img src=".\Images\RaceTrack.jpg" alt="main laps picture" width="960" height="540">
+    <img src=".\Images\output.gif" alt="main laps picture" width="1200" height="540">
     <!--figcaption>Fig.1 - The typical progression of map generation.</figcaption -->
     <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
