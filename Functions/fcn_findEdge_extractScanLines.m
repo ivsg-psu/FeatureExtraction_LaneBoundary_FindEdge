@@ -295,7 +295,8 @@ if isempty(allData) || isempty(alltotalDataLength) || ~isequal(totalDataLength,a
         LIDAR_scan = LiDAR_Scan_ENU_Entire_Loop{ith_Scan};
         LIDAR_XYZ  = LIDAR_scan(:,1:3);
         LIDAR_intensity = LIDAR_scan(:,4);
-        LIDAR_ringID = round(LIDAR_scan(:,5));
+        % LIDAR_ringID = round(LIDAR_scan(:,5));
+        LIDAR_ringID = round(LIDAR_scan(:,7));
 
         indicies_to_keep = [];
         for ith_ring = 1:length(ringsRange)

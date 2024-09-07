@@ -24,12 +24,22 @@ flag_load_all_data = [];
 assert(isequal(length(VehiclePose(:,1)),length(LiDAR_Scan_ENU_Entire_Loop)));
 assert(isequal(length(VehiclePose(1,:)),6)); % XYZRPY (roll pitch yaw)
 assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity scanLine deltaT
+%%
+VehiclePose = VehicleOutput(1:length(LiDAR_Scan_Transformed_cell),1:6); 
+LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_Transformed_cell; 
+
+% Check for empty rows
+emptyRows = cellfun(@isempty, LiDAR_Scan_ENU_Entire_Loop);
+
+
+VehiclePose = VehiclePose(~emptyRows,1:6); 
+LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_ENU_Entire_Loop(~emptyRows,:);
 
 %% Find the scan line ranges 
 
 % Intialize: Empty matrix
-boundary_points_test_track = []; 
-
+boundary_points_test_track_right = []; 
+boundary_points_test_track_left = []; 
 start_scan_line = 1;
 end_scan_line = length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
 scanLine_segment_length = 200; % Divide the scan lines based on this interval
@@ -207,6 +217,10 @@ for scanLineRange_id = 1:length(scanLineRanges)
     theta_threshold = 0.1745; % (9.98/180)*pi
     std_threshold = 0.1;
 
+    % theta_threshold = 0.15; % (9.98/180)*pi
+    % std_threshold = 0.08;
+
+
     % Classify mapped grids into drivable and drivable
     [standard_deviation_in_z, ...
         angle_btw_unit_normals_and_vertical, ...
@@ -271,7 +285,8 @@ transverse_shift = 6*3.6576;
 [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
     (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, grid_size, transverse_shift, fig_num);
 
-boundary_points_test_track = [boundary_points_test_track; boundary_points_right]; %#ok<AGROW>
+boundary_points_test_track_right = [boundary_points_test_track_right; boundary_points_right]; %#ok<AGROW>
+boundary_points_test_track_left = [boundary_points_test_track_left; boundary_points_left]; %#ok<AGROW>
 
 plot_boundary_pts_of_segments = 0; 
 
@@ -314,8 +329,8 @@ end
 
 %% Plot the boundary points
 
-fig_num = 408; 
-figure(fig_num); 
+fig_num = 408;
+figure(fig_num); clf; 
 
 marker_size = 30;
 RGB_triplet = [0 1 1]; 
@@ -324,7 +339,7 @@ legend_name = 'Right Boundary Points';
 legend_position = [];
 marker_type = []; 
 
-plot_boundary_points_right = [boundary_points_test_track, zeros(length(boundary_points_test_track),1)];
+plot_boundary_points_right = [boundary_points_test_track_right, zeros(length(boundary_points_test_track_right),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
@@ -335,5 +350,58 @@ legend_name = 'Right Boundary Points';
 legend_position = [];
 marker_type = []; 
 
-plot_boundary_points_right = [boundary_points_test_track, zeros(length(boundary_points_test_track),1)];
+plot_boundary_points_right = [boundary_points_test_track_right, zeros(length(boundary_points_test_track_right),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+%% Plot the boundary points
+
+fig_num = 1;
+figure(fig_num); 
+
+marker_size = 20;
+RGB_triplet = [1 1 1]; 
+legend_option = 0;
+legend_name = 'Right Boundary Points';
+legend_position = [];
+marker_type = 'o'; 
+
+plot_boundary_points_right = [boundary_points_test_track_right, zeros(length(boundary_points_test_track_right),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+
+marker_size = 12;
+RGB_triplet = [1 1 1]; 
+legend_option = 0;
+legend_name = 'Right Boundary Points';
+legend_position = [];
+marker_type = []; 
+
+plot_boundary_points_right = [boundary_points_test_track_right, zeros(length(boundary_points_test_track_right),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+
+%% Plot the boundary points
+
+fig_num = 409; 
+figure(fig_num); clf;
+
+marker_size = 30;
+RGB_triplet = [0 1 1]; 
+legend_option = 0;
+legend_name = 'Left Boundary Points';
+legend_position = [];
+marker_type = []; 
+
+plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+
+marker_size = 12;
+RGB_triplet = [0 0 1]; 
+legend_option = 0;
+legend_name = 'Left Boundary Points';
+legend_position = [];
+marker_type = []; 
+
+plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
+[~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
