@@ -24,10 +24,10 @@ true_z = [x y ones(size(x))]*true_parameters; % Solve for z vertices data
 
 z = true_z;
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = findEdge_fitPlaneLinearRegression([x y z],fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_findEdge_fitPlaneLinearRegression([x y z],fig_num);
 
 
-true_ABC = findEdge_calcUnitVector([-true_parameters(1) -true_parameters(2) 1]);
+true_ABC = fcn_findEdge_calcUnitVector([-true_parameters(1) -true_parameters(2) 1]);
 assert(isequal(round(true_parameters,4),round(parameters,4)));
 assert(isequal(round(standard_deviation_in_z,4),round(0.00,4)));
 assert(length(z_fit(:,1))==length(points(:,1)));

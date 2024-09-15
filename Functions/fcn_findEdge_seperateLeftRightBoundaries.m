@@ -134,7 +134,7 @@ end
 % scanLineNumber_start = 1400; 
 % scanLineNumber_end = 1450; 
 
-VehiclePose_current = VehiclePose(scanLineNumber_start:scanLineNumber_start,1:2);
+VehiclePose_current = VehiclePose(scanLineNumber_start:scanLineNumber_end,1:2);
 
 % Get the number of rows 
 rows_nearest_boundary_points = size(nearest_boundary_points, 1);
