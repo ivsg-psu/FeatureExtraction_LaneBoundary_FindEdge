@@ -127,6 +127,7 @@ end
 
 % Does user want to specify station_tolerance?
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
+% test_date_string = '2024_08_05';
 if (1<=nargin)
     temp = varargin{1};
     if ~isempty(temp)

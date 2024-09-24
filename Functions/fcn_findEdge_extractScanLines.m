@@ -297,8 +297,12 @@ if isempty(allData) || isempty(alltotalDataLength) || ~isequal(totalDataLength,a
         LIDAR_XYZ  = LIDAR_scan(:,1:3);
         LIDAR_intensity = LIDAR_scan(:,4);
         % LIDAR_ringID = round(LIDAR_scan(:,5));
-        LIDAR_ringID = round(LIDAR_scan(:,7));
-
+        if(6 == length(LIDAR_scan(1,:)))
+            LIDAR_ringID = round(LIDAR_scan(:,5));
+        else
+            LIDAR_ringID = round(LIDAR_scan(:,7));
+        end
+        
         indicies_to_keep = [];
         for ith_ring = 1:length(ringsRange)
             this_ring_indicies = find(LIDAR_ringID==ringsRange(ith_ring));

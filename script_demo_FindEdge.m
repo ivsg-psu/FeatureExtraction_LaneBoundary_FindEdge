@@ -169,12 +169,17 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 % and date of file creation for the Vehicle Pose data file
 
 fig_num = 101; 
-% fig_num2 = 102; 
+fig_num2 = 102; 
 
-fig_num2 = -1; 
+% % fig_num2 = -1; 
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
+
+% test_date_string = '2024_08_05'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
+% vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
+% LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
+
 flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num),(fig_num2));
 
@@ -186,11 +191,22 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 %% STEP 2: Find the scan lines that are "range of LiDAR" meters away from station 1 and station 2
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range), (fig_num))
-tic
+
+% VehiclePose = VehicleOutput(1:length(LiDAR_Scan_Transformed_cell),1:6); 
+% LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_Transformed_cell; 
+% 
+% % Check for empty rows
+% emptyRows = cellfun(@isempty, LiDAR_Scan_ENU_Entire_Loop);
+% 
+% 
+% VehiclePose = VehiclePose(~emptyRows,1:6); 
+% LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_ENU_Entire_Loop(~emptyRows,:);
+
+
 fig_num = []; 
 
 scanLineStart = 1400; 
-scanLineEnd = 1450;
+scanLineEnd = 1450; %length(LiDAR_Scan_ENU_Entire_Loop);
 
 % scanLineStart = 1000; 
 % scanLineEnd = 1500;
@@ -216,16 +232,16 @@ scanLineRange = [scanLineStart_minus_range_index scanLineEnd_plus_range_index];
 
 % Set defaults for which scans to extract
 % scanLineRange = [1400 1450];
-ringsRange = []; % If leave empty, it loads all rings
+ringsRange = []; %[7 8 9]; % If leave empty, it loads all rings
 
-% ENU_XYZ_fig_num = 103;
-% figure(ENU_XYZ_fig_num); clf; 
+ENU_XYZ_fig_num = 103;
+figure(ENU_XYZ_fig_num); clf; 
 
-% fig_num = 104;
-% figure(fig_num); clf; 
+fig_num = 104;
+figure(fig_num); clf; 
 
-ENU_XYZ_fig_num = -1; 
-fig_num = -1; 
+% ENU_XYZ_fig_num = -1; 
+% fig_num = -1; 
 
 % Extract scan lines
 [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
@@ -270,13 +286,13 @@ assert(max(LIDAR_scanLineAndRingID(:,2))==15);
 % fcn_findEdge_findDrivenPathBoundaryPoints:
 % fcn_findEdge_findDrivenPathBoundaryPoints(VehiclePose, scanLineRange, Nscans, shift, (fig_num))
 
-% fig_num = 105;
-% figure(fig_num);clf; 
-% fig_num2 = 106;
-% figure(fig_num2); clf;
+fig_num = 105;
+figure(fig_num);clf; 
+fig_num2 = 106;
+figure(fig_num2); clf;
 
-fig_num = -1; 
-fig_num2 = -1; 
+% fig_num = -1; 
+% fig_num2 = -1; 
 
 Nscans = length(VehiclePose(:,1));
 shift = 5;
@@ -295,10 +311,10 @@ end
 % [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, station_1, station_2,(fig_num))
 
 % print scan line numbers in the command window
-% fig_num = 107;
-% figure(fig_num); clf; 
+fig_num = 107;
+figure(fig_num); clf; 
 
-fig_num = -1; 
+% fig_num = -1; 
 [concatenate_LiDAR_XYZ_points_new, boundary_points_of_domain, in_domain] = fcn_findEdge_findPointsInDomain(VehiclePose, LIDAR_ENU, scanLineStart, scanLineEnd, LIDAR_intensity,(fig_num));
 
 assert(length(in_domain)==length(VehiclePose_ENU));
@@ -330,10 +346,10 @@ assert(length(in_domain)==length(VehiclePose_ENU));
 %  grids_with_zero_point, grids_greater_than_zero_points,
 %  gridCenters_zero_point_density,gridCenters_greater_than_zero_point_density] = fcn_findEdge_findGridsWithPoints(input_points,grid_size,grid_boundaries,(fig_num))
 %
-% fig_num = 109; 
-% figure(fig_num);clf
+fig_num = 109; 
+figure(fig_num);clf
 
-fig_num = -1; 
+% fig_num = -1; 
 
 % These are concatenated LiDAR points of chosen scans and cells in the
 % first step. 
@@ -384,11 +400,11 @@ assert(isequal(length(grid_AABBs(1,:)),4))
 % [total_points_in_each_grid_in_the_driven_path, total_points_in_each_grid_with_points_greater_than_zero]...
 %           = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,grids_greater_than_zero_points, (fig_num))
 
-% fig_num = 110;
-% ENU_3D_fig_num = 111;
+fig_num = 110;
+ENU_3D_fig_num = 111;
 
-fig_num = -1; 
-ENU_3D_fig_num = -1; 
+% fig_num = -1; 
+% ENU_3D_fig_num = -1; 
 
 format = sprintf('''.'',''MarkerSize'',30,''Color'',[0.8 0.8 0.8]');
 format1 = sprintf('''.'',''MarkerSize'',30,''Color'',[0 1 0]');
@@ -431,14 +447,14 @@ assert(length(total_points_in_each_grid_with_points_greater_than_zero)==length(g
 %       ,total_points_in_each_grid_in_the_driven_path,grid_size,(N_bins_grid_with_points_greater_than_zero)...
 %       (N_bins_grid_in_the_driven_path),(fig_num))
 
-% fig_num = 201; 
-% figure(fig_num); clf; 
+fig_num = 201; 
+figure(fig_num); clf; 
 
-fig_num = -1; 
+% fig_num = -1; 
 
 % Minimum number of points required 
 chosen_point_density = floor(20*((grid_size^2)/(0.3^2)));
-
+% chosen_point_density = 150;
 [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,chosen_point_density,[],[],fig_num);
 
 assert(point_density>0)
@@ -446,10 +462,10 @@ assert(point_density>0)
 
 
 % Find the grids that contain enough point density
-% fig_num = 202; 
-% figure(fig_num); clf; 
+fig_num = 202; 
+figure(fig_num); clf; 
 
-fig_num = -1; 
+% fig_num = -1; 
 
 [grid_indices_with_required_point_density, ...
     current_grids_with_low_point_density, ...
@@ -471,11 +487,11 @@ assert(length(grid_indices_with_required_point_density)==length(grids_greater_th
 
 assert(length(total_scan_lines_in_each_grid_with_more_than_zero_points) == length(grids_greater_than_zero_points))
 
-% fig_num = 203; 
-% figure(fig_num); clf;
+fig_num = 203; 
+figure(fig_num); clf;
 
-fig_num = -1; 
-% figure(fig_num); clf;
+% fig_num = -1; 
+
 
 % Find the grids that contain more than one scan line
 [grid_indices_with_more_than_one_scan_line, ...
@@ -495,20 +511,20 @@ assert(length(grids_greater_than_zero_points)==length(grid_indices_with_more_tha
 % [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] =
 %       fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points, gridCenters, (format_1),(format_2),(fig_num))
 
-% fig_num_1 = 204; 
-% figure(fig_num_1); clf; 
+fig_num_1 = 204; 
+figure(fig_num_1); clf; 
+
+fig_num_2 = 205; 
+figure(fig_num_2); clf; 
+
+fig_num_3 = 206;
+figure(fig_num_3); clf; 
+
+% fig_num_1 = -1;  
 % 
-% fig_num_2 = 205; 
-% figure(fig_num_2); clf; 
+% fig_num_2 = -1; 
 % 
-% fig_num_3 = 206;
-% figure(fig_num_3); clf; 
-
-fig_num_1 = -1;  
-
-fig_num_2 = -1; 
-
-fig_num_3 = -1;
+% fig_num_3 = -1;
 
 transverse_span_each_grid = fcn_findEdge_determineTransverseSpanThreshold...
     (grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines,...
@@ -524,8 +540,8 @@ end
 % Threshold of transverse span
 transverse_span_threshold = 0.15; 
 
-% fig_num = 207; 
-% figure(fig_num); clf;
+fig_num = 207; 
+figure(fig_num); clf;
 
 % Find the grids
 [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] = fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points,gridCenters,[],[],fig_num);
@@ -538,10 +554,10 @@ assert(transverse_span_threshold>0)
 %       fcn_findEdge_classifyQualifiedGrids(grid_indices_with_required_point_density,grid_indices_with_more_than_one_scan_line,...
 %       grid_indices_with_more_than_transverse_span_threshold, grids_greater_than_zero_points,gridCenters,(format_unqualified),(format_qualified),(fig_num))
 
-% fig_num=208;
-% figure(fig_num); clf;
+fig_num=208;
+figure(fig_num); clf;
 
-fig_num = -1; 
+% fig_num = -1; 
 
 [current_qualified_grids, ...
     current_unqualified_grids, ...
@@ -567,10 +583,10 @@ assert((length(current_qualified_grids)+length(current_unqualified_grids)) == (l
 
 % Plot qualified and unqualified grids
 
-% fig_num = 209; 
-% figure(fig_num);clf
+fig_num = 209; 
+figure(fig_num);clf
 
-fig_num = -1;
+% fig_num = -1;
 
 marker_size = 10;
 RGB_triplet = [0.8, 0.8, 0.8]; 
@@ -646,15 +662,15 @@ end
 %      = fcn_findEdge_findDrivenPathGrids(gridCenters_greater_than_zero_point_density, boundary_points_driven_path,...
 %      grids_greater_than_zero_points, (fig_num))
 
-% fig_num = 210;
-% figure(fig_num); clf;
+fig_num = 210;
+figure(fig_num); clf;
 
-% ENU_3D_fig_num = 211; 
-% figure(ENU_3D_fig_num);clf
+ENU_3D_fig_num = 211; 
+figure(ENU_3D_fig_num);clf
 
-fig_num = -1; 
-
-ENU_3D_fig_num = -1;
+% fig_num = -1; 
+% 
+% ENU_3D_fig_num = -1;
 
 [gridCenters_driven_path, current_grid_numbers_of_driven_path,~, ~] = fcn_findEdge_findDrivenPathGrids(gridCenters_qualified_grids, boundary_points_driven_path,...
                                         original_qualified_grids, current_qualified_grids, total_N_points_in_each_grid, (format), (format1),'Qualified grids',[], (fig_num), (ENU_3D_fig_num));
@@ -693,20 +709,20 @@ assert(length(current_grid_numbers_of_driven_path)==length(gridCenters_driven_pa
 % fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,std_threshold,(fig_num))
 
 
-% fig_num_1 = 301;
-% figure(fig_num_1); clf;
-% 
-% fig_num_2 = 302;
-% figure(fig_num_2); clf;
-% 
-% fig_num_3 = 303;
-% figure(fig_num_3); clf;
-% 
-fig_num_1 = -1;
+fig_num_1 = 301;
+figure(fig_num_1); clf;
 
-fig_num_2 = -1;
+fig_num_2 = 302;
+figure(fig_num_2); clf;
 
-fig_num_3 = -1;
+fig_num_3 = 303;
+figure(fig_num_3); clf;
+% 
+% fig_num_1 = -1;
+% 
+% fig_num_2 = -1;
+% 
+% fig_num_3 = -1;
 
 [original_mapped_gridIndices_cell, ...
     total_mapped_grids, ...
@@ -724,15 +740,15 @@ fig_num_3 = -1;
 assert(length(total_points_in_mapped_grids)==length(original_mapped_gridIndices_cell) & length(standard_deviation_in_z)==length(driven_path_grid_indices_in_current_mapped_grids))
 % Histogram of standard deviation - (Do not need to run after determining a std_threshold)
 
-% fig_num = 304;
-% figure(fig_num); clf;
-fig_num = -1; 
+fig_num = 304;
+figure(fig_num); clf;
+% fig_num = -1; 
 N_bins_stdz=100;
 N_bins_std_drivenpath=5;
 
 % Determined std_threshold
 chosen_std_threshold = 0.1; 
-
+% chosen_std_threshold = 0.022; 
 std_threshold = fcn_findEdge_histogramSTDinZError(standard_deviation_in_z,N_bins_stdz,std_in_z_driven_path,N_bins_std_drivenpath,mean_std_in_z_driven_path,chosen_std_threshold,(fig_num));
 
 if (fig_num>0)
@@ -753,20 +769,20 @@ end
 %       fcn_findEdge_determineAngleDeviation(LiDAR_allPoints, gridIndices_cell_array, original_qualified_grids,...
 %       gridCenters_qualified_grids,current_qualified_grids,gridCenters_driven_path,(fig_num),(fig_num2),(fig_num3) )
 
-% fig_num_1 = 305;
-% figure(fig_num_1); clf;
+fig_num_1 = 305;
+figure(fig_num_1); clf;
+
+fig_num_2 = 306;
+figure(fig_num_2); clf;
+
+fig_num_3 = 307;
+figure(fig_num_3); clf;
+
+% fig_num_1 = -1;
 % 
-% fig_num_2 = 306;
-% figure(fig_num_2); clf;
+% fig_num_2 = -1;
 % 
-% fig_num_3 = 307;
-% figure(fig_num_3); clf;
-
-fig_num_1 = -1;
-
-fig_num_2 = -1;
-
-fig_num_3 = -1;
+% fig_num_3 = -1;
 
 [angle_btw_unit_normals_and_vertical, ...
     mean_angle_btw_unit_normals_and_vertical_driven_path,...
@@ -784,12 +800,14 @@ end
 %
 %[theta_threshold] = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical,angle_btw_unit_normals_and_vertical_driven_path,mean_angle_btw_unit_normals_and_vertical_driven_path, varargin)
 
-% fig_num = 308;
-% figure(fig_num); clf;
+fig_num = 308;
+figure(fig_num); clf;
 
-fig_num = -1;
+% fig_num = -1;
 
 chosen_theta_threshold = 0.1745; % (9.98/180)*pi
+
+% chosen_theta_threshold = 0.123;
 
 theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical, angle_btw_unit_normals_and_vertical_driven_path, mean_angle_btw_unit_normals_and_vertical_driven_path, chosen_theta_threshold, fig_num);
 
@@ -811,10 +829,10 @@ input_points = LiDAR_allPoints(:,1:3);
 % theta_threshold = 30*pi/180;
 % gridCenters
 
-% fig_num = 309; 
-% figure(fig_num);clf
+fig_num = 309; 
+figure(fig_num);clf
 
-fig_num = -1; 
+% fig_num = -1; 
 
 % theta_threshold = [];
 % std_threshold = [];
@@ -857,10 +875,10 @@ assert(~isempty(concatenate_gridCenters_drivable_non_drivable_grids))
 %       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
 %       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 
-% fig_num = 310; 
-% figure(fig_num);clf
+fig_num = 310; 
+figure(fig_num);clf
 
-fig_num = -1; 
+% fig_num = -1; 
 
 marker_size = 25;
 RGB_triplet = [0 1 0]; 
@@ -1007,20 +1025,21 @@ assert(isequal(size(Xcoord_gridCenters), size(Zcoord_gridCenters)))
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
-% fig_num_qualified_unqualified = 401; 
-% figure(fig_num_qualified_unqualified);
-% clf;
 
-fig_num_qualified_unqualified = -1; 
+fig_num_qualified_unqualified = 401; 
+figure(fig_num_qualified_unqualified);
+clf;
+
+% fig_num_qualified_unqualified = -1; 
 
 boundary_points_qualified_unqualified = fcn_findEdge_findBoundaryPoints(Xcoord_gridCenters,Ycoord_gridCenters,Zcoord_gridCenters,grid_size,x_limits,y_limits,fig_num_qualified_unqualified);
 
 assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
 
-% fig_num = 444;
-% figure(fig_num); clf; 
+fig_num = 444;
+figure(fig_num); clf; 
 
-fig_num = -1; 
+% fig_num = -1; 
 
 marker_size = 20;
 RGB_triplet = [0.8, 0.8, 0.8]; 
@@ -1094,21 +1113,21 @@ assert(isequal(size(Xcoord_gridCenters), size(Zcoord_gridCenters)))
 x_limits = [];  
 y_limits = []; 
 % Calculate boundary points
-% fig_num_drivable_non_drivable = 402;
-% 
-% figure(fig_num_drivable_non_drivable)
-% clf;
+fig_num_drivable_non_drivable = 402;
 
-fig_num_drivable_non_drivable = -1; 
+figure(fig_num_drivable_non_drivable)
+clf;
+
+% fig_num_drivable_non_drivable = -1; 
 
 boundary_points = fcn_findEdge_findBoundaryPoints(Xcoord_gridCenters,Ycoord_gridCenters,Zcoord_gridCenters,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
 
 assert(isequal(length(boundary_points_qualified_unqualified(:,1)),length(boundary_points_qualified_unqualified(:,2))));
 
-% fig_num = 4234;
-% figure(fig_num); clf; 
+fig_num = 4234;
+figure(fig_num); clf; 
 
-fig_num = -1; 
+% fig_num = -1; 
 % plot computed boundary points
 marker_size = 25;
 RGB_triplet = [0 1 1]; 
@@ -1186,18 +1205,18 @@ end
 
 %% STEP 14: Find the true boundary points by removing the boundary points of qualified and unqualified from drivable and non-drivable boundary points
 
-% fig_num_bd_pts_ENU = 403; 
-% figure(fig_num_bd_pts_ENU); clf; 
+fig_num_bd_pts_ENU = 403; 
+figure(fig_num_bd_pts_ENU); clf; 
 
-fig_num_bd_pts_ENU = -1; 
+% fig_num_bd_pts_ENU = -1; 
 
 [true_boundary_points] = fcn_findEdge_findTrueBoundaryPoints(boundary_points,boundary_points_qualified_unqualified,fig_num_bd_pts_ENU);
 
 
-% fig_num = 404;
-% figure(fig_num); clf; 
+fig_num = 404;
+figure(fig_num); clf; 
 
-fig_num = -1; 
+% fig_num = -1; 
 
 % plot computed boundary points
 marker_size = 25;
@@ -1523,10 +1542,10 @@ end
 %       fcn_findEdge_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(marker_type),(legend_options),...
 %       (legend_name),(legend_position),(reference_latitude),(reference_longitude),(reference_altitude),(fig_num))
 
-% fig_num = 405;
-% figure(fig_num); clf
+fig_num = 405;
+figure(fig_num); clf
 
-fig_num = -1; 
+% fig_num = -1; 
 
 % Find the nearest boundaries
 [~, nearestBorderIndicies, nearestBorderXY] = fcn_findEdge_findNearestBoundaryPoints(true_boundary_points, ...
@@ -1537,9 +1556,9 @@ assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
 
 
 % Figure number
-% fig_num = 426; 
-% figure(fig_num); clf;
-fig_num = -1; 
+fig_num = 426; 
+figure(fig_num); clf;
+% fig_num = -1; 
 % legend()
 % plot the nearest boundary points
 marker_size = 30;
@@ -1576,10 +1595,10 @@ end
 %fcn_findEdge_seperateLeftRightBoundaries
 %[boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries(VehiclePose,station_1,station_2,nearest_boundary_points, grid_size,transverse_shift, (fig_num)).
 
-% fig_num = 407; 
-% figure(fig_num); clf; 
+fig_num = 407; 
+figure(fig_num); clf; 
 
-fig_num = -1; 
+% fig_num = -1; 
 
 % Transverse shift 
 transverse_shift = 6*3.6576; 
@@ -1668,7 +1687,7 @@ temp_h = figure(fig_num);
 assert(~isempty(get(temp_h,'Children')))
 end
 
-toc
+
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
