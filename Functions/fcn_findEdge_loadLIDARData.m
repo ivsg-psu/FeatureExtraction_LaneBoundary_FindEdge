@@ -58,6 +58,9 @@ function [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData(
 % -- Created function by copying out of load script in Geometry library
 % 2024_08_05 - Jiabao Zhao
 % -- Functionalized this code
+% 2024_09_25 - Aneesh Batchu
+% -- Added code to check for empty values in LiDAR scan and make the
+% lengths of the VehiclePose and LiDAR scan same. 
 
 %% Debugging and Input checks
 
@@ -255,6 +258,14 @@ if 1==flag_load_all_data
     if exist(mat_loadFilename_vehiclePose,'file')
         fprintf(1,'Loading vehicle pose data from file: %s\n',mat_loadFilename_vehiclePose);
         load(mat_loadFilename_vehiclePose,'VehiclePose');
+
+        % Sometimes the variable in the load file is called VehicleOutput.
+        % Need to check for this case
+        if ~exist('VehiclePose','var')
+            load(mat_loadFilename_vehiclePose,'VehicleOutput');
+            VehiclePose = VehicleOutput;
+            clear VehicleOutput
+        end
     else
         % File does not exist - need to warn the user
         error('Unable to find file: %s',mat_loadFilename_vehiclePose);
@@ -265,6 +276,14 @@ if 1==flag_load_all_data
     if exist(mat_loadFilename_LIDARdata,'file')
         fprintf(1,'Loading LIDAR scan data from file: %s\n',mat_loadFilename_LIDARdata);
         load(mat_loadFilename_LIDARdata,'LiDAR_Scan_ENU_Entire_Loop');
+
+        % Sometimes the variable in the load file is called VehicleOutput.
+        % Need to check for this case
+        if ~exist('LiDAR_Scan_ENU_Entire_Loop','var')
+            load(mat_loadFilename_LIDARdata,'LiDAR_Scan_Transformed_cell');
+            LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_Transformed_cell;
+            clear LiDAR_Scan_Transformed_cell
+        end
     else
         % File does not exist - need to load it
         error('Unable to find file: %s',mat_loadFilename_LIDARdata);
@@ -276,6 +295,14 @@ if 1==flag_load_all_data
         fprintf(1,'\tNumber of data in the vehicle pose file: %.0f\n',length(VehiclePose(:,1)));
         fprintf(1,'\tNumber of data in the LIDAR scan file: %.0f\n',length(LiDAR_Scan_ENU_Entire_Loop))
     end
+
+    % Check for empty values and make the lengths of VehiclePose and LiDAR
+    % Scan the same
+    % Check for empty rows
+    emptyRows = cellfun(@isempty, LiDAR_Scan_ENU_Entire_Loop);
+
+    VehiclePose = VehiclePose(~emptyRows,1:6);
+    LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_ENU_Entire_Loop(~emptyRows,:);
 
     if length(VehiclePose(:,1)) ~= length(LiDAR_Scan_ENU_Entire_Loop)
         error('The number of data in the vehicle pose data file does not match the number of data in the LIDAR scan file.');

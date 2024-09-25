@@ -25,15 +25,15 @@ assert(isequal(length(VehiclePose(:,1)),length(LiDAR_Scan_ENU_Entire_Loop)));
 assert(isequal(length(VehiclePose(1,:)),6)); % XYZRPY (roll pitch yaw)
 assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity scanLine deltaT
 %%
-VehiclePose = VehicleOutput(1:length(LiDAR_Scan_Transformed_cell),1:6); 
-LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_Transformed_cell; 
-
-% Check for empty rows
-emptyRows = cellfun(@isempty, LiDAR_Scan_ENU_Entire_Loop);
-
-
-VehiclePose = VehiclePose(~emptyRows,1:6); 
-LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_ENU_Entire_Loop(~emptyRows,:);
+% VehiclePose = VehicleOutput(1:length(LiDAR_Scan_Transformed_cell),1:6); 
+% LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_Transformed_cell; 
+% 
+% % Check for empty rows
+% emptyRows = cellfun(@isempty, LiDAR_Scan_ENU_Entire_Loop);
+% 
+% 
+% VehiclePose = VehiclePose(~emptyRows,1:6); 
+% LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_ENU_Entire_Loop(~emptyRows,:);
 
 %% Find the scan line ranges 
 

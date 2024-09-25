@@ -171,16 +171,16 @@ setenv('MATLABFLAG_FINDEDGE_FLAG_DO_DEBUG','0');
 fig_num = 101; 
 fig_num2 = 102; 
 
-% % fig_num2 = -1; 
-test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
-vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
-LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
-
-% test_date_string = '2024_08_05'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
+% % % fig_num2 = -1; 
+% test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 % vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 % LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
 
-flag_load_all_data = [];
+test_date_string = '2024_08_05'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
+vehicle_pose_string = 'VehiclePose_Seg3-2-1_CCW_Run1.mat'; % The name of the file containing VehiclePose
+LIDAR_file_string   = 'VelodyneLiDARScan_In_ENU_Seg3-2-1_CCW_Run1.mat'; % The name of the file containing the LIDAR data
+
+flag_load_all_data = 1;
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num),(fig_num2));
 
 % Check sizes
