@@ -74,7 +74,8 @@
 % 2024-08_19 - Aneesh Batchu
 % -- All the functions are modified to fit in a page. Internal functions
 % are created to make the functions compact. 
-
+% 2024_09_26 - S. Brennan
+% -- Updated clearUtilities to work with MacOS
 
 
 %% To-do items
@@ -129,7 +130,7 @@ library_folders{ith_library} = {'Functions', 'Data'};
 library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_VisualizingFieldData_PlotRoad/archive/refs/tags/PlotRoad_v2024_09_14.zip';
 
 %% Clear paths and folders, if needed
-if 1==1
+if 1==0
     clear flag_findEdge_Folders_Initialized;
     fcn_INTERNAL_clearUtilitiesFromPathAndFolders;
 end
