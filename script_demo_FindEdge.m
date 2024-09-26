@@ -124,12 +124,12 @@ library_folders{ith_library} = {'Functions'};
 library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_GPSRelatedCodes_GPSClass/archive/refs/tags/GPSClass_v2023_06_29.zip';
 
 ith_library = ith_library+1;
-library_name{ith_library}    = 'PlotRoad_v2024_08_16';
+library_name{ith_library}    = 'PlotRoad_v2024_09_14';
 library_folders{ith_library} = {'Functions', 'Data'};
-library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_VisualizingFieldData_PlotRoad/archive/refs/tags/PlotRoad_v2024_08_16.zip';
+library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_VisualizingFieldData_PlotRoad/archive/refs/tags/PlotRoad_v2024_09_14.zip';
 
 %% Clear paths and folders, if needed
-if 1==0
+if 1==1
     clear flag_findEdge_Folders_Initialized;
     fcn_INTERNAL_clearUtilitiesFromPathAndFolders;
 end
@@ -1709,12 +1709,21 @@ clear flag*
 clear path
 
 % Clear out any path directories under Utilities
-path_dirs = regexp(path,'[;]','split');
+if ispc
+    path_dirs = regexp(path,'[;]','split');
+elseif ismac
+    path_dirs = regexp(path,'[:]','split');
+elseif isunix
+    path_dirs = regexp(path,'[;]','split');
+else
+    error('Unknown operating system. Unable to continue.');
+end
+
 utilities_dir = fullfile(pwd,filesep,'Utilities');
 for ith_dir = 1:length(path_dirs)
     utility_flag = strfind(path_dirs{ith_dir},utilities_dir);
     if ~isempty(utility_flag)
-        rmpath(path_dirs{ith_dir});
+        rmpath(path_dirs{ith_dir})
     end
 end
 
