@@ -44,3 +44,8 @@ grid_size,grid_boundaries,-1);
 gridCenters_required_point_density, current_grids_with_low_point_density,...
 current_grids_with_required_point_density] = fcn_geometry_GridsIntoMappedUnmapped...
 (point_density, total_N_points_in_each_grid, grids_greater_than_zero_points, gridCenters,fig_num_LLA);
+
+assert(iscell(gridIndices_cell_array))
+assert(isequal(length(gridCenters(1,:)),2))
+assert(isequal(length(gridIndices(1,:)),1))
+assert(isequal(length(grid_AABBs(1,:)),4))
