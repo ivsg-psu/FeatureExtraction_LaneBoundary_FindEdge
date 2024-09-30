@@ -82,6 +82,15 @@
 
 % Use plot road library to plot the figures
 
+%% Instructions
+
+% Create a directory with the name "LargeData" in the FindEdge(main) directory
+% 
+% Go to OneDrive IVSG/GitHubMirror/MappingVanDataCollection/ParsedData/2024-06-28
+% 
+% Download vehiclePose_ENU.mat and Velodyne_LiDAR_Scan_ENU.mat
+% 
+% Copy the .mat files to LargeData directory
 
 %% Prep the workspace
 close all

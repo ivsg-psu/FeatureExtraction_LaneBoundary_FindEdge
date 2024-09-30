@@ -2,7 +2,7 @@
 
 % Load the data
 
-savefile = fullfile(pwd, 'Data', 'ExampleData_findOrthoError.mat');
+savefile = fullfile(pwd, 'Data', 'ExampleData_findOrthoError_6.mat');
 load(savefile, 'computed_boundary_path', 'hand_labeled_path')
 
 % NOTE: the hand_labeled_path is backwards (CW). Need to fix it
@@ -91,14 +91,23 @@ geolimits('auto');
 %%
 
 figure(1331);
-histogram(closestDistances(:,2),30);
-title('Initial Run: Histogram of all orthogonal distance projections');
+histogram(transverse_error,30);
+% axis equal
+title('Run 5: Histogram of all orthogonal distance projections');
+xlabel('Orthogonal Distance (m)')
+temp = axis;
+%     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
 
-OrthoDistances = closestDistances(~isnan(closestDistances(:,2)),2); 
+axis_range_y = temp(4)-temp(3);
+percent_larger = 0.1;
+axis([temp(1), temp(2),  temp(3), temp(4)+percent_larger*axis_range_y]);
 
-sigma_std = std(closestDistances(~isnan(closestDistances(:,2)),2)); 
-mu_mean = mean(closestDistances(~isnan(closestDistances(:,2)),2)); 
+
+OrthoDistances = transverse_error; 
+
+sigma_std = std(transverse_error); 
+mu_mean = mean(transverse_error); 
 
 
-text(mu_mean - 3.8*sigma_std, 50, ['std = ' num2str(sigma_std)], 'FontSize', 12, 'Color', 'k');
-text(mu_mean - 3.8*sigma_std, 45, ['mean = ' num2str(mu_mean)], 'FontSize', 12, 'Color', 'k');
+text(mu_mean - 3.2*sigma_std, 50, ['std = ' num2str(sigma_std)], 'FontSize', 12, 'Color', 'k');
+text(mu_mean - 3.2*sigma_std, 40, ['mean = ' num2str(mu_mean)], 'FontSize', 12, 'Color', 'k');
