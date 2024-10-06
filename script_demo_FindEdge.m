@@ -188,13 +188,13 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range), (fig_num))
 
-scanLineStart = 1400;
-scanLineEnd = 1450; %length(LiDAR_Scan_ENU_Entire_Loop);
+% scanLineStart = 1400;
+% scanLineEnd = 1450; 
 
-% scanLineStart = 1000;
-% scanLineEnd = 1500;
+scanLineStart = 2130;
+scanLineEnd = 2160;
 
-range_of_LiDAR = 0;
+range_of_LiDAR = 100;
 
 [scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,scanLineStart,scanLineEnd,range_of_LiDAR,-1);
 
@@ -880,7 +880,7 @@ legend_name = 'Std threshold failed uncertain grids';
 marker_type = 'o';
 legend_position = [];
 plot_std_threshold_failed_gridCenters = [std_threshold_failed_gridCenters, zeros(length(std_threshold_failed_gridCenters(:,1)),1)];
-[LLA_data_std_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_std_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],-1);
+[LLA_data_std_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_std_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 if (fig_num>0)
     temp_h = figure(fig_num);
@@ -903,7 +903,7 @@ legend_name = 'Theta threshold failed uncertain grids';
 marker_type = 'o';
 legend_position = [];
 plot_theta_threshold_failed_gridCenters = [theta_threshold_failed_gridCenters, zeros(length(theta_threshold_failed_gridCenters(:,1)),1)];
-[LLA_data_theta_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_theta_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],-1);
+[LLA_data_theta_threshold_failed_grids] = fcn_findEdge_plotPointsinLLA(plot_theta_threshold_failed_gridCenters,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 if (fig_num>0)
     temp_h = figure(fig_num);

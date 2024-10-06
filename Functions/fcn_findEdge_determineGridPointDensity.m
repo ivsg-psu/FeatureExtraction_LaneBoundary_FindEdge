@@ -193,7 +193,7 @@ if flag_do_plots
 
     plot(point_density,0, 'k.', 'MarkerSize',20)
     current_text = sprintf('chosen point density = %.2d',point_density);
-    text(x_location, 200,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
+    text(x_location, 100,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
 
 end
 
