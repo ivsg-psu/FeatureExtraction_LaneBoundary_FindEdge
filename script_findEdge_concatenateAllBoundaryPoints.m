@@ -8,6 +8,8 @@
 %
 % 2024_08_28 - Aneesh Batchu
 % -- wrote the code originally
+% 2024_10_07 - Aneesh Batchu
+% -- Fixed scanLineRange error
 
 %% STEP 1: Load the LiDAR and Vehicle Pose data
 fig_num = 101; 
@@ -40,9 +42,19 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 % Intialize: Empty matrix
 boundary_points_test_track_right = []; 
 boundary_points_test_track_left = []; 
-start_scan_line = 1;
-end_scan_line = length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
-scanLine_segment_length = 200; % Divide the scan lines based on this interval
+% Enter the start scan line
+start_scan_line = 1400;
+% Enter the end scan line
+end_scan_line = 1450; %length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
+scanLine_segment_length = 10; % Divide the scan lines based on this interval
+
+% Sets range of LiDAR to zero if you are processing the whole test track
+% data. 
+if end_scan_line == length(LiDAR_Scan_ENU_Entire_Loop) || start_scan_line == 1
+    range_of_LiDAR = 0;
+else
+    range_of_LiDAR = 100;
+end
 
 % Create the start points
 start_scanLines = start_scan_line:scanLine_segment_length:end_scan_line;
@@ -53,6 +65,9 @@ end_scanLines(end) = end_scan_line; % Adjust the last end point to match end_sca
 
 % Combine the start and end points into a matrix
 scanLineRanges = [start_scanLines(:), end_scanLines(:)];
+
+% Delete the range if start and end range are same
+scanLineRanges = scanLineRanges(~(scanLineRanges(:,1) == scanLineRanges(:,2)),:);
 
 for scanLineRange_id = 1:length(scanLineRanges)
 
@@ -65,7 +80,7 @@ for scanLineRange_id = 1:length(scanLineRanges)
     disp(['The scan line range of iteration ', num2str(scanLineRange_id), ' is [', num2str(scanLineStart),' ',num2str(scanLineEnd), '].']);
 
     h_waitbar = waitbar(0,'Grid preparation ...');
-    range_of_LiDAR = 0;
+   
 
     [scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,scanLineStart,scanLineEnd,range_of_LiDAR,fig_num);
     
@@ -354,27 +369,28 @@ plot_boundary_points_right = [boundary_points_test_track_right, zeros(length(bou
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 %% Plot the boundary points
+if ~isempty(boundary_points_test_track_left)
+    fig_num = 409;
+    figure(fig_num); clf;
 
-fig_num = 409; 
-figure(fig_num); clf;
+    marker_size = 30;
+    RGB_triplet = [0 1 1];
+    legend_option = 0;
+    legend_name = 'Left Boundary Points';
+    legend_position = [];
+    marker_type = [];
 
-marker_size = 30;
-RGB_triplet = [0 1 1]; 
-legend_option = 0;
-legend_name = 'Left Boundary Points';
-legend_position = [];
-marker_type = []; 
-
-plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
-[~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+    plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
+    [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
-marker_size = 12;
-RGB_triplet = [0 0 1]; 
-legend_option = 0;
-legend_name = 'Left Boundary Points';
-legend_position = [];
-marker_type = []; 
+    marker_size = 12;
+    RGB_triplet = [0 0 1];
+    legend_option = 0;
+    legend_name = 'Left Boundary Points';
+    legend_position = [];
+    marker_type = [];
 
-plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
-[~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+    plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
+    [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+end
