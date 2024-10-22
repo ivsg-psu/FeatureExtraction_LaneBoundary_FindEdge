@@ -191,6 +191,8 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 % scanLineStart = 1400;
 % scanLineEnd = 1450; 
 
+% Each scan line is a bit less than a meter. So the following processes 30
+% scan lines and less than 30 meters
 scanLineStart = 2130;
 scanLineEnd = 2160;
 
