@@ -43,11 +43,11 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 boundary_points_test_track_right = []; 
 boundary_points_test_track_left = []; 
 % Enter the start scan line
-start_scan_line = 1400;
+start_scan_line = 1401;
 % Enter the end scan line
-end_scan_line = 1450; %length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
-scanLine_segment_length = 10; % Divide the scan lines based on this interval
-
+end_scan_line = 1500;%length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
+scanLine_segment_length = 50; % Divide the scan lines based on this interval
+tic
 % Sets range of LiDAR to zero if you are processing the whole test track
 % data. 
 if end_scan_line == length(LiDAR_Scan_ENU_Entire_Loop) || start_scan_line == 1
@@ -341,7 +341,7 @@ close(h_waitbar)
 end
 
 % save('boundary_points_test_track.mat', 'boundary_points_test_track'); 
-
+toc
 %% Plot the boundary points
 
 fig_num = 408;
@@ -368,29 +368,29 @@ marker_type = [];
 plot_boundary_points_right = [boundary_points_test_track_right, zeros(length(boundary_points_test_track_right),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
-%% Plot the boundary points
-if ~isempty(boundary_points_test_track_left)
-    fig_num = 409;
-    figure(fig_num); clf;
-
-    marker_size = 30;
-    RGB_triplet = [0 1 1];
-    legend_option = 0;
-    legend_name = 'Left Boundary Points';
-    legend_position = [];
-    marker_type = [];
-
-    plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
-    [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
-
-    marker_size = 12;
-    RGB_triplet = [0 0 1];
-    legend_option = 0;
-    legend_name = 'Left Boundary Points';
-    legend_position = [];
-    marker_type = [];
-
-    plot_boundary_points_left = [boundary_points_test_track_left, zeros(length(boundary_points_test_track_left),1)];
-    [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-end
+% %% Plot the boundary points
+% if ~isempty(boundary_points_test_track_left)
+%     fig_num = 409;
+%     figure(fig_num); clf;
+% 
+%     marker_size = 30;
+%     RGB_triplet = [0 1 1];
+%     legend_option = 0;
+%     legend_name = 'Left Boundary Points';
+%     legend_position = [];
+%     marker_type = [];
+% 
+%     plot_boundary_points_left = [boundary_points_test_track_left, zeros(size(boundary_points_test_track_left,1),1)];
+%     [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+% 
+% 
+%     marker_size = 12;
+%     RGB_triplet = [0 0 1];
+%     legend_option = 0;
+%     legend_name = 'Left Boundary Points';
+%     legend_position = [];
+%     marker_type = [];
+% 
+%     plot_boundary_points_left = [boundary_points_test_track_left, zeros(size(boundary_points_test_track_left,1),1)];
+%     [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+% end

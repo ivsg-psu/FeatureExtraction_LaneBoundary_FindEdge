@@ -28,7 +28,7 @@ if 1==0
     plot(computed_boundary_path(:,1),computed_boundary_path(:,2),'r.');
 end
 
-fig_num_StPointConverstion = []; %1234;
+fig_num_StPointConverstion = [];
 % figure(fig_num_StPointConverstion);
 % clf;
 
