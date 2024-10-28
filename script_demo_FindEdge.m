@@ -188,13 +188,14 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range), (fig_num))
 
-% scanLineStart = 1400;
-% scanLineEnd = 1450; 
+scanLineStart = 1400;
+scanLineEnd = 1450; 
 
 % Each scan line is a bit less than a meter. So the following processes 30
 % scan lines and less than 30 meters
-scanLineStart = 2130;
-scanLineEnd = 2160;
+
+% scanLineStart = 2130;
+% scanLineEnd = 2160;
 
 range_of_LiDAR = 100;
 
@@ -322,7 +323,7 @@ input_points = LiDAR_allPoints(:,1:2);
 
 % grid size of each grid in 3 dimensions. For example, grid_size = 1.25:
 % [length, width, height] = [1.25 1.25 1.25]
-grid_size = 1; %0.5; %0.8;%1;%1.25; %1.26
+grid_size = 0.3; %0.5; %0.8;%1;%1.25; %1.26
 
 % Find minimum and maximum values of x,y,z of LiDAR data
 [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(input_points,-1);
@@ -406,6 +407,8 @@ clf;
 
 % Minimum number of points required
 chosen_point_density = floor(20*((grid_size^2)/(0.3^2)));
+
+% chosen_point_density = floor(4*((grid_size^2)/(0.1^2)));
 % chosen_point_density = 150;
 [point_density] = fcn_findEdge_determineGridPointDensity(total_points_in_each_grid_with_points_greater_than_zero,total_points_in_each_grid_in_the_driven_path,grid_size,chosen_point_density,[],[],fig_num);
 
@@ -461,20 +464,20 @@ assert(length(grids_greater_than_zero_points)==length(grid_indices_with_more_tha
 % [grid_indices_with_more_than_transverse_span_threshold, gridCenters_with_less_than_transverse_span_threshold] =
 %       fcn_findEdge_classifyGridsBasedOnTransverseSpan(transverse_span_each_grid,transverse_span_threshold,grids_greater_than_zero_points, gridCenters, (format_1),(format_2),(fig_num))
 
-fig_num_1 = 204;
-figure(fig_num_1); clf;
+% fig_num_1 = 204;
+% figure(fig_num_1); clf;
+% 
+% fig_num_2 = 205;
+% figure(fig_num_2); clf;
+% 
+% fig_num_3 = 206;
+% figure(fig_num_3); clf;
 
-fig_num_2 = 205;
-figure(fig_num_2); clf;
+fig_num_1 = -1;
 
-fig_num_3 = 206;
-figure(fig_num_3); clf;
+fig_num_2 = -1;
 
-% fig_num_1 = -1;
-%
-% fig_num_2 = -1;
-%
-% fig_num_3 = -1;
+fig_num_3 = -1;
 
 transverse_span_each_grid = fcn_findEdge_determineTransverseSpanThreshold...
     (grids_greater_than_zero_points, grid_AABBs, grid_size, gridIndices, input_points, LIDAR_scanLines,...
@@ -482,8 +485,10 @@ transverse_span_each_grid = fcn_findEdge_determineTransverseSpanThreshold...
 
 % assert(transverse_span_threshold>0)
 
-% Threshold of transverse span
+% % Threshold of transverse span
 transverse_span_threshold = 0.15;
+
+% transverse_span_threshold = 0.05;
 
 fig_num = 207;
 figure(fig_num); clf;
@@ -745,7 +750,7 @@ figure(fig_num); clf;
 
 % fig_num = -1;
 
-chosen_theta_threshold = 0.1745; % (9.98/180)*pi
+chosen_theta_threshold = 0.25;%0.25; %0.1745; % (9.98/180)*pi  0.1745
 
 theta_threshold = fcn_findEdge_histogramAngleDeviation(angle_btw_unit_normals_and_vertical, angle_btw_unit_normals_and_vertical_driven_path, mean_angle_btw_unit_normals_and_vertical_driven_path, chosen_theta_threshold, fig_num);
 
@@ -1308,16 +1313,16 @@ end
 %fcn_findEdge_seperateLeftRightBoundaries
 %[boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries(VehiclePose,station_1,station_2,nearest_boundary_points, grid_size,transverse_shift, (fig_num)).
 
-fig_num = 407;
-figure(fig_num); clf;
+% fig_num = 407;
+% figure(fig_num); clf;
 
-% fig_num = -1;
+fig_num = -1;
 
-% Transverse shift
-transverse_shift = 6*3.6576;
+% % Transverse shift
+% transverse_shift = 6*3.6576;
 
 [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
-    (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, grid_size, transverse_shift, fig_num);
+    (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, fig_num);
 
 assert(isequal(length(boundary_points_left(1,:)),2))
 assert(isequal(length(boundary_points_right(1,:)),2))
