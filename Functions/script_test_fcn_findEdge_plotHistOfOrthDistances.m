@@ -141,9 +141,33 @@ transverse_distances = fcn_findEdge_plotHistOfOrthDistances(hand_labeled_path, c
 
 assert(length(transverse_distances)>1);
 
+%% Point 3 grid size
 
+% % Load the data
+% savefile = fullfile(pwd, 'Data', 'ExampleData_findOrthoError_7.mat');
+% load(savefile, 'computed_boundary_path', 'hand_labeled_path')
 
+% NOTE: the hand_labeled_path is backwards (CW). Need to fix it
+hand_labeled_path = flipud(hand_labeled_path);
 
+% Figure number of histogram
+fig_num1 = 111;
+
+% Figure number of LLA plot
+fig_num2 = 112;
+
+% Figure number of ENU plot
+fig_num = 113; 
+
+transverse_distances = fcn_findEdge_plotHistOfOrthDistances(hand_labeled_path, boundary_points_test_track_right, fig_num1, fig_num2, fig_num); 
+
+figure(fig_num1);
+
+% axis equal
+title( 'Histogram of all orthogonal distance projections for grid size = 0.3 m');
+xlabel('Orthogonal Distance (m)')
+
+assert(length(transverse_distances)>1); 
 
 
 

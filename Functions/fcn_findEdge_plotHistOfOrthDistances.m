@@ -151,11 +151,11 @@ if flag_do_plots
     percent_larger = 0.1;
     axis([temp(1), temp(2),  temp(3), temp(4)+percent_larger*axis_range_y]);
 
-    sigma_std = std(transverse_distances);
-    mu_mean = mean(transverse_distances);
+    sigma_std = round(std(transverse_distances),2);
+    mu_mean = round(mean(transverse_distances),2);
 
-    text(mu_mean - 3.2*sigma_std, 50, ['std = ' num2str(sigma_std)], 'FontSize', 12, 'Color', 'k');
-    text(mu_mean - 3.2*sigma_std, 40, ['mean = ' num2str(mu_mean)], 'FontSize', 12, 'Color', 'k');
+    text(mu_mean - 3*sigma_std, 230, ['std = ' num2str(sigma_std)], 'FontSize', 12, 'Color', 'k');
+    text(mu_mean - 3*sigma_std, 190, ['mean = ' num2str(mu_mean)], 'FontSize', 12, 'Color', 'k');
 
     %% LLA Plot
 
