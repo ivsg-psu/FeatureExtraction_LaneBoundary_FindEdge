@@ -10,22 +10,37 @@
 % -- wrote the code originally
 % 2024_10_07 - Aneesh Batchu
 % -- Fixed scanLineRange error
+%%
+clc
+clear
+close all
+
+%%
+savefile = fullfile(pwd, 'Data', 'point6_ComputedBoundaryPoints_Sample1.mat');
+load(savefile, 'hand_labeled_path');
+
 
 %% STEP 1: Load the LiDAR and Vehicle Pose data
 fig_num = 101; 
 % fig_num2 = 102; 
 
 fig_num2 = -1; 
-test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
-vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
-LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
+% test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
+% vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
+% LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
+
+test_date_string = '2024_08_05'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
+vehicle_pose_string = 'VehiclePose_Seg3-2-1_CCW_Run6.mat'; % The name of the file containing VehiclePose
+LIDAR_file_string   = 'VelodyneLiDARScan_In_ENU_Seg3-2-1_CCW_Run6.mat'; % The name of the file containing the LIDAR data
+
+
 flag_load_all_data = [];
 [VehiclePose, LiDAR_Scan_ENU_Entire_Loop] = fcn_findEdge_loadLIDARData((test_date_string),(vehicle_pose_string), (LIDAR_file_string), (flag_load_all_data), (fig_num),(fig_num2));
 
-% Check sizes
-assert(isequal(length(VehiclePose(:,1)),length(LiDAR_Scan_ENU_Entire_Loop)));
-assert(isequal(length(VehiclePose(1,:)),6)); % XYZRPY (roll pitch yaw)
-assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity scanLine deltaT
+% % Check sizes
+% assert(isequal(length(VehiclePose(:,1)),length(LiDAR_Scan_ENU_Entire_Loop)));
+% assert(isequal(length(VehiclePose(1,:)),6)); % XYZRPY (roll pitch yaw)
+% assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity scanLine deltaT
 %%
 % VehiclePose = VehicleOutput(1:length(LiDAR_Scan_Transformed_cell),1:6); 
 % LiDAR_Scan_ENU_Entire_Loop = LiDAR_Scan_Transformed_cell; 
@@ -42,10 +57,14 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 % Intialize: Empty matrix
 boundary_points_test_track_right = []; 
 boundary_points_test_track_left = []; 
+
+% Choose a grid size
+grid_size = 1.25; %0.5; %0.8;%1;%1.25; %1.26
+theta_threshold = 0.1745; %0.1745;%0.25; 
 % Enter the start scan line
-start_scan_line = 1401;
+start_scan_line = 1;
 % Enter the end scan line
-end_scan_line = 1500;%length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
+end_scan_line = length(LiDAR_Scan_ENU_Entire_Loop); % Total scan lines
 scanLine_segment_length = 50; % Divide the scan lines based on this interval
 tic
 % Sets range of LiDAR to zero if you are processing the whole test track
@@ -77,12 +96,27 @@ for scanLineRange_id = 1:length(scanLineRanges)
     scanLineStart = scanLineRanges(scanLineRange_id,1);
     scanLineEnd = scanLineRanges(scanLineRange_id,2);
 
+    % Sets range of LiDAR to zero if you are processing the whole test track
+    % data.
+    if scanLineEnd == length(LiDAR_Scan_ENU_Entire_Loop) || scanLineStart == 1
+        range_of_LiDAR = 0;
+    else
+        range_of_LiDAR = 100;
+    end
+
+
     disp(['The scan line range of iteration ', num2str(scanLineRange_id), ' is [', num2str(scanLineStart),' ',num2str(scanLineEnd), '].']);
 
     h_waitbar = waitbar(0,'Grid preparation ...');
    
 
     [scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,scanLineStart,scanLineEnd,range_of_LiDAR,fig_num);
+
+    if isempty(scanLineStart_minus_range_index)
+        scanLineStart_minus_range_index = scanLineStart;
+    elseif isempty(scanLineEnd_plus_range_index)
+        scanLineEnd_plus_range_index = scanLineEnd;
+    end
     
     %STEP 3: Extracts vehicle pose ENU, vehicle pose unit orthogonal vectors, LiDAR ENU scans, LiDAR Intensity, LiDAR scan line and Ring IDs of the scan line range
     scanLineRange = [scanLineStart_minus_range_index scanLineEnd_plus_range_index];
@@ -129,7 +163,7 @@ for scanLineRange_id = 1:length(scanLineRanges)
 
     % grid size of each grid in 3 dimensions. For example, grid_size = 1.25:
     % [length, width, height] = [1.25 1.25 1.25]
-    grid_size = 1; %0.5; %0.8;%1;%1.25; %1.26
+    % grid_size = 1; %0.5; %0.8;%1;%1.25; %1.26
 
     % Find minimum and maximum values of x,y,z of LiDAR data
     [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_findEdge_findMaxMinOfXYZ(input_points,-1);
@@ -229,7 +263,7 @@ for scanLineRange_id = 1:length(scanLineRanges)
 
     fig_num = -1;
 
-    theta_threshold = 0.1745; % (9.98/180)*pi
+    % theta_threshold = 0.1745;%0.25;%0.1745; % (9.98/180)*pi
     std_threshold = 0.1;
 
     % theta_threshold = 0.15; % (9.98/180)*pi
@@ -289,19 +323,26 @@ fig_num = -1;
 [~, nearestBorderIndicies, nearestBorderXY] = fcn_findEdge_findNearestBoundaryPoints(true_boundary_points, ...
     gridCenters_driven_path, grid_size, grid_boundaries, fig_num);
 
-nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(length(nearestBorderXY(:,1)),1)]; 
+if ~isempty(nearestBorderXY)
+    nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(length(nearestBorderXY(:,1)),1)];
 
-% STEP 16: Seperate the right and left boundaries from the nearest boundaries 
-fig_num = -1; 
+    % STEP 16: Seperate the right and left boundaries from the nearest boundaries
+    fig_num = -1;
 
-% Transverse shift 
-transverse_shift = 6*3.6576; 
+    % Transverse shift
+    % transverse_shift = 6*3.6576;
 
-[boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
-    (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, grid_size, transverse_shift, fig_num);
+    % [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
+    %     (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, grid_size, transverse_shift, fig_num);
 
-boundary_points_test_track_right = [boundary_points_test_track_right; boundary_points_right]; %#ok<AGROW>
-boundary_points_test_track_left = [boundary_points_test_track_left; boundary_points_left]; %#ok<AGROW>
+    [boundary_points_left, boundary_points_right] = fcn_findEdge_seperateLeftRightBoundaries...
+        (VehiclePose, scanLineStart, scanLineEnd, nearest_boundary_points, fig_num);
+
+
+    boundary_points_test_track_right = [boundary_points_test_track_right; boundary_points_right]; %#ok<AGROW>
+    boundary_points_test_track_left = [boundary_points_test_track_left; boundary_points_left]; %#ok<AGROW>
+end
+
 
 plot_boundary_pts_of_segments = 0; 
 
@@ -342,6 +383,17 @@ end
 
 % save('boundary_points_test_track.mat', 'boundary_points_test_track'); 
 toc
+%%
+
+% % Specify the full path to the target location
+% filePath = '/Users/aneeshbatchu/Documents/IVSG/FeatureExtraction_LaneBoundary_FindEdge/Data/point5_ComputedBoundaryPoints_Sample1.mat';
+% 
+% % Save the file
+% save(filePath, 'boundary_points_test_track_right');
+
+savefile = fullfile(pwd, 'Data', 'onePoint25_ComputedBoundaryPoints_Sample7.mat');
+save(savefile, 'boundary_points_test_track_right', 'hand_labeled_path')
+
 %% Plot the boundary points
 
 fig_num = 408;
@@ -367,6 +419,10 @@ marker_type = [];
 
 plot_boundary_points_right = [boundary_points_test_track_right, zeros(length(boundary_points_test_track_right),1)];
 [~] = fcn_findEdge_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+saveas(figure(fig_num), '/Users/aneeshbatchu/Documents/PennState_Semesters/05_Fall 2024/FA24_IVSG/Point3_boundaryPointPlots/onePoint25_Sample7.jpg')
+saveas(figure(fig_num), '/Users/aneeshbatchu/Documents/PennState_Semesters/05_Fall 2024/FA24_IVSG/Point3_boundaryPointPlots/MATLAB_figs/onePoint25_Sample7.fig')
+
 
 % %% Plot the boundary points
 % if ~isempty(boundary_points_test_track_left)

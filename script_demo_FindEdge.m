@@ -76,6 +76,10 @@
 % are created to make the functions compact.
 % 2024_09_26 - S. Brennan
 % -- Updated clearUtilities to work with MacOS
+% 2024_11_18 - Aneesh Batchu
+% -- Created boundary points mat files and saved them in Data directory
+% -- Created a function (fcn_findEdge_plotHistOfOrthDistances) that
+% generates a hist and boundary point error plot.
 
 
 %% To-do items
@@ -188,16 +192,16 @@ assert(isequal(length(LiDAR_Scan_ENU_Entire_Loop{1}(1,:)),6)); % XYZ intensity s
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index]= fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range), (fig_num))
 
-scanLineStart = 1400;
-scanLineEnd = 1450; 
+% scanLineStart = 1450;
+% scanLineEnd = 1510; 
 
 % Each scan line is a bit less than a meter. So the following processes 30
 % scan lines and less than 30 meters
 
-% scanLineStart = 2130;
-% scanLineEnd = 2160;
+scanLineStart = 50;
+scanLineEnd = 100;
 
-range_of_LiDAR = 100;
+range_of_LiDAR = 0;
 
 [scanLineStart_minus_range_index, scanLineEnd_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,scanLineStart,scanLineEnd,range_of_LiDAR,-1);
 

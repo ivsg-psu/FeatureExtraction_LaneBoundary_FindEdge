@@ -2,7 +2,8 @@
 
 % Load the data
 
-savefile = fullfile(pwd, 'Data', 'ExampleData_findOrthoError_6.mat');
+% savefile = fullfile(pwd, 'Data', 'ExampleData_findOrthoError_6.mat');
+savefile = fullfile(pwd, 'Data', 'one_ComputedBoundaryPoints_Sample1.mat');
 load(savefile, 'computed_boundary_path', 'hand_labeled_path')
 
 % NOTE: the hand_labeled_path is backwards (CW). Need to fix it
@@ -58,6 +59,7 @@ Ncolors = 10;
 reducedColorMap = fcn_plotRoad_reduceColorMap(colorMapMatrixOrString, Ncolors, -1);
 
 fcn_plotRoad_plotXYI(XYI_data, (plotFormat),  (reducedColorMap), (fig_num_colorized_error_XYI));
+% colorbar
 title('Boundary error, ENU');
 
 %% DO LLA
@@ -83,6 +85,7 @@ clf;
 LLI_data = [LLA_full_data(:,1:2) normalized_abs_transverse_error];
 
 [h_plot, indiciesInEachPlot]  = fcn_plotRoad_plotLLI(LLI_data, (plotFormat),  (reducedColorMap), (fig_num_colorized_error_LLI));
+colorbar
 title('Boundary error, ENU');
 
 % Force the plot to fit

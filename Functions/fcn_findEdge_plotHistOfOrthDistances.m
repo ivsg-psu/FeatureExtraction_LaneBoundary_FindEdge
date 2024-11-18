@@ -1,4 +1,4 @@
-function transverse_distances = fcn_findEdge_plotHistOfOrthDistances(reference_path, computed_boundary_path, fig_num1, fig_num2, varargin)
+function transverse_distances = fcn_findEdge_plotHistOfOrthDistances(reference_path, computed_boundary_path, max_transverse_error, fig_num1, fig_num2, nPoints, varargin)
 %% fcn_findEdge_plotHistOfOrthDistances
 % The histogram of the orthogonal distances from the reference points to
 % computed boundary points is plotted. 
@@ -51,7 +51,7 @@ function transverse_distances = fcn_findEdge_plotHistOfOrthDistances(reference_p
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -92,14 +92,14 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(4,5);
+        narginchk(6,7);
     end
 end
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (5<= nargin)
+if (0==flag_max_speed) && (7<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -121,8 +121,8 @@ end
 St_points = fcn_Path_convertXY2St(reference_path,computed_boundary_path,[],[]);
 transverse_distances = real(St_points(:,2));
 
-max_transverse_error = 2; % Set by user - this determines the color scale
-normalized_abs_transverse_error = min(2,abs(transverse_distances))/max_transverse_error;
+% max_transverse_error = 2; % Set by user - this determines the color scale
+normalized_abs_transverse_error = min(max_transverse_error,abs(transverse_distances))/max_transverse_error;
 
 
 %% Plot the results (for debugging)?
@@ -142,7 +142,12 @@ if flag_do_plots
     %% Hist Plot
     figure(fig_num1);
 
-    histogram(transverse_distances,30);
+    % histogram(transverse_distances,30);
+    num_bins = 30; 
+    [counts, edges] = histcounts(transverse_distances, num_bins, 'Normalization', 'probability');
+    % Convert to percentages
+    h = bar(edges(1:end-1), counts*100, 'histc');
+    h.FaceColor = [0.2, 0.6, 0.8];
 
     temp = axis;
     %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
@@ -151,15 +156,27 @@ if flag_do_plots
     percent_larger = 0.1;
     axis([temp(1), temp(2),  temp(3), temp(4)+percent_larger*axis_range_y]);
 
-    sigma_std = round(std(transverse_distances),2);
-    mu_mean = round(mean(transverse_distances),2);
+    % sigma_std = round(std(transverse_distances),2);
+    % mu_mean = round(mean(transverse_distances),2);
+    % 
+    % text(mu_mean - 3*sigma_std, 8, ['std = ' num2str(sigma_std)], 'FontSize', 12, 'Color', 'k');
+    % text(mu_mean - 3*sigma_std, 6, ['mean = ' num2str(mu_mean)], 'FontSize', 12, 'Color', 'k');
 
-    text(mu_mean - 3*sigma_std, 230, ['std = ' num2str(sigma_std)], 'FontSize', 12, 'Color', 'k');
-    text(mu_mean - 3*sigma_std, 190, ['mean = ' num2str(mu_mean)], 'FontSize', 12, 'Color', 'k');
+    xlabel('Orthogonal Distance (m)');
+    ylabel('Percentage')
 
-    %% LLA Plot
+
+    %% ENU Plot
+
+    figure(fig_num); 
+    clf;
 
     XYI_data = [computed_boundary_path normalized_abs_transverse_error];
+
+    rng(0);
+    indices = sort(randperm(size(XYI_data,1), nPoints)); 
+
+    XYI_data = XYI_data(indices,:); 
 
     % Call the plotting function
     clear plotFormat
@@ -171,6 +188,16 @@ if flag_do_plots
     colorMapMatrixOrString = colormap('turbo');
     Ncolors = 10;
     reducedColorMap = fcn_plotRoad_reduceColorMap(colorMapMatrixOrString, Ncolors, -1);
+   
+    fcn_plotRoad_plotXYI(XYI_data, (plotFormat),  (reducedColorMap), (fig_num));
+    colorbar
+    title('Boundary error, ENU');
+
+    
+    %% LLA plot
+
+      figure(fig_num2);
+      clf;
 
     % Convert ENU data to LLA
     % Define reference location at test track
@@ -188,21 +215,17 @@ if flag_do_plots
     ENU_full_data = [XYI_data(:,1), XYI_data(:,2), XYI_data(:,2)*0];
     LLA_full_data  =  gps_object.ENU2WGSLLA(ENU_full_data);
 
-    figure(fig_num2);
-    clf;
-    LLI_data = [LLA_full_data(:,1:2) normalized_abs_transverse_error];
+  
+
+    LLI_data = [LLA_full_data(:,1:2) normalized_abs_transverse_error(indices,:)];
 
     [~, ~]  = fcn_plotRoad_plotLLI(LLI_data, (plotFormat),  (reducedColorMap), (fig_num2));
-    title('Boundary error, ENU');
-
+    % colorbar
+    % title('Boundary error, LLA');
+    
     % Force the plot to fit
     geolimits('auto');
-    %% ENU plot
-
-    figure(fig_num);
-   
-    fcn_plotRoad_plotXYI(XYI_data, (plotFormat),  (reducedColorMap), (fig_num));
-    title('Boundary error, ENU');
+    
 end
 
 if flag_do_debug
