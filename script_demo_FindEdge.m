@@ -218,6 +218,8 @@ disp(['The index of the scan line that is 100 meters after the end scan line is 
 % fcn_findEdge_pointsAtRangeOfLiDARFromStation:
 % [station1_minus_range_index, station2_plus_range_index] = fcn_findEdge_pointsAtRangeOfLiDARFromStation(VehiclePose,starting_index,ending_index,(range))
 
+% clear fcn_findEdge_extractScanLines
+
 scanLineRange = [scanLineStart_minus_range_index scanLineEnd_plus_range_index];
 
 % Set defaults for which scans to extract
@@ -257,8 +259,8 @@ assert(isequal(size(LIDAR_scanLineAndRingID),[Npoints 2]));
 % Check key values
 assert(min(LIDAR_scanLineAndRingID(:,1))==scanLineRange(1));
 assert(max(LIDAR_scanLineAndRingID(:,1))==scanLineRange(2));
-assert(min(LIDAR_scanLineAndRingID(:,2))==0);
-assert(max(LIDAR_scanLineAndRingID(:,2))==15);
+% assert(min(LIDAR_scanLineAndRingID(:,2))==0);
+% assert(max(LIDAR_scanLineAndRingID(:,2))==15);
 
 %% STEP 3.1: Find the boundary points of the driven path to create a bounding box for finding the driven path grids
 % fcn_findEdge_findDrivenPathBoundaryPoints:

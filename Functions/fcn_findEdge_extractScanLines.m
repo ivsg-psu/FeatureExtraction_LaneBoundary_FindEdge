@@ -87,6 +87,9 @@ function [VehiclePose_ENU, VehiclePose_UnitOrthoVectors, ...
 % -- Created function by copying out of load script in Geometry library
 % 2024_08_06 - Jiabao Zhao
 % -- Documented the output variables.
+% 2025_03_17 - Aneesh Batchu
+% -- Created a persistent variable rings so that when the ringsRange is
+% modified by the user, the for loop in the main function is executed
 
 
 %% Debugging and Input checks
@@ -274,9 +277,10 @@ max_lines = max_lines+16; % There are 16 rings that may have NaN values at end o
 
 totalDataLength = N_scanLines*max_lines;
 
-persistent allData alltotalDataLength
+persistent allData alltotalDataLength rings
 
-if isempty(allData) || isempty(alltotalDataLength) || ~isequal(totalDataLength,alltotalDataLength)
+
+if isempty(allData) || isempty(alltotalDataLength) || ~isequal(totalDataLength,alltotalDataLength) || ~isequal(ringsRange, rings)
     % ScanLineNumbers              = nan(N_scanLines*max_lines,1);
     % VehiclePose_ENU              = nan(N_scanLines*max_lines,3);
     % VehiclePose_UnitOrthoVectors = nan(N_scanLines*max_lines,3);
@@ -340,6 +344,7 @@ if isempty(allData) || isempty(alltotalDataLength) || ~isequal(totalDataLength,a
     end
     allData = fillData;
     alltotalDataLength = totalDataLength;
+    rings = ringsRange; 
 
 end
 
